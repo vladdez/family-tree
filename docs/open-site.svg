@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="112" viewBox="0 0 480 112" role="img" aria-labelledby="title description">
+  <title id="title">Открыть сайт</title>
+  <desc id="description">Родословная Михеевых — семейное древо и архив</desc>
+  <rect x="8" y="8" width="464" height="96" rx="16" fill="#374d3e" />
+  <text x="219" y="66" text-anchor="middle" fill="#fffefa" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="600">Открыть сайт</text>
+  <path d="M356 56h32m-11-11 11 11-11 11" fill="none" stroke="#fffefa" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

@@ -1,0 +1,19 @@
+---
+import type { MarkdownLayoutProps } from 'astro';
+import BaseLayout from './BaseLayout.astro';
+import PageHeader from './PageHeader.astro';
+import '../../styles/developer.css';
+type Props = MarkdownLayoutProps<{ title: string; description: string }>;
+const { frontmatter, headings } = Astro.props;
+const sections = headings.filter((heading) => heading.depth === 2);
+---
+<BaseLayout title={frontmatter.title} description={frontmatter.description}>
+  <PageHeader eyebrow="Работа над сайтом" title="Для разработчика" description={frontmatter.description} />
+  <div class="developer-content">
+    <nav class="developer-contents" aria-label="Разделы руководства">
+      <h2>Содержание</h2>
+      <ul>{sections.map((section) => <li><a href={`#${section.slug}`}>{section.text}</a></li>)}</ul>
+    </nav>
+    <article class="developer-article" aria-label="Руководство для разработчика"><slot /></article>
+  </div>
+</BaseLayout>
