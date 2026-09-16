@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import PageHeader from '../../components/layout/PageHeader.astro';
+import Breadcrumbs from '../../components/layout/Breadcrumbs.astro';
+import ArchiveReference from '../../components/documents/ArchiveReference.astro';
+import DocumentViewer from '../../components/documents/DocumentViewer.astro';
+import PersonLink from '../../components/person/PersonLink.astro';
+import { catalog } from '../../domain/catalog';
+import { documentTypes } from '../../domain/schemas';
+import { formatDate } from '../../domain/dates';
+import { isImage } from '../../domain/documents';
+export function getStaticPaths() { return catalog.documents.map((document) => ({ params: { id: document.id }, props: { document } })); }
+const { document } = Astro.props;
+const description = `${document.title}. ${formatDate(document.date)}. ${document.archive.name || documentTypes[document.type]}.`;
+---
+<BaseLayout title={`${document.title} — Родословная Михеевых`} description={description} image={document.files.find((f) => isImage(f.path))?.path ?? null}>
+  <Breadcrumbs items={[{ label: 'Документы', path: '/documents/' }, { label: document.title }]} />
+  <PageHeader title={document.title} eyebrow={documentTypes[document.type]} description={formatDate(document.date)} />
+  <ArchiveReference archive={document.archive} /><ul class="document-people section">{document.peopleIds.map((id) => <li><PersonLink personId={id} /></li>)}</ul><DocumentViewer document={document} />
+</BaseLayout>

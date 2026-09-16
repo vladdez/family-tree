@@ -1,0 +1,14 @@
+---
+import type { FamilyDocument } from '../../domain/schemas';
+import { isImage } from '../../domain/documents';
+import { url } from '../../domain/urls';
+interface Props { document: FamilyDocument }
+const { document } = Astro.props;
+---
+<div class="document-viewer">
+  {document.files.map((file) => <figure><figcaption>{file.label}</figcaption>{isImage(file.path) ? <a href={url(file.path)} target="_blank" rel="noopener"><img src={url(file.path)} alt={file.label} loading="lazy" /></a> : /\.pdf$/i.test(file.path) ? <iframe src={url(file.path)} title={file.label} loading="lazy"></iframe> : null}<a class="button" href={url(file.path)} target="_blank" rel="noopener">Открыть оригинал ↗</a></figure>)}
+  {document.originalUrl && <p><a class="button" href={document.originalUrl} target="_blank" rel="noopener">Оригинал на сайте источника ↗</a></p>}
+  {!document.files.length && !document.originalUrl && <p class="note">Изображение или ссылка на оригинал пока не добавлены.</p>}
+  {document.transcription && <section class="section"><h2>Расшифровка</h2><p class="prose">{document.transcription}</p></section>}
+  {document.notes && <section class="section"><h2>Комментарии</h2><p class="prose muted">{document.notes}</p></section>}
+</div>

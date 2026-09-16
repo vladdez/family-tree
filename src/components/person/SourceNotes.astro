@@ -1,0 +1,8 @@
+---
+import { catalog } from '../../domain/catalog';
+import { getSourceIssues } from '../../domain/source-notes';
+import PersonLink from './PersonLink.astro';
+interface Props { personId: string }
+const issues = getSourceIssues(Astro.props.personId, catalog);
+---
+{issues.length > 0 && <section class="section"><h2>Замечания к источникам</h2><div class="source-notes">{issues.map((issue) => <article class="note"><h3>{issue.title}</h3><p>{issue.reason}</p>{issue.values && <p>Варианты в источнике: {issue.values.join(' / ')}</p>}{issue.preferred !== undefined && <p>Исправленный вариант в данных: {issue.preferred}</p>}{issue.peopleIds.length > 0 && <ul class="document-people">{issue.peopleIds.map((id) => <li><PersonLink personId={id} /></li>)}</ul>}</article>)}</div></section>}

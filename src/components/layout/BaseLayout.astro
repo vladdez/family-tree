@@ -1,0 +1,38 @@
+---
+import Navigation from './Navigation.astro';
+import { url } from '../../domain/urls';
+import '../../styles/global.css';
+interface Props { title: string; description: string; image?: string | null; canonicalPath?: string }
+const { title, description, image = null, canonicalPath } = Astro.props;
+const absolute = (path: string) => new URL(url(path), Astro.site ?? Astro.url.origin).href;
+const canonical = canonicalPath ? absolute(canonicalPath) : new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
+---
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:site_name" content="Родословная Михеевых" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {image && <><meta property="og:image" content={absolute(image)} /><meta name="twitter:image" content={absolute(image)} /></>}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Перейти к содержимому</a>
+    <header class="site-header"><div class="container header-inner">
+      <a class="brand" href={url('/')}><span class="brand-mark" aria-hidden="true">М</span><span>Родословная Михеевых<small>Семейный архив</small></span></a>
+      <Navigation />
+    </div></header>
+    <main id="main" class="container"><slot /></main>
+    <footer class="site-footer"><div class="container footer-inner"><span>Родословная Михеевых</span><span>Сохраняем известное. Уточняем неизвестное.</span></div></footer>
+  </body>
+</html>

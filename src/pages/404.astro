@@ -1,0 +1,6 @@
+---
+import BaseLayout from '../components/layout/BaseLayout.astro';
+import PageHeader from '../components/layout/PageHeader.astro';
+import { url } from '../domain/urls';
+---
+<BaseLayout title="Страница не найдена — Родословная Михеевых" description="Эта запись не найдена. Вернитесь к списку людей или семейному древу." canonicalPath="/404.html"><PageHeader eyebrow="404" title="Эта страница пока не найдена" description="Возможно, адрес изменился. Вы можете вернуться к семейным записям." /><a class="button primary" href={url('/people/')}>Открыть список людей →</a></BaseLayout>

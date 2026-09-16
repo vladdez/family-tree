@@ -1,0 +1,7 @@
+---
+import type { TimelineEntry } from '../../domain/timeline';
+import TimelineEvent from './TimelineEvent.astro';
+interface Props { events: TimelineEntry[] }
+const { events } = Astro.props;
+---
+<ol class="timeline">{events.map((event) => <TimelineEvent event={event} />)}</ol>

@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import Breadcrumbs from '../../components/layout/Breadcrumbs.astro';
+import PersonHeader from '../../components/person/PersonHeader.astro';
+import RelationshipList from '../../components/person/RelationshipList.astro';
+import Timeline from '../../components/person/Timeline.astro';
+import SourceNotes from '../../components/person/SourceNotes.astro';
+import UnidentifiedRelatives from '../../components/person/UnidentifiedRelatives.astro';
+import DocumentCard from '../../components/documents/DocumentCard.astro';
+import { catalog } from '../../domain/catalog';
+import { fullName, personDescription, eventDate, lifespan } from '../../domain/people';
+import { getRelativeGroups } from '../../domain/relationships';
+import { getDocumentsForPerson } from '../../domain/documents';
+import { getTimeline } from '../../domain/timeline';
+import { url } from '../../domain/urls';
+export function getStaticPaths() { return catalog.people.map((person) => ({ params: { slug: person.slug }, props: { person } })); }
+const { person } = Astro.props;
+const groups = getRelativeGroups(person.id, catalog);
+const documents = getDocumentsForPerson(person.id, catalog);
+const timeline = getTimeline(person.id, catalog);
+const placeName = (id: string | null) => id ? catalog.places.find((p) => p.id === id)?.name : 'Место пока неизвестно';
+---
+<BaseLayout title={`${fullName(person)} · ${lifespan(person)} — Родословная Михеевых`} description={personDescription(person)} image={person.portrait}>
+  <Breadcrumbs items={[{ label: 'Люди', path: '/people/' }, { label: fullName(person) }]} /><PersonHeader person={person} />
+  <div class="person-content"><div>
+    <section class="section"><h2>Биография</h2>{person.biography ? <p class="prose">{person.biography}</p> : <p class="muted">Биография пока не записана. Сохранены известные даты жизни; новые сведения появятся после уточнения семейных источников.</p>}{person.notes && <p class="note section">{person.notes}</p>}</section>
+    <section class="section"><h2>Хронология</h2><Timeline events={timeline} /></section>
+    <SourceNotes personId={person.id} />
+    <UnidentifiedRelatives personId={person.id} />
+    <section class="section"><div class="section-head"><h2>Документальный след</h2><span class="muted">{documents.length} документов</span></div>{documents.length ? <div class="document-list">{documents.map((document) => <DocumentCard document={document} />)}</div> : <div class="empty-state"><p>Документы, связанные с этим человеком, пока не добавлены.</p></div>}</section>
+    <section class="section"><h2>Связанные люди</h2><div class="cards">{groups.map((group) => <RelationshipList {...group} />)}</div><div class="actions"><a class="button" href={url('/tree/')}>Вернуться к древу ↗</a></div></section>
+  </div><aside><dl class="facts"><div><dt>Рождение</dt><dd>{eventDate(person.birth)}<br /><span class="muted">{placeName(person.birth.placeId)}</span></dd></div><div><dt>Смерть</dt><dd>{eventDate(person.death)}{person.death.placeId && <><br /><span class="muted">{placeName(person.death.placeId)}</span></>}{person.death.notes && <p class="muted">{person.death.notes}</p>}</dd></div>{groups.slice(0, 3).map((group) => <div><dt>{group.label}</dt><dd><RelationshipList {...group} showHeading={false} /></dd></div>)}</dl></aside></div>
+</BaseLayout>

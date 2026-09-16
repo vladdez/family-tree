@@ -1,0 +1,8 @@
+---
+import { url } from '../../domain/urls';
+const links = [['/', 'Главная'], ['/tree/', 'Древо'], ['/people/', 'Люди'], ['/documents/', 'Документы']];
+const current = Astro.url.pathname;
+---
+<nav class="navigation" aria-label="Основная навигация">
+  {links.map(([path, label]) => <a href={url(path)} aria-current={(path === '/' ? current === url(path) : current.startsWith(url(path))) ? 'page' : undefined}>{label}</a>)}
+</nav>

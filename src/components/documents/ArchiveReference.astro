@@ -1,0 +1,7 @@
+---
+import type { FamilyDocument } from '../../domain/schemas';
+interface Props { archive: FamilyDocument['archive'] }
+const { archive } = Astro.props;
+const parts = [[archive.fond, 'Фонд'], [archive.opis, 'Опись'], [archive.delo, 'Дело'], [archive.page, 'Лист']].filter(([value]) => value);
+---
+<div class="archive-reference">{archive.name && <p>{archive.name}</p>}{parts.length > 0 && <p>{parts.map(([value, label]) => `${label} ${value}`).join(' · ')}</p>}{!archive.name && !parts.length && <p>Архивная ссылка пока не указана</p>}</div>

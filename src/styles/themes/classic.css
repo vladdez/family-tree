@@ -1,0 +1,11 @@
+/* Меняйте только значения токенов: данные и компоненты остаются прежними. */
+:root {
+  --color-background: #f7f6f2;
+  --color-surface: #fffefa;
+  --color-text: #292e29;
+  --color-muted: #686e65;
+  --color-border: #dedfd5;
+  --color-accent: #374d3e;
+  --color-accent-text: #fffefa;
+  --font-heading: Georgia, "Times New Roman", serif;
+}

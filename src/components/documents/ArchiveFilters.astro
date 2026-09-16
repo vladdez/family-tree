@@ -1,0 +1,21 @@
+---
+import { documentTypes } from '../../domain/schemas';
+interface Props { count: number }
+const { count } = Astro.props;
+---
+<div class="filters"><label class="field search">Поиск по названию или человеку<input type="search" id="document-search" placeholder="Имя, запись, фотография…" /></label><label class="field">Тип документа<select id="document-type"><option value="all">Все документы</option>{Object.entries(documentTypes).map(([type, label]) => <option value={type}>{label}</option>)}</select></label><span id="document-count" class="results-count" role="status">Найдено: {count}</span></div>
+<script>
+  const search = document.querySelector<HTMLInputElement>('#document-search');
+  const type = document.querySelector<HTMLSelectElement>('#document-type');
+  function filter() {
+    const query = search?.value.trim().toLocaleLowerCase('ru').replaceAll('ё', 'е') ?? '';
+    let count = 0;
+    document.querySelectorAll<HTMLElement>('[data-document-type]').forEach((card) => {
+      const visible = (type?.value === 'all' || type?.value === card.dataset.documentType) && (card.dataset.documentSearch ?? '').includes(query);
+      card.hidden = !visible; if (visible) count++;
+    });
+    const status = document.querySelector('#document-count'); if (status) status.textContent = `Найдено: ${count}`;
+    const empty = document.querySelector<HTMLElement>('#documents-no-results'); if (empty) empty.hidden = count !== 0;
+  }
+  search?.addEventListener('input', filter); type?.addEventListener('change', filter);
+</script>

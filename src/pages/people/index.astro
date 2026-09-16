@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import PageHeader from '../../components/layout/PageHeader.astro';
+import PersonCard from '../../components/person/PersonCard.astro';
+import { catalog } from '../../domain/catalog';
+import { chronologicalPeople } from '../../domain/people';
+const people = chronologicalPeople(catalog);
+---
+<BaseLayout title="Люди — Родословная Михеевых" description="Все люди в семейном архиве Михеевых. Известные даты, биографии и документы каждого человека.">
+  <PageHeader eyebrow="Семейные записи" title="Люди семьи" description="Имена, которые мы сохранили. Откройте запись, чтобы увидеть известные даты и историю человека." />
+  <div class="filters"><label class="field search">Найти человека<input id="people-search" type="search" placeholder="Введите имя или фамилию" /></label><span id="people-count" class="results-count" role="status">Найдено: {people.length}</span></div>
+  <div class="cards">{people.map((person) => <PersonCard person={person} />)}</div><p id="people-empty" class="note section" hidden>Человек с таким именем пока не найден.</p>
+  <p class="note section">{!people.some((p) => p.parents.length || p.spouses.length) && 'Родственные связи пока не уточнены. '}Совпадение фамилии или отчества само по себе не устанавливает родство.</p>
+</BaseLayout>
+<script>
+  document.querySelector<HTMLInputElement>('#people-search')?.addEventListener('input', (event) => {
+    const query = (event.currentTarget as HTMLInputElement).value.trim().toLocaleLowerCase('ru').replaceAll('ё', 'е');
+    let count = 0;
+    document.querySelectorAll<HTMLElement>('[data-person-name]').forEach((card) => { card.hidden = !(card.dataset.personName ?? '').includes(query); if (!card.hidden) count++; });
+    const status = document.querySelector('#people-count'); if (status) status.textContent = `Найдено: ${count}`;
+    const empty = document.querySelector<HTMLElement>('#people-empty'); if (empty) empty.hidden = count !== 0;
+  });
+</script>

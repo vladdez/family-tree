@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import PageHeader from '../../components/layout/PageHeader.astro';
+import ArchiveFilters from '../../components/documents/ArchiveFilters.astro';
+import DocumentCard from '../../components/documents/DocumentCard.astro';
+import { catalog } from '../../domain/catalog';
+import { compareDates } from '../../domain/dates';
+const documents = [...catalog.documents].sort((a, b) => compareDates(a.date, b.date));
+---
+<BaseLayout title="Документы — Родословная Михеевых" description="Семейный документальный архив: метрические записи, фотографии, переписи и другие источники.">
+  <PageHeader eyebrow="Семейный архив" title="Документальный след" description="Источники, которые помогают восстановить семейную историю. Каждый документ хранится один раз и связывает всех упомянутых в нём людей." />
+  <ArchiveFilters count={documents.length} />
+  <div class="cards">{documents.map((document) => <DocumentCard document={document} />)}</div>
+  <div id="documents-no-results" class="empty-state" hidden={documents.length > 0}><h2>{documents.length ? 'Ничего не найдено' : 'Архив ждёт первых находок'}</h2><p>{documents.length ? 'Измените поисковый запрос или тип документа.' : 'Документы пока не добавлены. Здесь появятся сканы, архивные ссылки и расшифровки, когда будут найдены источники.'}</p></div>
+  <noscript><p class="note section">Для фильтрации включите JavaScript. Все документы доступны без него.</p></noscript>
+</BaseLayout>

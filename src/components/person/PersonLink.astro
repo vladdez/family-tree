@@ -1,0 +1,8 @@
+---
+import { catalog } from '../../domain/catalog';
+import { getPerson, fullName } from '../../domain/people';
+import { personUrl } from '../../domain/urls';
+interface Props { personId: string }
+const person = getPerson(Astro.props.personId, catalog);
+---
+<a class="person-link" href={personUrl(person.slug)}>{fullName(person)}</a>

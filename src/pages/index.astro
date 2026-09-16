@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../components/layout/BaseLayout.astro';
+import PersonCard from '../components/person/PersonCard.astro';
+import DocumentCard from '../components/documents/DocumentCard.astro';
+import { catalog } from '../domain/catalog';
+import { chronologicalPeople, fullName, lifespan } from '../domain/people';
+import { url, personUrl } from '../domain/urls';
+import { compareDates } from '../domain/dates';
+const people = chronologicalPeople(catalog);
+const firstBirth = people[0]?.birth;
+const firstYear = firstBirth?.date?.slice(0, 4) ?? firstBirth?.alternatives.map((d) => d.slice(0, 4)).join(' / ') ?? '—';
+const hasRelationships = people.some((p) => p.parents.length || p.spouses.length);
+const recentDocuments = [...catalog.documents].sort((a, b) => compareDates(b.date, a.date)).slice(0, 3);
+---
+<BaseLayout title="Родословная Михеевых — семейный архив" description="Имена, даты и документы семьи Михеевых. Интерактивное древо и отдельная история каждого человека.">
+  <section class="hero">
+    <div><div class="eyebrow">Родословная Михеевых</div><h1>Каждое имя —<br /><em>часть истории.</em></h1><p class="hero-copy">Собираем семейную память по крупицам: имена, даты, родственные связи и документы. Чтобы история каждого человека оставалась рядом.</p><div class="actions"><a class="button primary" href={url('/tree/')}>Исследовать древо <span aria-hidden="true">↗</span></a><a class="text-link" href={url('/people/')}>Все люди семьи</a></div></div>
+    <div class="hero-register"><div class="register-head"><span>Из семейных записей</span><span>{String(people.length).padStart(2, '0')} имён</span></div>{people.slice(0, 6).map((person, index) => <a class="register-row" href={personUrl(person.slug)}><span class="register-number">{String(index + 1).padStart(2, '0')}</span><span class="register-name">{fullName(person)}</span><span class="register-dates">{lifespan(person)}</span></a>)}<p class="register-note">{!hasRelationships && 'Родственные связи пока не уточнены. '}Даты с «?» ещё предстоит найти.</p></div>
+  </section>
+  <div class="stats"><div class="stat"><strong>{String(people.length).padStart(2, '0')}</strong><span>человек в архиве</span></div><div class="stat"><strong>{firstYear}</strong><span>самая ранняя запись о рождении</span></div><div class="stat"><strong>{String(catalog.documents.length).padStart(2, '0')}</strong><span>документов добавлено</span></div></div>
+  <section class="section"><div class="section-head"><div><p class="eyebrow">Люди и их истории</p><h2>За каждым именем — жизнь</h2></div><a class="text-link" href={url('/people/')}>Открыть все записи →</a></div><div class="cards">{people.slice(-3).map((person) => <PersonCard person={person} />)}</div></section>
+  <section class="section"><div class="section-head"><div><p class="eyebrow">Документальный след</p><h2>История начинается с источника</h2></div><a class="text-link" href={url('/documents/')}>Семейный архив →</a></div>{recentDocuments.length ? <div class="cards">{recentDocuments.map((document) => <DocumentCard document={document} />)}</div> : <div class="empty-state"><p>Архивные документы пока не добавлены. Здесь появятся метрические записи, фотографии, письма и другие источники, связанные с людьми семьи.</p></div>}</section>
+</BaseLayout>

@@ -1,0 +1,7 @@
+---
+import PersonLink from './PersonLink.astro';
+import type { Person } from '../../domain/schemas';
+interface Props { label: string; people: Person[]; showHeading?: boolean; annotations?: Record<string, string> }
+const { label, people, showHeading = true, annotations = {} } = Astro.props;
+---
+<div class="relationship-group">{showHeading && <h3>{label}</h3>}{people.length ? <ul>{people.map((person) => <li><PersonLink personId={person.id} />{annotations[person.id] && <small class="relationship-annotation">{annotations[person.id]}</small>}</li>)}</ul> : <p class="muted">Пока не уточнены</p>}</div>

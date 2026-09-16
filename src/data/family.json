@@ -1,0 +1,954 @@
+{
+  "schemaVersion": 1,
+  "people": [
+    {
+      "id": "yakov",
+      "name": "Яков",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "petr-1802",
+      "name": "Пётр",
+      "birthYears": [
+        1802
+      ],
+      "deathYears": [
+        1855
+      ]
+    },
+    {
+      "id": "avdotya-efremova",
+      "name": "Авдотья Ефремова",
+      "birthYears": [
+        1794,
+        1795
+      ],
+      "deathYears": []
+    },
+    {
+      "id": "mikhey-petrov-1833",
+      "name": "Михей Петров",
+      "birthYears": [
+        1833
+      ],
+      "deathYears": []
+    },
+    {
+      "id": "vasily-son-of-petr",
+      "name": "Василий",
+      "birthYears": [
+        1838,
+        1839
+      ],
+      "deathYears": []
+    },
+    {
+      "id": "tatyana-grigoryeva",
+      "name": "Татьяна Григорьева",
+      "birthYears": [
+        1829,
+        1830
+      ],
+      "deathYears": []
+    },
+    {
+      "id": "konstantin-son-of-mikhey",
+      "name": "Константин",
+      "birthYears": [
+        1852,
+        1853
+      ],
+      "deathYears": []
+    },
+    {
+      "id": "ivan-son-of-mikhey",
+      "name": "Иван",
+      "birthYears": [
+        1854,
+        1855
+      ],
+      "deathYears": []
+    },
+    {
+      "id": "nikifor-1858",
+      "name": "Никифор",
+      "birthYears": [
+        1858
+      ],
+      "deathYears": []
+    },
+    {
+      "id": "ekaterina-wife-of-nikifor",
+      "name": "Екатерина",
+      "birthYears": [
+        1857
+      ],
+      "deathYears": []
+    },
+    {
+      "id": "stepan-kirillov",
+      "name": "Степан Кириллов",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "petr-mikheev-1889",
+      "name": "Пётр Михеев",
+      "birthYears": [
+        1889
+      ],
+      "deathYears": []
+    },
+    {
+      "id": "paraskeva-pavlova-1889",
+      "name": "Параскева Павлова",
+      "birthYears": [
+        1889
+      ],
+      "deathYears": [
+        1955
+      ]
+    },
+    {
+      "id": "pavel-nikolaevich-vasiliev",
+      "name": "Павел Николаевич Васильев",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "natalya-andreeva",
+      "name": "Наталья Андреева",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "dmitry-mikheev-1910",
+      "name": "Дмитрий Михеев",
+      "birthYears": [
+        1910
+      ],
+      "deathYears": [
+        1996,
+        1998
+      ]
+    },
+    {
+      "id": "alexey-son-of-petr-1889",
+      "name": "Алексей",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "vasily-son-of-petr-1889",
+      "name": "Василий",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "anastasia-mikhailova-1914",
+      "name": "Анастасия Михайлова",
+      "birthYears": [
+        1914
+      ],
+      "deathYears": [
+        1994
+      ]
+    },
+    {
+      "id": "vladimir-mikheev-1941",
+      "name": "Владимир Михеев",
+      "birthYears": [
+        1941
+      ],
+      "deathYears": []
+    },
+    {
+      "id": "maria-efimova-1941",
+      "name": "Мария Ефимова",
+      "birthYears": [
+        1941
+      ],
+      "deathYears": [
+        2017
+      ]
+    },
+    {
+      "id": "efim-father-of-maria",
+      "name": "Ефим",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "elvira-mikheeva-grigoryeva",
+      "name": "Эльвира Константиновна Михеева",
+      "alternateNames": [
+        "Эльвира Константиновна Григорьева",
+        "Эльвира Михеева (Григорьева)"
+      ],
+      "birth": "1969-03-18",
+      "death": null
+    },
+    {
+      "id": "maria-petrovna-grigoryeva-1940",
+      "name": "Мария Петровна Григорьева",
+      "birthYears": [
+        1940
+      ],
+      "deathYears": []
+    },
+    {
+      "id": "alexandra-gerasimovna-pavlova",
+      "name": "Александра Герасимовна Павлова",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "anisia-alexandra-pavlova-1912",
+      "name": "Анисия (Александра) Павлова (Герасимова)",
+      "birthYears": [
+        1912
+      ],
+      "deathYears": [
+        1991
+      ]
+    },
+    {
+      "id": "petr-pavlovich-pavlov-1912",
+      "name": "Пётр Павлович Павлов",
+      "birthYears": [
+        1912
+      ],
+      "deathYears": [
+        1943
+      ]
+    },
+    {
+      "id": "fyodor-son-of-anisia",
+      "name": "Фёдор",
+      "birthYears": [
+        1937
+      ],
+      "deathYears": []
+    },
+    {
+      "id": "pavel-ivanovich-ivanov",
+      "name": "Павел Иванович Иванов",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "anton-son-of-pavel-ivanov",
+      "name": "Антон",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "evdokia-daughter-of-pavel-ivanov",
+      "name": "Евдокия",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "marfa-daughter-of-pavel-ivanov",
+      "name": "Марфа",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "anush-daughter-of-pavel-ivanov",
+      "name": "Ануш",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "konstantin-grigoryevich-grigoryev-1935",
+      "name": "Константин Григорьевич Григорьев",
+      "birthYears": [
+        1935
+      ],
+      "deathYears": [
+        2024
+      ]
+    },
+    {
+      "id": "grigory-maksimovich-maksimov-1898",
+      "name": "Григорий Максимович Максимов",
+      "birthYears": [
+        1898
+      ],
+      "deathYears": [
+        1943
+      ]
+    },
+    {
+      "id": "tatyana-sergeevna-maksimova-1906",
+      "name": "Татьяна Сергеевна Максимова",
+      "birthYears": [
+        1906
+      ],
+      "deathYears": [
+        1999
+      ]
+    },
+    {
+      "id": "georgy-child-of-grigory-and-tatyana",
+      "name": "Георгий",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "gennady-1-child-of-grigory-and-tatyana",
+      "name": "Геннадий",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "gennady-2-child-of-grigory-and-tatyana",
+      "name": "Геннадий",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "rimma-child-of-grigory-and-tatyana",
+      "name": "Римма",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "tamara-child-of-grigory-and-tatyana",
+      "name": "Тамара",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "vladimir-halfbrother-1947",
+      "name": "Владимир",
+      "birthYears": [
+        1947
+      ],
+      "deathYears": [
+        2013
+      ]
+    },
+    {
+      "id": "maxim-kirillovich-kirillov",
+      "name": "Максим Кириллович Кириллов",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "fedot-son-of-maxim-kirillov",
+      "name": "Федот",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "lyuku-child-of-maxim-kirillov",
+      "name": "Люку",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "petyuk-child-of-maxim-kirillov",
+      "name": "Петюк",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "alexey-grigoryev-1924",
+      "name": "Алексей Григорьев",
+      "birthYears": [
+        1924
+      ],
+      "deathYears": []
+    },
+    {
+      "id": "maria-grigoryeva-1925",
+      "name": "Мария Григорьева",
+      "birthYears": [
+        1925
+      ],
+      "deathYears": []
+    },
+    {
+      "id": "nikolay-grigoryev-son-of-maxim",
+      "name": "Николай Григорьев",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "yuri-vladimirovich-mikheev-1965",
+      "name": "Юрий Владимирович Михеев",
+      "birth": "1965-10-21",
+      "death": "2025"
+    },
+    {
+      "id": "ksenia-mikheeva-1990",
+      "name": "Ксения Михеева",
+      "alternateNames": [
+        "Ксения Михайлова"
+      ],
+      "birth": "1990",
+      "death": null
+    },
+    {
+      "id": "vladimir-mikheev-1995",
+      "name": "Владимир Михеев",
+      "birth": "1995",
+      "death": null
+    },
+    {
+      "id": "maria-mikheeva-2003",
+      "name": "Мария Михеева",
+      "birth": "2003",
+      "death": null
+    }
+  ],
+  "relations": [
+    {
+      "type": "parent",
+      "parent": "yakov",
+      "child": "petr-1802",
+      "status": "explicit"
+    },
+    {
+      "type": "spouse",
+      "person1": "petr-1802",
+      "person2": "avdotya-efremova",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "petr-1802",
+      "child": "mikhey-petrov-1833",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "avdotya-efremova",
+      "child": "mikhey-petrov-1833",
+      "status": "inferred_context"
+    },
+    {
+      "type": "parent",
+      "parent": "petr-1802",
+      "child": "vasily-son-of-petr",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "avdotya-efremova",
+      "child": "vasily-son-of-petr",
+      "status": "inferred_context"
+    },
+    {
+      "type": "spouse",
+      "person1": "mikhey-petrov-1833",
+      "person2": "tatyana-grigoryeva",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "mikhey-petrov-1833",
+      "child": "konstantin-son-of-mikhey",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "tatyana-grigoryeva",
+      "child": "konstantin-son-of-mikhey",
+      "status": "inferred_context"
+    },
+    {
+      "type": "parent",
+      "parent": "mikhey-petrov-1833",
+      "child": "ivan-son-of-mikhey",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "tatyana-grigoryeva",
+      "child": "ivan-son-of-mikhey",
+      "status": "inferred_context"
+    },
+    {
+      "type": "parent",
+      "parent": "mikhey-petrov-1833",
+      "child": "nikifor-1858",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "tatyana-grigoryeva",
+      "child": "nikifor-1858",
+      "status": "inferred_context"
+    },
+    {
+      "type": "spouse",
+      "person1": "nikifor-1858",
+      "person2": "ekaterina-wife-of-nikifor",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "stepan-kirillov",
+      "child": "ekaterina-wife-of-nikifor",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "nikifor-1858",
+      "child": "petr-mikheev-1889",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "ekaterina-wife-of-nikifor",
+      "child": "petr-mikheev-1889",
+      "status": "explicit"
+    },
+    {
+      "type": "spouse",
+      "person1": "petr-mikheev-1889",
+      "person2": "paraskeva-pavlova-1889",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "pavel-nikolaevich-vasiliev",
+      "child": "paraskeva-pavlova-1889",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "natalya-andreeva",
+      "child": "paraskeva-pavlova-1889",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "petr-mikheev-1889",
+      "child": "dmitry-mikheev-1910",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "paraskeva-pavlova-1889",
+      "child": "dmitry-mikheev-1910",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "petr-mikheev-1889",
+      "child": "alexey-son-of-petr-1889",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "paraskeva-pavlova-1889",
+      "child": "alexey-son-of-petr-1889",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "petr-mikheev-1889",
+      "child": "vasily-son-of-petr-1889",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "paraskeva-pavlova-1889",
+      "child": "vasily-son-of-petr-1889",
+      "status": "explicit"
+    },
+    {
+      "type": "spouse",
+      "person1": "dmitry-mikheev-1910",
+      "person2": "anastasia-mikhailova-1914",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "dmitry-mikheev-1910",
+      "child": "vladimir-mikheev-1941",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "anastasia-mikhailova-1914",
+      "child": "vladimir-mikheev-1941",
+      "status": "explicit"
+    },
+    {
+      "type": "spouse",
+      "person1": "vladimir-mikheev-1941",
+      "person2": "maria-efimova-1941",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "efim-father-of-maria",
+      "child": "maria-efimova-1941",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "petr-pavlovich-pavlov-1912",
+      "child": "maria-petrovna-grigoryeva-1940",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "alexandra-gerasimovna-pavlova",
+      "child": "maria-petrovna-grigoryeva-1940",
+      "status": "explicit"
+    },
+    {
+      "type": "spouse",
+      "person1": "anisia-alexandra-pavlova-1912",
+      "person2": "petr-pavlovich-pavlov-1912",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "anisia-alexandra-pavlova-1912",
+      "child": "fyodor-son-of-anisia",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "pavel-ivanovich-ivanov",
+      "child": "anton-son-of-pavel-ivanov",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "pavel-ivanovich-ivanov",
+      "child": "petr-pavlovich-pavlov-1912",
+      "status": "inferred_context"
+    },
+    {
+      "type": "parent",
+      "parent": "pavel-ivanovich-ivanov",
+      "child": "evdokia-daughter-of-pavel-ivanov",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "pavel-ivanovich-ivanov",
+      "child": "marfa-daughter-of-pavel-ivanov",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "pavel-ivanovich-ivanov",
+      "child": "anush-daughter-of-pavel-ivanov",
+      "status": "explicit"
+    },
+    {
+      "type": "spouse",
+      "person1": "konstantin-grigoryevich-grigoryev-1935",
+      "person2": "maria-petrovna-grigoryeva-1940",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "konstantin-grigoryevich-grigoryev-1935",
+      "child": "elvira-mikheeva-grigoryeva",
+      "status": "inferred_branch_context"
+    },
+    {
+      "type": "parent",
+      "parent": "maria-petrovna-grigoryeva-1940",
+      "child": "elvira-mikheeva-grigoryeva",
+      "status": "inferred_branch_context"
+    },
+    {
+      "type": "spouse",
+      "person1": "grigory-maksimovich-maksimov-1898",
+      "person2": "tatyana-sergeevna-maksimova-1906",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "grigory-maksimovich-maksimov-1898",
+      "child": "konstantin-grigoryevich-grigoryev-1935",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "tatyana-sergeevna-maksimova-1906",
+      "child": "konstantin-grigoryevich-grigoryev-1935",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "grigory-maksimovich-maksimov-1898",
+      "child": "georgy-child-of-grigory-and-tatyana",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "tatyana-sergeevna-maksimova-1906",
+      "child": "georgy-child-of-grigory-and-tatyana",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "grigory-maksimovich-maksimov-1898",
+      "child": "gennady-1-child-of-grigory-and-tatyana",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "tatyana-sergeevna-maksimova-1906",
+      "child": "gennady-1-child-of-grigory-and-tatyana",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "grigory-maksimovich-maksimov-1898",
+      "child": "gennady-2-child-of-grigory-and-tatyana",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "tatyana-sergeevna-maksimova-1906",
+      "child": "gennady-2-child-of-grigory-and-tatyana",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "grigory-maksimovich-maksimov-1898",
+      "child": "rimma-child-of-grigory-and-tatyana",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "tatyana-sergeevna-maksimova-1906",
+      "child": "rimma-child-of-grigory-and-tatyana",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "grigory-maksimovich-maksimov-1898",
+      "child": "tamara-child-of-grigory-and-tatyana",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "tatyana-sergeevna-maksimova-1906",
+      "child": "tamara-child-of-grigory-and-tatyana",
+      "status": "explicit"
+    },
+    {
+      "type": "half_sibling",
+      "person1": "konstantin-grigoryevich-grigoryev-1935",
+      "person2": "vladimir-halfbrother-1947",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "maxim-kirillovich-kirillov",
+      "child": "grigory-maksimovich-maksimov-1898",
+      "status": "inferred_context"
+    },
+    {
+      "type": "parent",
+      "parent": "maxim-kirillovich-kirillov",
+      "child": "fedot-son-of-maxim-kirillov",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "maxim-kirillovich-kirillov",
+      "child": "lyuku-child-of-maxim-kirillov",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "maxim-kirillovich-kirillov",
+      "child": "petyuk-child-of-maxim-kirillov",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "maxim-kirillovich-kirillov",
+      "child": "alexey-grigoryev-1924",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "maxim-kirillovich-kirillov",
+      "child": "maria-grigoryeva-1925",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "maxim-kirillovich-kirillov",
+      "child": "nikolay-grigoryev-son-of-maxim",
+      "status": "explicit"
+    },
+    {
+      "type": "possible_same_person",
+      "person1": "alexandra-gerasimovna-pavlova",
+      "person2": "anisia-alexandra-pavlova-1912",
+      "status": "unresolved"
+    },
+    {
+      "type": "spouse",
+      "person1": "yuri-vladimirovich-mikheev-1965",
+      "person2": "elvira-mikheeva-grigoryeva",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "yuri-vladimirovich-mikheev-1965",
+      "child": "ksenia-mikheeva-1990",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "elvira-mikheeva-grigoryeva",
+      "child": "ksenia-mikheeva-1990",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "yuri-vladimirovich-mikheev-1965",
+      "child": "vladimir-mikheev-1995",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "elvira-mikheeva-grigoryeva",
+      "child": "vladimir-mikheev-1995",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "yuri-vladimirovich-mikheev-1965",
+      "child": "maria-mikheeva-2003",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "elvira-mikheeva-grigoryeva",
+      "child": "maria-mikheeva-2003",
+      "status": "explicit"
+    }
+  ],
+  "unidentifiedRelatives": [
+    {
+      "people": [
+        "mikhey-petrov-1833",
+        "tatyana-grigoryeva"
+      ],
+      "relation": "child",
+      "sex": "male",
+      "count": 1,
+      "status": "uncertain",
+      "reason": "В источнике сказано, что у Михея было 4 сына, но по именам перечислены только Константин, Иван и Никифор."
+    },
+    {
+      "people": [
+        "nikifor-1858",
+        "ekaterina-wife-of-nikifor"
+      ],
+      "relation": "child",
+      "sex": "female",
+      "count": 4,
+      "status": "explicit"
+    },
+    {
+      "people": [
+        "dmitry-mikheev-1910",
+        "anastasia-mikhailova-1914"
+      ],
+      "relation": "child",
+      "sex": "female",
+      "count": 3,
+      "status": "explicit"
+    },
+    {
+      "people": [
+        "vladimir-mikheev-1941",
+        "maria-efimova-1941"
+      ],
+      "relation": "child",
+      "sex": "male",
+      "count": 2,
+      "status": "explicit"
+    },
+    {
+      "people": [
+        "vladimir-mikheev-1941",
+        "maria-efimova-1941"
+      ],
+      "relation": "child",
+      "sex": "female",
+      "count": 3,
+      "status": "explicit"
+    },
+    {
+      "people": [
+        "vladimir-mikheev-1941",
+        "maria-efimova-1941"
+      ],
+      "relation": "possible_additional_child",
+      "sex": "female",
+      "count": 1,
+      "status": "conflicting_source"
+    }
+  ],
+  "issues": [
+    {
+      "person": "nikifor-1858",
+      "type": "name_correction",
+      "values": [
+        "Николай",
+        "Никифор"
+      ],
+      "preferred": "Никифор",
+      "reason": "В документе имя Николай зачёркнуто и заменено на Никифор."
+    },
+    {
+      "person": "ekaterina-wife-of-nikifor",
+      "type": "date_correction",
+      "values": [
+        "1853",
+        "1857"
+      ],
+      "preferred": "1857",
+      "reason": "Старый вариант 1853 зачёркнут; рядом указано 1857 года рождения."
+    },
+    {
+      "person": "dmitry-mikheev-1910",
+      "type": "death_year_conflict",
+      "values": [
+        1996,
+        1998
+      ],
+      "reason": "В одном месте указано 1910-1996, в другом тексте указано, что умер в 1998 году."
+    },
+    {
+      "person": "alexandra-gerasimovna-pavlova",
+      "type": "identity_conflict",
+      "relatedPerson": "anisia-alexandra-pavlova-1912",
+      "reason": "Описание Александры Герасимовны и Анисии (Александры) частично совпадает; возможно, это один человек, но автоматически объединять их нельзя."
+    },
+    {
+      "people": [
+        "vladimir-mikheev-1941",
+        "maria-efimova-1941"
+      ],
+      "type": "children_count_conflict",
+      "values": [
+        5,
+        6
+      ],
+      "reason": "Один фрагмент говорит о двух сыновьях и трёх дочерях, другой дополнительно упоминает ещё одну умершую дочь."
+    }
+  ]
+}

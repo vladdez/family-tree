@@ -1,0 +1,6 @@
+---
+import { url } from '../../domain/urls';
+interface Props { items: { label: string; path?: string }[] }
+const { items } = Astro.props;
+---
+<nav aria-label="Навигационная цепочка"><ol class="breadcrumbs"><li><a href={url('/')}>Главная</a></li>{items.map((item) => <li>{item.path ? <a href={url(item.path)}>{item.label}</a> : <span aria-current="page">{item.label}</span>}</li>)}</ol></nav>
