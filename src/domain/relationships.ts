@@ -45,7 +45,7 @@ export function getRelativeGroups(personId: string, catalog: Catalog) {
   if (possibleIds.size) groups.push(group('Возможное совпадение записи', [...possibleIds].map((id) => getPerson(id, catalog)), 'possible_same_person'));
   return groups;
 }
-export interface TreePerson { id: string; name: string; lifespan: string; href: string; uncertain: boolean }
+export interface TreePerson { id: string; name: string; lifespan: string; href: string; uncertain: boolean; birthYears: number[] }
 export interface TreeRelationship { id: string; from: string; to: string; type: FamilyRelation['type']; status?: RelationStatus; kind?: 'biological' | 'adoptive' | 'unknown' }
 export function getTreeRelationships(catalog: Catalog): TreeRelationship[] {
   const relationships: TreeRelationship[] = [];
@@ -61,5 +61,5 @@ export function getTreeRelationships(catalog: Catalog): TreeRelationship[] {
   return relationships;
 }
 export function getTreeData(catalog: Catalog): { people: TreePerson[]; relationships: TreeRelationship[] } {
-  return { people: chronologicalPeople(catalog).map((p) => ({ id: p.id, name: fullName(p), lifespan: lifespan(p), href: personUrl(p.slug), uncertain: !!(p.birth.alternatives.length || p.death.alternatives.length) })), relationships: getTreeRelationships(catalog) };
+  return { people: chronologicalPeople(catalog).map((p) => ({ id: p.id, name: fullName(p), lifespan: lifespan(p), href: personUrl(p.slug), uncertain: !!(p.birth.alternatives.length || p.death.alternatives.length), birthYears: [...new Set((p.birth.date ? [p.birth.date] : p.birth.alternatives).map((date) => Number(date.slice(0, 4))))] })), relationships: getTreeRelationships(catalog) };
 }

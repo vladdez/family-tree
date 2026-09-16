@@ -5,9 +5,10 @@ import { FamilySourceSchema } from '../src/domain/schemas';
 import { adaptFamilySource } from '../src/domain/family-source';
 import { validateCatalog } from '../src/domain/validation';
 import { fullName, personSearchText } from '../src/domain/people';
-import { getSiblings, getRelativeGroups, getTreeRelationships, relationEndpoints } from '../src/domain/relationships';
+import { getSiblings, getRelativeGroups, getTreeRelationships, getTreeData, relationEndpoints } from '../src/domain/relationships';
 import { getSourceIssues, getUnidentifiedRelatives } from '../src/domain/source-notes';
 import { layoutTree } from '../src/components/genealogy/layout';
+import { edgePath } from '../src/components/genealogy/edges';
 
 const source = FamilySourceSchema.parse(JSON.parse(await readFile(new URL('../src/data/family.json', import.meta.url), 'utf8')));
 const catalog = validateCatalog({ ...adaptFamilySource(source), documents: [], places: [] });
@@ -91,7 +92,7 @@ test('unknown IDs in source annotations and duplicate relation entries fail vali
 });
 
 test('actual family layout keeps spouses together, parents above children and all cards distinct', () => {
-  const people = catalog.people.map((p) => ({ id: p.id, name: fullName(p), lifespan: '', href: '', uncertain: false }));
+  const { people } = getTreeData(catalog);
   const edges = getTreeRelationships(catalog);
   const graph = layoutTree(people, edges, { nodeWidth: 220, nodeHeight: 140, gap: 40, generationGap: 100 });
   const nodes = new Map(graph.nodes.map((p) => [p.id, p]));
@@ -100,5 +101,32 @@ test('actual family layout keeps spouses together, parents above children and al
   for (const edge of edges) {
     if (edge.type === 'parent') assert.ok(nodes.get(edge.from)!.y < nodes.get(edge.to)!.y, edge.id);
     if (edge.type === 'spouse') assert.equal(nodes.get(edge.from)!.y, nodes.get(edge.to)!.y, edge.id);
+  }
+  const contemporaries = ['konstantin-grigoryevich-grigoryev-1935', 'maria-petrovna-grigoryeva-1940', 'vladimir-mikheev-1941', 'maria-efimova-1941', 'vladimir-halfbrother-1947'];
+  assert.equal(new Set(contemporaries.map((id) => nodes.get(id)!.y)).size, 1);
+  assert.equal(new Set(['ksenia-mikheeva-1990', 'vladimir-mikheev-1995', 'maria-mikheeva-2003'].map((id) => nodes.get(id)!.y)).size, 1);
+  assert.ok(graph.periods?.some((period) => period.label === '1935–1947'));
+  assert.ok(graph.periods?.some((period) => period.label === '1990–2003'));
+});
+
+test('real chronological relationship lines never pass through unrelated cards', () => {
+  const { people, relationships } = getTreeData(catalog);
+  const geometry = { nodeWidth: 220, nodeHeight: 140, gap: 40, generationGap: 100 };
+  const graph = layoutTree(people, relationships, geometry), nodes = new Map(graph.nodes.map((node) => [node.id, node]));
+  for (const edge of relationships) {
+    const tokens = edgePath(edge, nodes.get(edge.from)!, nodes.get(edge.to)!, geometry).match(/[MVH]|-?\d+(?:\.\d+)?/g)!;
+    let x = 0, y = 0;
+    while (tokens.length) {
+      const command = tokens.shift(), previous = { x, y };
+      if (command === 'M') { x = Number(tokens.shift()); y = Number(tokens.shift()); continue; }
+      if (command === 'V') y = Number(tokens.shift());
+      if (command === 'H') x = Number(tokens.shift());
+      for (const node of graph.nodes.filter((node) => node.id !== edge.from && node.id !== edge.to)) {
+        const crosses = x === previous.x
+          ? x > node.x && x < node.x + geometry.nodeWidth && Math.max(y, previous.y) > node.y && Math.min(y, previous.y) < node.y + geometry.nodeHeight
+          : y > node.y && y < node.y + geometry.nodeHeight && Math.max(x, previous.x) > node.x && Math.min(x, previous.x) < node.x + geometry.nodeWidth;
+        assert.equal(crosses, false, `${edge.id} crosses ${node.id}`);
+      }
+    }
   }
 });

@@ -8,6 +8,10 @@
 .tree-viewport.is-register { overflow: auto; cursor: auto; touch-action: pan-y; }
 .tree-canvas { position: absolute; transform-origin: 0 0; }
 .tree-edges { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+.tree-period { position: absolute; padding-block: var(--space-md); color: var(--color-muted); pointer-events: none; }
+.tree-period > span { display: block; font: var(--font-xl)/var(--line-heading) var(--font-heading); }
+.tree-period small { display: block; margin-top: var(--space-sm); font-size: var(--font-xs); }
+.tree-period-lines line { stroke: var(--color-grid); stroke-width: var(--border-width); }
 .tree-edge { fill: none; stroke: var(--color-accent); stroke-width: var(--tree-edge-width); }
 .tree-edge.spouse { stroke: var(--color-muted); }
 .tree-edge.half_sibling { stroke: var(--color-muted); stroke-dasharray: var(--tree-half-dash); }
@@ -19,6 +23,7 @@
 .tree-node-name { font: var(--font-lg)/1.2 var(--font-heading); padding-right: var(--space-xs); }
 .tree-node-life { font-size: var(--font-xs); color: var(--color-muted); }
 .tree-node-uncertainty { font-size: var(--font-xs); color: var(--color-warning); }
+.tree-node-placement { font-size: var(--font-xs); color: var(--color-muted); }
 .tree-node-arrow { position: absolute; right: var(--space-sm); top: var(--space-sm); color: var(--color-accent); font-size: var(--font-sm); }
 .tree-caption { display: flex; justify-content: space-between; gap: var(--space-lg); padding: var(--space-md) var(--space-lg); color: var(--color-muted); font-size: var(--font-xs); border: var(--border-width) solid var(--color-border); border-top: none; background: var(--color-surface); }
 .tree-caption p { max-width: var(--reading-width); }

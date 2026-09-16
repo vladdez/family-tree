@@ -1,8 +1,12 @@
 import type { TreePerson, TreeRelationship } from '../../domain/relationships';
+import { layoutByEpoch } from './chronology';
 
 export interface Geometry { nodeWidth: number; nodeHeight: number; gap: number; generationGap: number }
-export interface PositionedPerson extends TreePerson { x: number; y: number }
-export function layoutTree(people: TreePerson[], edges: TreeRelationship[], geometry: Geometry): { nodes: PositionedPerson[]; width: number; height: number } {
+export interface PositionedPerson extends TreePerson { x: number; y: number; positionFromRelatives?: boolean }
+export interface TreePeriod { y: number; label: string; dated: boolean }
+export interface TreeGraph { nodes: PositionedPerson[]; width: number; height: number; periods?: TreePeriod[] }
+export function layoutTree(people: TreePerson[], edges: TreeRelationship[], geometry: Geometry): TreeGraph {
+  if (people.some((person) => person.birthYears.length)) return layoutByEpoch(people, edges, geometry);
   const { nodeWidth, nodeHeight, gap, generationGap } = geometry;
   if (!edges.length) {
     // A register of unconnected records: rows do not claim family generations.
