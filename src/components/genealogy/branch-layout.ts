@@ -1,6 +1,7 @@
 import type { TreeRelationship } from '../../domain/relationships';
 import type { TreeBranch } from '../../domain/tree-branches';
 import type { Geometry, PositionedPerson, TreeGraph, TreeLane } from './layout';
+import { centerAncestry } from './ancestry-layout';
 
 // Keep chronology's rows intact. Fixed column slots keep long relationship lines
 // in the gaps between cards, including when a relationship skips several periods.
@@ -75,6 +76,6 @@ export function layoutBranches(graph: TreeGraph, edges: TreeRelationship[], geom
   if (spans) laneLabels.push({ id: below!.id, label: below!.label, x: left,
     y: Math.min(...nodes.filter((node) => branchByPerson.get(node.id) === below!.id).map((node) => node.y)) - generationGap / 2,
     width: totalColumns * stride - gap, bottom: graph.height + top - gap });
-  return { ...graph, nodes, width: left + totalColumns * stride + gap, height: graph.height + top,
-    periods: graph.periods?.map((period) => ({ ...period, y: period.y + top })), lanes: laneLabels };
+  return centerAncestry({ ...graph, nodes, width: left + totalColumns * stride + gap, height: graph.height + top,
+    periods: graph.periods?.map((period) => ({ ...period, y: period.y + top })), lanes: laneLabels }, edges, geometry, branches);
 }

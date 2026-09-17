@@ -7,6 +7,8 @@ import { getFocusedTree } from '../src/domain/focused-tree';
 import { getTreeBranches } from '../src/domain/tree-branches';
 import { layoutTree } from '../src/components/genealogy/layout';
 import { getFamilyConnections } from '../src/components/genealogy/families';
+import type { Point } from '../src/components/genealogy/families';
+import { edgePath } from '../src/components/genealogy/edges';
 import { fitNodes } from '../src/components/genealogy/viewport';
 import branchRoots from '../src/data/tree-branches.json';
 import treeSettings from '../src/data/tree-view.json';
@@ -77,7 +79,7 @@ test('focused real layout preserves era alignment, branch separation and the sha
   assert.equal(new Set(['konstantin-grigoryevich-grigoryev-1935', 'maria-petrovna-grigoryeva-1940', 'vladimir-mikheev-1941'].map((id) => nodes.get(id)!.y)).size, 1);
   assert.equal(new Set(['ksenia-mikheeva-1990', 'vladimir-mikheev-1995', 'maria-mikheeva-2003'].map((id) => nodes.get(id)!.y)).size, 1);
   assert.ok(nodes.get('yuri-vladimirovich-mikheev-1965')!.x < nodes.get('elvira-mikheeva-grigoryeva')!.x);
-  assert.equal(nodes.get('elvira-mikheeva-grigoryeva')!.x - nodes.get('yuri-vladimirovich-mikheev-1965')!.x, (geometry.nodeWidth + geometry.gap) * 2);
+  assert.ok(nodes.get('elvira-mikheeva-grigoryeva')!.x - nodes.get('yuri-vladimirovich-mikheev-1965')!.x >= geometry.nodeWidth + geometry.gap);
   assert.equal(nodes.get('vladimir-mikheev-1995')!.x, (nodes.get('yuri-vladimirovich-mikheev-1965')!.x + nodes.get('elvira-mikheeva-grigoryeva')!.x) / 2);
   const families = getFamilyConnections(graph.nodes, tree.relationships, geometry);
   const main = families.find((family) => family.parentIds.includes('yuri-vladimirovich-mikheev-1965'))!;
@@ -99,6 +101,54 @@ test('focused real layout preserves era alignment, branch separation and the sha
       assert.ok(view.x + node.x * view.scale >= 0); assert.ok(view.y + node.y * view.scale >= 0);
       assert.ok(view.x + (node.x + geometry.nodeWidth) * view.scale <= viewport.width);
       assert.ok(view.y + (node.y + geometry.nodeHeight) * view.scale <= viewport.height);
+    }
+  }
+});
+
+test('all focused families are centred on straight trunks with symmetric sibling spacing and clear card gaps', () => {
+  const tree = getFocusedTree(catalog, treeSettings), geometry = { nodeWidth: 220, nodeHeight: 180, gap: 40, generationGap: 100 };
+  const branches = getTreeBranches(tree.people, tree.relationships, branchRoots);
+  const graph = layoutTree(tree.people, tree.relationships, geometry, branches);
+  const nodes = new Map(graph.nodes.map((node) => [node.id, node]));
+  const families = getFamilyConnections(graph.nodes, tree.relationships, geometry);
+  for (const family of families) {
+    const axis = family.parentIds.reduce((sum, id) => sum + nodes.get(id)!.x + geometry.nodeWidth / 2, 0) / family.parentIds.length;
+    assert.ok(family.lines.find((line) => line.id.endsWith(':spine'))!.points.every((point) => point.x === axis), family.id);
+    if (family.childIds.length === 1) {
+      assert.equal(nodes.get(family.childIds[0])!.x + geometry.nodeWidth / 2, axis, family.id);
+      assert.equal(family.lines.some((line) => line.id.includes(':children:')), false, family.id);
+    } else {
+      const children = family.childIds.map((id) => nodes.get(id)!).sort((a, b) => a.x - b.x);
+      assert.equal((children[0].x + children.at(-1)!.x) / 2 + geometry.nodeWidth / 2, axis);
+      for (let index = 1; index < children.length; index++) assert.equal(children[index].x - children[index - 1].x, geometry.nodeWidth + geometry.gap);
+    }
+  }
+  for (const y of new Set(graph.nodes.map((node) => node.y))) {
+    const row = graph.nodes.filter((node) => node.y === y).sort((a, b) => a.x - b.x);
+    for (let index = 1; index < row.length; index++) assert.ok(row[index].x - row[index - 1].x >= geometry.nodeWidth + geometry.gap, `${row[index - 1].id} and ${row[index].id}`);
+  }
+  const paternal = branches.find((branch) => branch.id === 'paternal')!.personIds.map((id) => nodes.get(id)!);
+  const maternal = branches.find((branch) => branch.id === 'maternal')!.personIds.map((id) => nodes.get(id)!);
+  assert.ok(Math.max(...paternal.map((node) => node.x + geometry.nodeWidth)) + geometry.gap <= Math.min(...maternal.map((node) => node.x)));
+  const connections = families.map((family) => ({ id: family.id, segments: family.lines.flatMap((line) => line.points.slice(1).map((point, index) => [line.points[index], point])) }));
+  for (const edge of tree.relationships.filter((edge) => edge.type !== 'parent')) {
+    const tokens = edgePath(edge, nodes.get(edge.from)!, nodes.get(edge.to)!, geometry).match(/[MVH]|-?\d+(?:\.\d+)?/g)!;
+    let x = 0, y = 0;
+    const segments: Point[][] = [];
+    while (tokens.length) {
+      const command = tokens.shift(), a = { x, y };
+      if (command === 'M') { x = Number(tokens.shift()); y = Number(tokens.shift()); continue; }
+      if (command === 'V') y = Number(tokens.shift());
+      if (command === 'H') x = Number(tokens.shift());
+      segments.push([a, { x, y }]);
+    }
+    connections.push({ id: edge.id, segments });
+  }
+  for (let index = 0; index < connections.length; index++) for (const other of connections.slice(index + 1)) {
+    for (const [a, b] of connections[index].segments) for (const [c, d] of other.segments) {
+      const intersects = Math.max(Math.min(a.x, b.x), Math.min(c.x, d.x)) <= Math.min(Math.max(a.x, b.x), Math.max(c.x, d.x))
+        && Math.max(Math.min(a.y, b.y), Math.min(c.y, d.y)) <= Math.min(Math.max(a.y, b.y), Math.max(c.y, d.y));
+      assert.equal(intersects, false, `${connections[index].id} intersects ${other.id}`);
     }
   }
 });
