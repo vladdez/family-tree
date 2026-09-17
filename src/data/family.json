@@ -163,7 +163,7 @@
     },
     {
       "id": "maria-efimova-1941",
-      "name": "Мария Ефимова",
+      "name": "Мария Ефимовна Михеева",
       "birthYears": [
         1941
       ],
@@ -599,7 +599,8 @@
       "type": "spouse",
       "person1": "vladimir-mikheev-1941",
       "person2": "maria-efimova-1941",
-      "status": "explicit"
+      "status": "explicit",
+      "notes": "Пользователь подтвердил, что Мария Ефимовна Михеева — жена Владимира Михеева."
     },
     {
       "type": "parent",
