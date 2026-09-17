@@ -13,8 +13,8 @@ export function getTimeline(personId: string, catalog: Catalog): TimelineEntry[]
   const person = getPerson(personId, catalog);
   const entries: TimelineEntry[] = [];
   const basic = (id: string, date: string | null, title: string, type: TimelineEntry['type']): TimelineEntry => ({ id, date, title, type, alternatives: [], peopleIds: [], notes: '' });
-  entries.push({ ...basic(`${personId}:birth`, person.birth.date, 'Рождение', 'birth'), alternatives: person.birth.alternatives, notes: person.birth.notes });
-  if (person.death.date || person.death.alternatives.length) entries.push({ ...basic(`${personId}:death`, person.death.date, 'Смерть', 'death'), alternatives: person.death.alternatives, notes: person.death.notes });
+  entries.push({ ...basic(`${personId}:birth`, person.birth.date, 'Рождение', 'birth'), alternatives: person.birth.alternatives, documentId: person.birth.documentId, notes: person.birth.notes });
+  if (person.death.date || person.death.alternatives.length) entries.push({ ...basic(`${personId}:death`, person.death.date, 'Смерть', 'death'), alternatives: person.death.alternatives, documentId: person.death.documentId, notes: person.death.notes });
   person.marriages.forEach((m, index) => entries.push({ ...basic(`${personId}:marriage:${index}`, m.date, 'Брак', 'marriage'), documentId: m.documentId, peopleIds: [m.spouseId], notes: m.notes }));
   for (const child of getChildren(personId, catalog)) {
     const kind = child.parentDetails.find((p) => p.personId === personId)?.kind;

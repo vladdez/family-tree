@@ -15,6 +15,7 @@ export const PartialDateSchema = z.string().refine(isPartialDate, 'Дата до
 const lifeEvent = z.object({
   date: PartialDateSchema.nullable(),
   placeId: id.nullable(),
+  documentId: id.optional(),
   alternatives: z.array(PartialDateSchema).default([]),
   notes: z.string().default(''),
 }).strict().refine((e) => !e.alternatives.length || (e.date === null && e.alternatives.length >= 2 && new Set(e.alternatives).size === e.alternatives.length), 'Противоречивые даты: date = null, alternatives — минимум два разных варианта');
@@ -97,6 +98,7 @@ export const PersonProfileSchema = z.object({
   id, slug: id.optional(), sex: PersonSchema.shape.sex.optional(),
   birthDate: PartialDateSchema.nullable().optional(), deathDate: PartialDateSchema.nullable().optional(),
   birthPlaceId: id.nullable().optional(), deathPlaceId: id.nullable().optional(),
+  birthDocumentId: id.optional(), deathDocumentId: id.optional(),
   portrait: mediaPath.nullable().optional(), summary: z.string().optional(), biography: z.string().optional(), notes: z.string().optional(),
   marriages: PersonSchema.shape.marriages.optional(), events: PersonSchema.shape.events.optional(),
 }).strict();

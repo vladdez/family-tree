@@ -59,7 +59,7 @@ export function validateCatalog(raw: { people: unknown[]; documents: unknown[]; 
       if (other && !other.marriages.some((m) => m.spouseId === person.id && m.date === marriage.date && m.documentId === marriage.documentId)) errors.push(`${person.id}: брак должен быть отражён у обоих супругов`);
     }
     unique(person.events.map((e) => e.id), `${person.id} event ID`);
-    for (const event of [...person.events, ...person.marriages]) if (event.documentId && !documents.get(event.documentId)?.peopleIds.includes(person.id)) errors.push(`${person.id}: документ события ${event.documentId} отсутствует или не связан с человеком`);
+    for (const event of [person.birth, person.death, ...person.events, ...person.marriages]) if (event.documentId && !documents.get(event.documentId)?.peopleIds.includes(person.id)) errors.push(`${person.id}: документ события ${event.documentId} отсутствует или не связан с человеком`);
   }
   for (const document of catalog.documents) for (const personId of document.peopleIds) if (!people.has(personId)) errors.push(`${document.id}: неизвестный person ID ${personId}`);
   const visiting = new Set<string>(), visited = new Set<string>();

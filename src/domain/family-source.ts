@@ -14,12 +14,12 @@ export function adaptFamilySource(input: unknown, profileInputs: unknown[] = [])
     if (profiles.has(profile.id)) throw new Error(`Повтор профиля ${profile.id}`);
     profiles.set(profile.id, profile);
   }
-  const event = (years: number[] = [], sourceDate: string | null | undefined, profileDate: string | null | undefined, placeId: string | null = null): Person['birth'] => {
+  const event = (years: number[] = [], sourceDate: string | null | undefined, profileDate: string | null | undefined, placeId: string | null = null, documentId?: string): Person['birth'] => {
     if (sourceDate && profileDate && sourceDate !== profileDate && !profileDate.startsWith(`${sourceDate}-`)) throw new Error('Дата профиля противоречит дате family.json');
     const exact = profileDate ?? sourceDate;
     if (exact && years.length && (years.length !== 1 || Number(exact.slice(0, 4)) !== years[0])) throw new Error('Дата профиля противоречит годам family.json: сначала уточните исходную запись');
     const dates = years.map((year) => String(year).padStart(4, '0'));
-    return { date: exact ?? (dates.length === 1 ? dates[0] : null), alternatives: dates.length > 1 ? dates : [], placeId, notes: dates.length > 1 ? 'В семейных данных указано несколько вариантов года. Требуется уточнение источника.' : '' };
+    return { date: exact ?? (dates.length === 1 ? dates[0] : null), alternatives: dates.length > 1 ? dates : [], placeId, ...(documentId ? { documentId } : {}), notes: dates.length > 1 ? 'В семейных данных указано несколько вариантов года. Требуется уточнение источника.' : '' };
   };
   const people = source.people.map((record) => {
     const profile = profiles.get(record.id);
@@ -29,8 +29,8 @@ export function adaptFamilySource(input: unknown, profileInputs: unknown[] = [])
       ...(record.archivalName ? { archivalName: record.archivalName } : {}),
       alternateNames: record.alternateNames,
       sex: profile?.sex ?? 'unknown',
-      birth: event(record.birthYears, record.birth, profile?.birthDate, profile?.birthPlaceId),
-      death: event(record.deathYears, record.death, profile?.deathDate, profile?.deathPlaceId),
+      birth: event(record.birthYears, record.birth, profile?.birthDate, profile?.birthPlaceId, profile?.birthDocumentId),
+      death: event(record.deathYears, record.death, profile?.deathDate, profile?.deathPlaceId, profile?.deathDocumentId),
       parents: [], spouses: [], children: [],
       portrait: profile?.portrait ?? null, summary: profile?.summary ?? '', biography: profile?.biography ?? '', notes: profile?.notes ?? '',
       marriages: profile?.marriages ?? [], events: profile?.events ?? [],

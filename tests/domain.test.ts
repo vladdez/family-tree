@@ -8,7 +8,7 @@ import { getTimeline } from '../src/domain/timeline';
 import { lifespan, eventDate, fullName, showBirthOnly } from '../src/domain/people';
 import { formatDate } from '../src/domain/dates';
 import { withBase } from '../src/domain/urls';
-import { validateMedia } from '../scripts/data-files';
+import { readRawCatalog, validateMedia } from '../scripts/data-files';
 
 // Synthetic fixtures are used only by tests and never included in site data.
 function person(id: string, changes: Record<string, unknown> = {}) {
@@ -94,6 +94,61 @@ test('shared documents stay one entity and linked marriage timeline is not dupli
   assert.deepEqual(timeline.find((e) => e.type === 'marriage')!.peopleIds, ['b']);
   assert.ok(!timeline.some((e) => e.type === 'death'));
   assert.throws(() => validateCatalog(raw([catalog.people[0], person('b', { spouses: ['a'] })], catalog.documents)), /брак должен быть отражён/);
+});
+
+test('life event evidence is shown once without merging a parent’s birth in the same year or replacing family dates', () => {
+  const evidence = DocumentSchema.parse({ ...document(['child', 'parent']), type: 'birth', date: '1900-04-09' });
+  const catalog = validateCatalog(raw([
+    person('child', { parents: ['parent'], birth: { date: '1900', placeId: null, documentId: 'source' } }),
+    person('parent', { children: ['child'], birth: { date: '1900', placeId: null } }),
+  ], [evidence]));
+  const snapshot = JSON.stringify(catalog);
+  const birth = getTimeline('child', catalog).filter((event) => event.documentId === 'source');
+  assert.equal(birth.length, 1);
+  assert.equal(birth[0].title, 'Рождение');
+  assert.equal(birth[0].type, 'birth');
+  assert.equal(birth[0].date, '1900');
+  const parentTimeline = getTimeline('parent', catalog);
+  assert.equal(parentTimeline.find((event) => event.type === 'birth')!.documentId, undefined);
+  assert.equal(parentTimeline.filter((event) => event.documentId === 'source').length, 1);
+  assert.equal(parentTimeline.find((event) => event.documentId === 'source')!.type, 'document');
+  assert.equal(JSON.stringify(catalog), snapshot);
+
+  const deathEvidence = DocumentSchema.parse({ ...document(['a']), type: 'death', date: '1980' });
+  const deceased = person('a', { death: { date: null, alternatives: ['1980', '1981'], placeId: null, documentId: 'source' } });
+  const death = getTimeline('a', validateCatalog(raw([deceased], [deathEvidence]))).filter((event) => event.documentId === 'source');
+  assert.equal(death.length, 1);
+  assert.equal(death[0].type, 'death');
+  assert.equal(death[0].date, null);
+  assert.deepEqual(death[0].alternatives, ['1980', '1981']);
+  for (const event of ['birth', 'death'] as const) {
+    const linked = person('a', { [event]: { date: null, placeId: null, documentId: 'source' } });
+    assert.throws(() => validateCatalog(raw([linked])), /документ события source отсутствует или не связан/);
+    assert.throws(() => validateCatalog(raw([linked, person('b')], [document(['b'])])), /документ события source отсутствует или не связан/);
+  }
+});
+
+test('real shared birth scans are attached to Petr, Paraskeva and Dmitry’s births without duplicate timeline entries', async () => {
+  const catalog = validateCatalog(await readRawCatalog());
+  for (const [id, documentId] of [
+    ['petr-mikheev-1889', 'petr-paraskeva-births-1889'],
+    ['paraskeva-pavlova-1889', 'petr-paraskeva-births-1889'],
+    ['dmitry-mikheev-1910', 'dmitry-birth-1910'],
+  ]) {
+    const record = catalog.people.find((person) => person.id === id)!;
+    const timeline = getTimeline(id, catalog);
+    const evidence = timeline.filter((event) => event.documentId === documentId);
+    assert.equal(timeline.filter((event) => event.type === 'birth').length, 1);
+    assert.equal(evidence.length, 1);
+    assert.equal(evidence[0].title, 'Рождение');
+    assert.equal(evidence[0].type, 'birth');
+    assert.equal(evidence[0].date, record.birth.date);
+    assert.deepEqual(evidence[0].alternatives, record.birth.alternatives);
+    assert.ok(getDocumentsForPerson(id, catalog).some((document) => document.id === documentId));
+  }
+  assert.equal(catalog.people.find((person) => person.id === 'paraskeva-pavlova-1889')!.birth.date, '1889-07-28');
+  assert.equal(getTimeline('petr-mikheev-1889', catalog).find((event) => event.documentId === 'dmitry-birth-1910')!.type, 'document');
+  assert.equal(getTimeline('nikifor-1858', catalog).find((event) => event.documentId === 'petr-paraskeva-births-1889')!.type, 'document');
 });
 
 test('siblings with unknown shared parents remain reciprocal without inheriting a father, mother or half-sibling label', () => {

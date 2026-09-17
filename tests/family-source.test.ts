@@ -84,9 +84,11 @@ test('all corrections, identity issues and unnamed-relative counts remain attach
 
 test('profiles enrich existing nodes and cannot silently choose an uncertain year', () => {
   const input = { schemaVersion: 2, people: [{ id: 'a', firstName: 'Тест', lastName: '', patronymic: '', maidenName: '', birthYears: [1900], deathYears: [1980, 1981] }], relations: [], unidentifiedRelatives: [], issues: [] };
-  const enriched = adaptFamilySource(input, [{ id: 'a', birthDate: '1900-03-12', biography: 'Текст профиля', portrait: null }]);
+  const enriched = adaptFamilySource(input, [{ id: 'a', birthDate: '1900-03-12', birthDocumentId: 'birth-source', deathDocumentId: 'death-source', biography: 'Текст профиля', portrait: null }]);
   assert.equal(enriched.people[0].birth.date, '1900-03-12'); assert.equal(enriched.people[0].biography, 'Текст профиля');
   assert.deepEqual(enriched.people[0].death.alternatives, ['1980', '1981']);
+  assert.equal(enriched.people[0].birth.documentId, 'birth-source');
+  assert.equal(enriched.people[0].death.documentId, 'death-source');
   assert.throws(() => adaptFamilySource(input, [{ id: 'a', deathDate: '1980' }]), /противоречит/);
   assert.throws(() => adaptFamilySource(input, [{ id: 'missing' }]), /отсутствует/);
 });

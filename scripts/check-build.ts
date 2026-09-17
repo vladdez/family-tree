@@ -65,6 +65,12 @@ for (const person of catalog.people) {
   for (const document of getDocumentsForPerson(person.id, catalog)) {
     if (!personLinks.has(`${base}documents/${document.id}/`) || !visibleText.includes(document.title)) errors.push(`${person.id}: пропущен документ ${document.id}`);
   }
+  const timelineEvents = nodes.filter((node) => node.tagName === 'li' && (attr(node, 'class') ?? '').split(/\s+/).includes('timeline-event'));
+  for (const [title, event] of [['Рождение', person.birth], ['Смерть', person.death]] as const) {
+    if (!event.documentId || (title === 'Смерть' && !event.date && !event.alternatives.length)) continue;
+    const evidence = timelineEvents.filter((node) => elements(node).some((child) => child.tagName === 'a' && attr(child, 'href') === `${base}documents/${event.documentId}/`));
+    if (evidence.length !== 1 || textContent(elements(evidence[0]).find((node) => node.tagName === 'h3')!) !== title) errors.push(`${person.id}: источник события «${title}» отсутствует или показан отдельным событием`);
+  }
   for (const name of person.alternateNames) if (!visibleText.includes(name)) errors.push(`${person.id}: пропущено альтернативное имя ${name}`);
   if (person.maidenName && !visibleText.includes(`Девичья фамилия: ${person.maidenName}`)) errors.push(`${person.id}: пропущена девичья фамилия`);
   if (person.archivalName && !visibleText.includes('Имя сохранено в архивном написании.')) errors.push(`${person.id}: пропущена пометка архивного написания`);
