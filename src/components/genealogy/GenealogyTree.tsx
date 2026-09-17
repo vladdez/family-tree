@@ -3,7 +3,8 @@ import { relationStatusLabels, type TreePerson, type TreeRelationship } from '..
 import type { TreeBranch } from '../../domain/tree-branches';
 import { layoutTree, type Geometry } from './layout';
 import { fitView, scaleView, pinchView, type View } from './viewport';
-import { edgePath } from './edges';
+import { edgePath, marriageMarkerPosition } from './edges';
+import MarriageIcon from './MarriageIcon';
 import './tree.css';
 
 interface Props { people: TreePerson[]; relationships: TreeRelationship[]; branches?: TreeBranch[] }
@@ -119,9 +120,16 @@ export default function GenealogyTree({ people, relationships, branches = emptyB
           const from = byId.get(edge.from), to = byId.get(edge.to); if (!from || !to) return null;
           return <path key={edge.id} d={edgePath(edge, from, to, geometry)} className={`tree-edge ${edge.type}${edge.kind === 'adoptive' ? ' adoptive' : ''}${edge.status && edge.status !== 'explicit' ? ' inferred' : ''}`}><title>{edge.status ? relationStatusLabels[edge.status] : 'Родственная связь'}</title></path>;
         })}</svg>
+        {relationships.filter((edge) => edge.type === 'spouse').map((edge) => {
+          const from = byId.get(edge.from), to = byId.get(edge.to); if (!from || !to) return null;
+          const position = marriageMarkerPosition(from, to, geometry);
+          const inferred = !!edge.status && edge.status !== 'explicit';
+          const label = `${inferred ? 'Предполагаемые супруги' : 'Супруги'}: ${from.name} и ${to.name}${inferred ? ` · ${relationStatusLabels[edge.status!]}` : ''}`;
+          return <span key={edge.id} className={`tree-marriage${inferred ? ' inferred' : ''}`} style={{ left: position.x, top: position.y }} role="img" aria-label={label} title={label}><MarriageIcon /></span>;
+        })}
         {graph.nodes.map((p) => <a className={`tree-node${selected === p.id ? ' is-selected' : ''}`} key={p.id} href={p.href} data-branch={branchByPerson.get(p.id)?.id} title={branchByPerson.get(p.id)?.label} style={{ left: p.x, top: p.y }} onFocus={(event) => { if (event.currentTarget.matches(':focus-visible')) focusPerson(p.id); }}><span className="tree-node-name">{p.name}</span><span className="tree-node-life">{p.lifespan}</span>{p.uncertain && <span className="tree-node-uncertainty">Дата требует уточнения</span>}{p.positionFromRelatives && <span className="tree-node-placement">Положение по родству</span>}<span className="tree-node-arrow" aria-hidden="true">↗</span></a>)}
       </div> : <div className="tree-static-register">{people.map((p) => <a key={p.id} href={p.href} data-branch={branchByPerson.get(p.id)?.id} title={branchByPerson.get(p.id)?.label}><span>{p.name}</span><small>{p.lifespan}</small></a>)}</div>}
     </div>
-    <div className="tree-caption"><p id="tree-instructions">Перетаскивайте поле, используйте + / − или жест двумя пальцами. С клавиатуры: стрелки, + / −, 0. Нажмите на имя, чтобы открыть историю.</p>{relationships.length > 0 && <div className="tree-legend"><span className="legend-parent">Родитель — ребёнок</span><span className="legend-spouse">Супруги</span><span className="legend-inferred">Предполагаемая связь</span><span className="legend-half">Неполнородное родство</span><span className="legend-identity">Возможное совпадение</span><span className="legend-adoptive">Приёмное родство</span></div>}</div>
+    <div className="tree-caption"><p id="tree-instructions">Перетаскивайте поле, используйте + / − или жест двумя пальцами. С клавиатуры: стрелки, + / −, 0. Нажмите на имя, чтобы открыть историю.</p>{relationships.length > 0 && <div className="tree-legend"><span className="legend-parent">Родитель — ребёнок</span><span className="legend-spouse"><MarriageIcon /> Брак</span><span className="legend-inferred">Предполагаемая связь</span><span className="legend-half">Неполнородное родство</span><span className="legend-identity">Возможное совпадение</span><span className="legend-adoptive">Приёмное родство</span></div>}</div>
   </div>;
 }

@@ -24,6 +24,13 @@
 .tree-edge.possible_same_person { stroke: var(--color-warning); stroke-dasharray: var(--tree-identity-dash); }
 .tree-edge.inferred:not(.possible_same_person) { stroke: var(--color-warning); stroke-dasharray: var(--tree-inferred-dash); }
 .tree-edge.adoptive { stroke-dasharray: var(--tree-adoptive-dash); }
+.marriage-icon { position: relative; display: inline-block; flex-shrink: 0; width: var(--tree-marriage-icon-width); height: var(--tree-marriage-ring-size); color: var(--color-muted); vertical-align: middle; }
+.marriage-icon::before, .marriage-icon::after { content: ''; position: absolute; box-sizing: border-box; top: 0; width: var(--tree-marriage-ring-size); height: var(--tree-marriage-ring-size); border: var(--tree-edge-width) solid currentColor; border-radius: var(--radius-round); }
+.marriage-icon::before { left: 0; }
+.marriage-icon::after { right: 0; }
+.tree-marriage { position: absolute; display: flex; align-items: center; justify-content: center; width: calc(var(--tree-marriage-icon-width) + var(--tree-marriage-padding) * 2); height: calc(var(--tree-marriage-ring-size) + var(--tree-marriage-padding) * 2); transform: translate(-50%, -50%); background: var(--color-soft); border-radius: var(--radius-round); cursor: default; }
+.tree-marriage.inferred .marriage-icon { color: var(--color-warning); }
+.tree-marriage.inferred .marriage-icon::before, .tree-marriage.inferred .marriage-icon::after { border-style: dashed; }
 .tree-node { position: absolute; width: var(--tree-node-width); height: var(--tree-node-height); display: flex; flex-direction: column; justify-content: center; gap: var(--space-2xs); padding: var(--space-md) var(--space-lg); border: var(--border-width) solid var(--tree-card-border, var(--color-border)); border-radius: var(--radius-small); background: var(--tree-card-background, var(--color-surface)); box-shadow: var(--shadow-card); text-decoration: none; user-select: none; }
 .tree-node:hover, .tree-node.is-selected { border-color: var(--color-accent); box-shadow: var(--shadow-focus); }
 .tree-node-name { font: var(--font-lg)/1.2 var(--font-heading); padding-right: var(--space-xs); }
@@ -34,8 +41,9 @@
 .tree-caption { display: flex; justify-content: space-between; gap: var(--space-lg); padding: var(--space-md) var(--space-lg); color: var(--color-muted); font-size: var(--font-xs); border: var(--border-width) solid var(--color-border); border-top: none; background: var(--color-surface); }
 .tree-caption p { max-width: var(--reading-width); }
 .tree-legend { display: flex; flex-wrap: wrap; gap: var(--space-md); }
-.tree-legend span::before { content: ''; display: inline-block; width: var(--space-lg); border-top: var(--tree-edge-width) solid var(--color-accent); vertical-align: middle; margin-right: var(--space-xs); }
-.tree-legend .legend-spouse::before { border-top-color: var(--color-muted); }
+.tree-legend > span::before { content: ''; display: inline-block; width: var(--space-lg); border-top: var(--tree-edge-width) solid var(--color-accent); vertical-align: middle; margin-right: var(--space-xs); }
+.tree-legend .legend-spouse { display: inline-flex; align-items: center; gap: var(--space-xs); }
+.tree-legend .legend-spouse::before { content: none; }
 .tree-legend .legend-inferred::before { border-top-style: dashed; border-top-color: var(--color-warning); }
 .tree-legend .legend-half::before { border-top-style: dashed; border-top-color: var(--color-muted); }
 .tree-legend .legend-identity::before { border-top-style: dotted; border-top-color: var(--color-warning); }

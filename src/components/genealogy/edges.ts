@@ -1,5 +1,12 @@
 import type { TreeRelationship } from '../../domain/relationships';
 import type { Geometry, PositionedPerson } from './layout';
+
+export function marriageMarkerPosition(from: PositionedPerson, to: PositionedPerson, geometry: Geometry): { x: number; y: number } {
+  if (from.y === to.y) return { x: (from.x + to.x + geometry.nodeWidth) / 2, y: from.y - geometry.gap / 4 };
+  // For spouses in different periods, use the vertical segment in a column gap.
+  return { x: to.x - geometry.gap / 2, y: (from.y + to.y) / 2 - geometry.gap / 2 };
+}
+
 export function edgePath(edge: TreeRelationship, from: PositionedPerson, to: PositionedPerson, geometry: Geometry): string {
   const x1 = from.x + geometry.nodeWidth / 2, x2 = to.x + geometry.nodeWidth / 2;
   if (edge.type === 'parent') {
