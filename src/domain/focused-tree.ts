@@ -5,7 +5,7 @@ import { getParents, getRelativeGroups, getSiblings, getTreeData, type TreePerso
 const settingsSchema = z.object({ focusPersonId: z.string().min(1) }).strict();
 export interface HiddenRelativeGroup { label: string; people: (TreePerson & { annotation: string })[] }
 
-/** The main graph contains one person's ancestry and their own siblings only. */
+/** Show ancestry, confirmed spouses and the focal person's own siblings. */
 export function getFocusedTree(catalog: Catalog, settings: unknown) {
   const { focusPersonId } = settingsSchema.parse(settings);
   const tree = getTreeData(catalog), byId = new Map(tree.people.map((person) => [person.id, person]));
@@ -17,6 +17,10 @@ export function getFocusedTree(catalog: Catalog, settings: unknown) {
     if (ancestors.has(id)) continue;
     ancestors.add(id); visible.add(id);
     pending.push(...getParents(id, catalog).map((parent) => parent.id));
+  }
+  for (const edge of tree.relationships) if (edge.type === 'spouse' && (!edge.status || edge.status === 'explicit')) {
+    if (ancestors.has(edge.from)) visible.add(edge.to);
+    if (ancestors.has(edge.to)) visible.add(edge.from);
   }
   const people = tree.people.filter((person) => visible.has(person.id));
   const relatives: Record<string, HiddenRelativeGroup[]> = Object.fromEntries(people.map((person) => [person.id,

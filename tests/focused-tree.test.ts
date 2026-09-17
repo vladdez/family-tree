@@ -8,7 +8,7 @@ import { getTreeBranches } from '../src/domain/tree-branches';
 import { layoutTree } from '../src/components/genealogy/layout';
 import { getFamilyConnections } from '../src/components/genealogy/families';
 import type { Point } from '../src/components/genealogy/families';
-import { edgePath } from '../src/components/genealogy/edges';
+import { edgePath, marriageMarkerPosition } from '../src/components/genealogy/edges';
 import { fitNodes } from '../src/components/genealogy/viewport';
 import branchRoots from '../src/data/tree-branches.json';
 import treeSettings from '../src/data/tree-view.json';
@@ -21,11 +21,12 @@ test('main tree retains Vladimir, both parents, his sisters and both ancestral l
   const ids = new Set(tree.people.map((person) => person.id));
   assert.equal(tree.people.find((person) => person.id === tree.focusPersonId)!.name, 'Владимир Юрьевич Михеев');
   assert.deepEqual(tree.familyPersonIds.slice().sort(), ['elvira-mikheeva-grigoryeva', 'ksenia-mikheeva-1990', 'maria-mikheeva-2003', 'vladimir-mikheev-1995', 'yuri-vladimirovich-mikheev-1965']);
-  for (const id of ['petr-mikheev-1889', 'dmitry-mikheev-1910', 'vladimir-mikheev-1941', 'konstantin-grigoryevich-grigoryev-1935', 'maria-petrovna-grigoryeva-1940']) assert.ok(ids.has(id), id);
-  for (const id of ['vladimir-halfbrother-1947', 'maria-efimova-1941', 'efim-father-of-maria']) assert.equal(ids.has(id), false, id);
+  for (const id of ['petr-mikheev-1889', 'dmitry-mikheev-1910', 'vladimir-mikheev-1941', 'maria-efimova-1941', 'konstantin-grigoryevich-grigoryev-1935', 'maria-petrovna-grigoryeva-1940']) assert.ok(ids.has(id), id);
+  for (const id of ['vladimir-halfbrother-1947', 'efim-father-of-maria']) assert.equal(ids.has(id), false, id);
   const ancestors = tree.people.filter((person) => !tree.familyPersonIds.includes(person.id));
   for (const person of ancestors) {
-    assert.ok(tree.relationships.some((edge) => edge.type === 'parent' && edge.from === person.id), person.id);
+    assert.ok(tree.relationships.some((edge) => edge.type === 'parent' && edge.from === person.id)
+      || tree.relationships.some((edge) => edge.type === 'spouse' && edge.status === 'explicit' && [edge.from, edge.to].includes(person.id)), person.id);
   }
   assert.ok(tree.people.length < catalog.people.length);
   assert.equal(catalog.people.length, 52);
@@ -33,7 +34,7 @@ test('main tree retains Vladimir, both parents, his sisters and both ancestral l
   assert.equal(JSON.stringify(catalog), snapshot);
 });
 
-test('hidden siblings and spouses remain linked inside ancestor cards with uncertainty labels', () => {
+test('siblings stay inside ancestor cards while Maria Efimovna has her own card and confirmed marriage', () => {
   const tree = getFocusedTree(catalog, treeSettings);
   const brother = tree.relatives['konstantin-grigoryevich-grigoryev-1935'].find((group) => group.label === 'Братья и сёстры')!.people.find((person) => person.id === 'vladimir-halfbrother-1947')!;
   assert.equal(brother.annotation, 'Общие родители не уточнены');
@@ -41,7 +42,12 @@ test('hidden siblings and spouses remain linked inside ancestor cards with uncer
   const reciprocal = getFocusedTree(catalog, { focusPersonId: brother.id }).relatives;
   assert.equal(Object.values(reciprocal).flatMap((groups) => groups.flatMap((group) => group.people)).some((person) => person.annotation.includes('Неполнородное')), false);
   assert.ok(brother.href.includes('/people/')); assert.ok(brother.lifespan.includes('1947'));
-  assert.ok(tree.relatives['vladimir-mikheev-1941'].find((group) => group.label === 'Супруги')!.people.some((person) => person.id === 'maria-efimova-1941'));
+  assert.equal(tree.people.find((person) => person.id === 'maria-efimova-1941')!.name, 'Мария Ефимовна Михеева');
+  assert.ok(tree.relationships.some((edge) => edge.type === 'spouse' && edge.status === 'explicit'
+    && [edge.from, edge.to].includes('vladimir-mikheev-1941') && [edge.from, edge.to].includes('maria-efimova-1941')));
+  assert.deepEqual(tree.relationships.filter((edge) => edge.type === 'parent' && edge.to === 'yuri-vladimirovich-mikheev-1965')
+    .map((edge) => edge.from), ['vladimir-mikheev-1941']);
+  assert.ok(tree.relatives['maria-efimova-1941'].find((group) => group.label === 'Родители')!.people.some((person) => person.id === 'efim-father-of-maria'));
   assert.deepEqual(tree.relationships.filter((edge) => edge.type === 'parent' && edge.to === 'elvira-mikheeva-grigoryeva')
     .map((edge) => [edge.from, edge.status]).sort(), [
       ['konstantin-grigoryevich-grigoryev-1935', 'explicit'], ['maria-petrovna-grigoryeva-1940', 'explicit'],
@@ -49,21 +55,25 @@ test('hidden siblings and spouses remain linked inside ancestor cards with uncer
   for (const groups of Object.values(tree.relatives)) for (const group of groups) for (const person of group.people) assert.equal(tree.people.some((visible) => visible.id === person.id), false);
 });
 
-test('only the focal person’s siblings are separate nodes; cousins, siblings of ancestors and unconfirmed spouses stay in cards', () => {
-  const people = ['me', 'sister', 'father', 'mother', 'grandfather', 'uncle', 'cousin', 'spouse', 'half', 'other-parent'].map((id) => ({ id, name: id, birthYears: [], death: null }));
+test('confirmed spouses have separate nodes; cousins, siblings of ancestors and unconfirmed spouses stay in cards', () => {
+  const people = ['me', 'sister', 'father', 'mother', 'grandfather', 'uncle', 'cousin', 'spouse', 'spouse-parent', 'unconfirmed-spouse', 'half', 'other-parent'].map((id) => ({ id, name: id, birthYears: [], death: null }));
   const input = { schemaVersion: 1, people, relations: [
     { type: 'parent', parent: 'father', child: 'me' }, { type: 'parent', parent: 'mother', child: 'me', status: 'inferred_context' },
     { type: 'parent', parent: 'father', child: 'sister' }, { type: 'parent', parent: 'mother', child: 'sister' },
     { type: 'parent', parent: 'grandfather', child: 'father' }, { type: 'parent', parent: 'grandfather', child: 'uncle' },
     { type: 'parent', parent: 'uncle', child: 'cousin' }, { type: 'spouse', person1: 'grandfather', person2: 'spouse' },
+    { type: 'parent', parent: 'spouse-parent', child: 'spouse' },
+    { type: 'spouse', person1: 'grandfather', person2: 'unconfirmed-spouse', status: 'inferred_context' },
     { type: 'half_sibling', person1: 'me', person2: 'half' }, { type: 'parent', parent: 'other-parent', child: 'half' },
   ], issues: [], unidentifiedRelatives: [] };
   const records = validateCatalog({ ...adaptFamilySource(input), documents: [], places: [] });
   const tree = getFocusedTree(records, { focusPersonId: 'me' });
-  assert.deepEqual(tree.people.map((person) => person.id).sort(), ['father', 'grandfather', 'half', 'me', 'mother', 'sister']);
+  assert.deepEqual(tree.people.map((person) => person.id).sort(), ['father', 'grandfather', 'half', 'me', 'mother', 'sister', 'spouse']);
   assert.ok(tree.relatives.father.find((group) => group.label === 'Братья и сёстры')!.people.some((person) => person.id === 'uncle'));
   assert.ok(tree.relatives.grandfather.find((group) => group.label === 'Дети')!.people.some((person) => person.id === 'uncle'));
-  assert.ok(tree.relatives.grandfather.find((group) => group.label === 'Супруги')!.people.some((person) => person.id === 'spouse'));
+  assert.ok(tree.relationships.some((edge) => edge.type === 'spouse' && [edge.from, edge.to].includes('grandfather') && [edge.from, edge.to].includes('spouse')));
+  assert.ok(tree.relatives.spouse.find((group) => group.label === 'Родители')!.people.some((person) => person.id === 'spouse-parent'));
+  assert.equal(tree.relatives.grandfather.find((group) => group.label === 'Супруги')!.people.find((person) => person.id === 'unconfirmed-spouse')!.annotation, 'Предположение из контекста');
   assert.ok(tree.relatives.half.find((group) => group.label === 'Родители')!.people.some((person) => person.id === 'other-parent'));
   assert.ok(tree.relationships.some((edge) => edge.from === 'mother' && edge.to === 'me' && edge.status === 'inferred_context'));
   assert.throws(() => getFocusedTree(records, { focusPersonId: 'missing' }), /Неизвестный человек/);
@@ -76,7 +86,14 @@ test('focused real layout preserves era alignment, branch separation and the sha
   const graph = layoutTree(tree.people, tree.relationships, geometry, branches), nodes = new Map(graph.nodes.map((person) => [person.id, person]));
   assert.equal(new Set(graph.nodes.map((person) => `${person.x}:${person.y}`)).size, tree.people.length);
   for (const edge of tree.relationships) if (edge.type === 'parent') assert.ok(nodes.get(edge.from)!.y < nodes.get(edge.to)!.y);
-  assert.equal(new Set(['konstantin-grigoryevich-grigoryev-1935', 'maria-petrovna-grigoryeva-1940', 'vladimir-mikheev-1941'].map((id) => nodes.get(id)!.y)).size, 1);
+  assert.equal(new Set(['konstantin-grigoryevich-grigoryev-1935', 'maria-petrovna-grigoryeva-1940', 'vladimir-mikheev-1941', 'maria-efimova-1941'].map((id) => nodes.get(id)!.y)).size, 1);
+  const vladimir = nodes.get('vladimir-mikheev-1941')!, maria = nodes.get('maria-efimova-1941')!;
+  assert.equal(Math.abs(vladimir.x - maria.x), geometry.nodeWidth + geometry.gap);
+  assert.ok(branches.find((branch) => branch.id === 'paternal')!.personIds.includes(maria.id));
+  const marriage = marriageMarkerPosition(vladimir, maria, geometry);
+  assert.ok(marriage.x > Math.min(vladimir.x, maria.x) + geometry.nodeWidth);
+  assert.ok(marriage.x < Math.max(vladimir.x, maria.x));
+  assert.equal(marriage.y, maria.y + geometry.nodeHeight / 2);
   assert.equal(new Set(['ksenia-mikheeva-1990', 'vladimir-mikheev-1995', 'maria-mikheeva-2003'].map((id) => nodes.get(id)!.y)).size, 1);
   assert.ok(nodes.get('yuri-vladimirovich-mikheev-1965')!.x < nodes.get('elvira-mikheeva-grigoryeva')!.x);
   assert.ok(nodes.get('elvira-mikheeva-grigoryeva')!.x - nodes.get('yuri-vladimirovich-mikheev-1965')!.x >= geometry.nodeWidth + geometry.gap);

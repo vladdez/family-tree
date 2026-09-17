@@ -25,7 +25,16 @@ export function centerAncestry(graph: TreeGraph, edges: TreeRelationship[], geom
   for (let index = 0; index < families.length; index++) {
     if (!collect(orderedRoots[index][0], new Set(families[index].personIds))) return graph;
   }
-  if (seen.size !== families.reduce((sum, branch) => sum + branch.personIds.length, 0)) return graph;
+  const companions = new Map<string, string>();
+  for (const branch of families) for (const id of branch.personIds.filter((member) => !seen.has(member))) {
+    // A visible spouse occupies a neighbouring card without becoming a parent.
+    const partners = edges.filter((edge) => edge.type === 'spouse' && (!edge.status || edge.status === 'explicit')
+      && (edge.from === id || edge.to === id)).map((edge) => edge.from === id ? edge.to : edge.from)
+      .filter((partner) => seen.has(partner) && branch.personIds.includes(partner));
+    if (parents.get(id)!.length || partners.length !== 1 || companions.has(partners[0])
+      || byId.get(id)!.y !== byId.get(partners[0])!.y) return graph;
+    companions.set(partners[0], id);
+  }
   const { nodeWidth, gap } = geometry, stride = nodeWidth + gap;
   function contours(nodes: PositionedPerson[]) {
     const rows = new Map<number, { left: number; right: number }>();
@@ -51,7 +60,9 @@ export function centerAncestry(graph: TreeGraph, edges: TreeRelationship[], geom
     }
     const centre = centres.length ? centres.reduce((sum, x) => sum + x, 0) / centres.length : 0;
     nodes = nodes.map((node) => ({ ...node, x: node.x - centre }));
-    return [{ ...byId.get(id)!, x: 0 }, ...nodes];
+    const companion = companions.get(id);
+    const pair = companion ? [{ ...byId.get(companion)!, x: byId.get(companion)!.x < byId.get(id)!.x ? -stride : stride }] : [];
+    return [{ ...byId.get(id)!, x: 0 }, ...pair, ...nodes];
   }
   const left = subtree(orderedRoots[0][0]), right = subtree(orderedRoots[1][0]);
   // Leave a full card gap between the two coloured branches at every level.
