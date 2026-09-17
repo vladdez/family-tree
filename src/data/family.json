@@ -759,7 +759,8 @@
       "type": "parent",
       "parent": "maxim-kirillovich-kirillov",
       "child": "grigory-maksimovich-maksimov-1898",
-      "status": "inferred_context"
+      "status": "explicit",
+      "role": "father"
     },
     {
       "type": "parent",
