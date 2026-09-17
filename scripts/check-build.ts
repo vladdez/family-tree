@@ -64,10 +64,8 @@ for (const person of catalog.people) {
   for (const name of person.alternateNames) if (!visibleText.includes(name)) errors.push(`${person.id}: пропущено альтернативное имя ${name}`);
   if (person.maidenName && !visibleText.includes(`Девичья фамилия: ${person.maidenName}`)) errors.push(`${person.id}: пропущена девичья фамилия`);
   if (person.archivalName && !visibleText.includes('Имя сохранено в архивном написании.')) errors.push(`${person.id}: пропущена пометка архивного написания`);
-  if (showBirthOnly(person)) {
-    const deathFact = nodes.find((node) => node.tagName === 'dt' && textContent(node) === 'Смерть')?.parentNode;
-    const deathValue = deathFact ? elements(deathFact).find((node) => node.tagName === 'dd') : undefined;
-    if (!deathValue || textContent(deathValue).trim()) errors.push(`${person.id}: строка смерти должна присутствовать с пустым значением`);
+  if (showBirthOnly(person) && nodes.some((node) => node.tagName === 'dt' && textContent(node) === 'Смерть')) {
+    errors.push(`${person.id}: показана пустая строка смерти`);
   }
   const title = `${fullName(person)} · ${lifespan(person)} — Родословная Михеевых`;
   const meta = (key: string) => attr(nodes.find((n) => n.tagName === 'meta' && (attr(n, 'property') ?? attr(n, 'name')) === key)!, 'content');
