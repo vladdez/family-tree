@@ -1,11 +1,18 @@
 import type { TreePerson, TreeRelationship } from '../../domain/relationships';
 import { layoutByEpoch } from './chronology';
+import { layoutBranches } from './branch-layout';
+import type { TreeBranch } from '../../domain/tree-branches';
 
 export interface Geometry { nodeWidth: number; nodeHeight: number; gap: number; generationGap: number }
 export interface PositionedPerson extends TreePerson { x: number; y: number; positionFromRelatives?: boolean }
 export interface TreePeriod { y: number; label: string; dated: boolean }
-export interface TreeGraph { nodes: PositionedPerson[]; width: number; height: number; periods?: TreePeriod[] }
-export function layoutTree(people: TreePerson[], edges: TreeRelationship[], geometry: Geometry): TreeGraph {
+export interface TreeLane { id: string; label: string; x: number; y: number; width: number; bottom: number }
+export interface TreeGraph { nodes: PositionedPerson[]; width: number; height: number; periods?: TreePeriod[]; lanes?: TreeLane[] }
+export function layoutTree(people: TreePerson[], edges: TreeRelationship[], geometry: Geometry, branches: TreeBranch[] = []): TreeGraph {
+  const graph = layoutWithoutBranches(people, edges, geometry);
+  return branches.length ? layoutBranches(graph, edges, geometry, branches) : graph;
+}
+function layoutWithoutBranches(people: TreePerson[], edges: TreeRelationship[], geometry: Geometry): TreeGraph {
   if (people.some((person) => person.birthYears.length)) return layoutByEpoch(people, edges, geometry);
   const { nodeWidth, nodeHeight, gap, generationGap } = geometry;
   if (!edges.length) {
@@ -44,7 +51,7 @@ export function layoutTree(people: TreePerson[], edges: TreeRelationship[], geom
   if (order.length !== members.size) {
     // A legitimate ancestry graph may become cyclic after spouse grouping.
     // Fall back to separate nodes rather than assuming a binary pedigree.
-    const parentOnly = layoutTree(people, edges.filter((e) => e.type === 'parent'), geometry);
+    const parentOnly = layoutWithoutBranches(people, edges.filter((e) => e.type === 'parent'), geometry);
     return parentOnly;
   }
   for (const edge of edges.filter((e) => e.type === 'half_sibling')) {

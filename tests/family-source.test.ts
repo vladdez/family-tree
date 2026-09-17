@@ -9,6 +9,8 @@ import { getSiblings, getRelativeGroups, getTreeRelationships, getTreeData, rela
 import { getSourceIssues, getUnidentifiedRelatives } from '../src/domain/source-notes';
 import { layoutTree } from '../src/components/genealogy/layout';
 import { edgePath } from '../src/components/genealogy/edges';
+import { getTreeBranches } from '../src/domain/tree-branches';
+import branchRoots from '../src/data/tree-branches.json';
 
 const source = FamilySourceSchema.parse(JSON.parse(await readFile(new URL('../src/data/family.json', import.meta.url), 'utf8')));
 const catalog = validateCatalog({ ...adaptFamilySource(source), documents: [], places: [] });
@@ -91,10 +93,22 @@ test('unknown IDs in source annotations and duplicate relation entries fail vali
   if (source.relations.length) assert.throws(() => validateCatalog({ ...catalog, relations: [...source.relations, source.relations[0]] }), /Повтор связи/);
 });
 
+test('confirmed paternal chain reaches Yuri without inventing his mother', () => {
+  const chain = ['petr-mikheev-1889', 'dmitry-mikheev-1910', 'vladimir-mikheev-1941', 'yuri-vladimirovich-mikheev-1965'];
+  for (let index = 1; index < chain.length; index++) {
+    const relation = source.relations.filter((relation) => relation.type === 'parent' && relation.parent === chain[index - 1] && relation.child === chain[index]);
+    assert.equal(relation.length, 1);
+    assert.equal(relation[0].status, 'explicit');
+    assert.ok(catalog.people.find((person) => person.id === chain[index - 1])!.children.includes(chain[index]));
+  }
+  assert.deepEqual(catalog.people.find((person) => person.id === chain.at(-1))!.parents, ['vladimir-mikheev-1941']);
+});
+
 test('actual family layout keeps spouses together, parents above children and all cards distinct', () => {
   const { people } = getTreeData(catalog);
   const edges = getTreeRelationships(catalog);
-  const graph = layoutTree(people, edges, { nodeWidth: 220, nodeHeight: 140, gap: 40, generationGap: 100 });
+  const branches = getTreeBranches(people, edges, branchRoots);
+  const graph = layoutTree(people, edges, { nodeWidth: 220, nodeHeight: 140, gap: 40, generationGap: 100 }, branches);
   const nodes = new Map(graph.nodes.map((p) => [p.id, p]));
   assert.equal(nodes.size, source.people.length);
   assert.equal(new Set(graph.nodes.map((p) => `${p.x}:${p.y}`)).size, source.people.length);
@@ -107,12 +121,22 @@ test('actual family layout keeps spouses together, parents above children and al
   assert.equal(new Set(['ksenia-mikheeva-1990', 'vladimir-mikheev-1995', 'maria-mikheeva-2003'].map((id) => nodes.get(id)!.y)).size, 1);
   assert.ok(graph.periods?.some((period) => period.label === '1935–1947'));
   assert.ok(graph.periods?.some((period) => period.label === '1990–2003'));
+  const father = branches.find((branch) => branch.id === 'paternal')!;
+  const mother = branches.find((branch) => branch.id === 'maternal')!;
+  assert.ok(father.personIds.includes('petr-mikheev-1889'));
+  assert.ok(father.personIds.includes('vladimir-mikheev-1941'));
+  assert.ok(mother.personIds.includes('konstantin-grigoryevich-grigoryev-1935'));
+  assert.ok(mother.personIds.includes('maria-petrovna-grigoryeva-1940'));
+  assert.ok(Math.max(...father.personIds.map((id) => nodes.get(id)!.x + 220)) < Math.min(...mother.personIds.map((id) => nodes.get(id)!.x)));
+  assert.deepEqual(branches.find((branch) => branch.kind === 'descendants')!.personIds.sort(), ['ksenia-mikheeva-1990', 'maria-mikheeva-2003', 'vladimir-mikheev-1995']);
+  assert.deepEqual(branches.flatMap((branch) => branch.personIds).sort(), source.people.map((person) => person.id).sort());
 });
 
 test('real chronological relationship lines never pass through unrelated cards', () => {
   const { people, relationships } = getTreeData(catalog);
   const geometry = { nodeWidth: 220, nodeHeight: 140, gap: 40, generationGap: 100 };
-  const graph = layoutTree(people, relationships, geometry), nodes = new Map(graph.nodes.map((node) => [node.id, node]));
+  const branches = getTreeBranches(people, relationships, branchRoots);
+  const graph = layoutTree(people, relationships, geometry, branches), nodes = new Map(graph.nodes.map((node) => [node.id, node]));
   for (const edge of relationships) {
     const tokens = edgePath(edge, nodes.get(edge.from)!, nodes.get(edge.to)!, geometry).match(/[MVH]|-?\d+(?:\.\d+)?/g)!;
     let x = 0, y = 0;

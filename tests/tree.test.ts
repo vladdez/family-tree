@@ -3,10 +3,52 @@ import assert from 'node:assert/strict';
 import { layoutTree } from '../src/components/genealogy/layout';
 import { fitView, scaleView, pinchView } from '../src/components/genealogy/viewport';
 import type { TreePerson, TreeRelationship } from '../src/domain/relationships';
+import { getTreeBranches } from '../src/domain/tree-branches';
 const geometry = { nodeWidth: 220, nodeHeight: 100, gap: 40, generationGap: 100 };
 const people = ['a', 'b', 'c', 'd', 'e', 'f'].map((id): TreePerson => ({ id, name: id, lifespan: '? — ?', href: `/people/${id}/`, uncertain: false, birthYears: [] }));
 const person = (id: string, birthYears: number[] = []): TreePerson => ({ id, name: id, lifespan: '? — ?', href: `/people/${id}/`, uncertain: birthYears.length > 1, birthYears });
 const parent = (from: string, to: string): TreeRelationship => ({ id: `${from}:${to}`, from, to, type: 'parent' });
+
+const branchRoots = [{ id: 'father', personId: 'a', label: 'Отцовская ветвь' }, { id: 'mother', personId: 'b', label: 'Материнская ветвь' }];
+test('branches include collateral relatives without mixing spouses or guessing from a possible identity', () => {
+  const records = [person('a', [1965]), person('b', [1969]), person('c', [1941]), person('d', [1935]), person('uncle', [1945]), person('half', [1947]), person('child', [1995]), person('unknown', [1941])];
+  const edges: TreeRelationship[] = [parent('c', 'a'), { ...parent('d', 'b'), status: 'inferred_branch_context', kind: 'adoptive' }, parent('c', 'uncle'), parent('a', 'child'), parent('b', 'child'),
+    { id: 'spouses', from: 'a', to: 'b', type: 'spouse' }, { id: 'half', from: 'd', to: 'half', type: 'half_sibling' }, { id: 'possible', from: 'c', to: 'unknown', type: 'possible_same_person' }];
+  const snapshot = JSON.stringify({ records, edges });
+  const branches = getTreeBranches(records, edges, branchRoots);
+  assert.deepEqual(branches.find((branch) => branch.id === 'father')!.personIds, ['a', 'c', 'uncle']);
+  assert.deepEqual(branches.find((branch) => branch.id === 'mother')!.personIds, ['b', 'd', 'half']);
+  assert.deepEqual(branches.find((branch) => branch.kind === 'descendants')!.personIds, ['child']);
+  assert.deepEqual(branches.find((branch) => branch.kind === 'unassigned')!.personIds, ['unknown']);
+  assert.equal(JSON.stringify({ records, edges }), snapshot);
+  const plain = layoutTree(records, edges, geometry), graph = layoutTree(records, edges, geometry, branches);
+  for (const node of graph.nodes) assert.equal(node.y - plain.nodes.find((other) => other.id === node.id)!.y, geometry.generationGap);
+  assert.equal(new Set(graph.nodes.map((node) => `${node.x}:${node.y}`)).size, records.length);
+});
+test('shared ancestry receives its own area without merging people or the two roots', () => {
+  const records = [person('a', [1965]), person('b', [1969]), person('ancestor', [1940])];
+  const branches = getTreeBranches(records, [parent('ancestor', 'a'), parent('ancestor', 'b')], branchRoots);
+  assert.deepEqual(branches.find((branch) => branch.kind === 'shared')!.personIds, ['ancestor']);
+  assert.deepEqual(branches.find((branch) => branch.id === 'father')!.personIds, ['a']);
+  assert.deepEqual(branches.find((branch) => branch.id === 'mother')!.personIds, ['b']);
+});
+test('branch settings reject missing roots, repeated roots and repeated labels IDs', () => {
+  assert.throws(() => getTreeBranches(people, [], [{ id: 'first', personId: 'missing', label: 'Ветвь' }]), /Неизвестный корень/);
+  assert.throws(() => getTreeBranches(people, [], [branchRoots[0], { ...branchRoots[1], personId: 'a' }]), /Повтор/);
+  assert.throws(() => getTreeBranches(people, [], [branchRoots[0], { ...branchRoots[1], id: 'father' }]), /Повтор/);
+});
+test('a descendant sharing an epoch with relatives keeps a separate area and no cards overlap', () => {
+  const records = [person('a', [1900]), person('b', [1905]), person('child', [1940]), person('cousin', [1941]), person('grandparent', [1870]), person('uncle', [1910])];
+  const edges = [parent('a', 'child'), parent('b', 'child'), parent('grandparent', 'a'), parent('grandparent', 'uncle'), parent('uncle', 'cousin')];
+  const branches = getTreeBranches(records, edges, branchRoots);
+  const graph = layoutTree(records, edges, geometry, branches);
+  assert.equal(graph.nodes.find((node) => node.id === 'child')!.y, graph.nodes.find((node) => node.id === 'cousin')!.y);
+  const descendantLane = graph.lanes!.find((lane) => lane.id === 'tree-descendants')!;
+  const familyLane = graph.lanes!.find((lane) => lane.id === 'father')!;
+  assert.ok(descendantLane.x > familyLane.x + familyLane.width);
+  assert.equal(new Set(graph.nodes.map((node) => `${node.x}:${node.y}`)).size, records.length);
+  for (const node of graph.nodes) { assert.ok(node.x + geometry.nodeWidth <= graph.width); assert.ok(node.y + geometry.nodeHeight <= graph.height); }
+});
 
 test('contemporaries in branches with different ancestry depths share an epoch row', () => {
   const records = [person('a', [1900]), person('b', [1910]), person('c', [1935]), person('d', [1941]), person('e', [1969]), person('f', [1990]), person('root')];

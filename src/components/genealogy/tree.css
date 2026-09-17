@@ -8,6 +8,7 @@
 .tree-viewport.is-register { overflow: auto; cursor: auto; touch-action: pan-y; }
 .tree-canvas { position: absolute; transform-origin: 0 0; }
 .tree-edges { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+.tree-branch-heading { position: absolute; color: var(--color-accent); font: var(--font-xl)/var(--line-heading) var(--font-heading); pointer-events: none; }
 .tree-period { position: absolute; padding-block: var(--space-md); color: var(--color-muted); pointer-events: none; }
 .tree-period > span { display: block; font: var(--font-xl)/var(--line-heading) var(--font-heading); }
 .tree-period small { display: block; margin-top: var(--space-sm); font-size: var(--font-xs); }

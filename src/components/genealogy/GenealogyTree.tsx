@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent, type KeyboardEvent } from 'react';
 import { relationStatusLabels, type TreePerson, type TreeRelationship } from '../../domain/relationships';
+import type { TreeBranch } from '../../domain/tree-branches';
 import { layoutTree, type Geometry } from './layout';
 import { fitView, scaleView, pinchView, type View } from './viewport';
 import { edgePath } from './edges';
 import './tree.css';
 
-interface Props { people: TreePerson[]; relationships: TreeRelationship[] }
+interface Props { people: TreePerson[]; relationships: TreeRelationship[]; branches?: TreeBranch[] }
+const emptyBranches: TreeBranch[] = [];
 
-export default function GenealogyTree({ people, relationships }: Props) {
+export default function GenealogyTree({ people, relationships, branches = emptyBranches }: Props) {
   const viewport = useRef<HTMLDivElement>(null);
   const [geometry, setGeometry] = useState<Geometry | null>(null);
   const [view, setView] = useState<View>({ x: 0, y: 0, scale: 1 });
@@ -16,7 +18,7 @@ export default function GenealogyTree({ people, relationships }: Props) {
   const pointers = useRef(new Map<number, { x: number; y: number }>());
   const moved = useRef(false);
   const dragDistance = useRef(0);
-  const graph = useMemo(() => geometry ? layoutTree(people, relationships, geometry) : null, [people, relationships, geometry]);
+  const graph = useMemo(() => geometry ? layoutTree(people, relationships, geometry, branches) : null, [people, relationships, geometry, branches]);
   const byId = useMemo(() => new Map(graph?.nodes.map((p) => [p.id, p]) ?? []), [graph]);
 
   useEffect(() => {
@@ -109,8 +111,9 @@ export default function GenealogyTree({ people, relationships }: Props) {
     <div className="tree-toolbar"><label className="field tree-search">Найти на древе<select value={selected} onChange={(event) => focusPerson(event.target.value)}><option value="">Все люди</option>{people.map((p) => <option key={p.id} value={p.id}>{p.name} · {p.lifespan}</option>)}</select></label><div className="tree-controls"><button type="button" className="button" onClick={() => zoom(1.2)} aria-label="Увеличить">+</button><span className="tree-scale" aria-live="polite">{Math.round(view.scale * 100)}%</span><button type="button" className="button" onClick={() => zoom(1 / 1.2)} aria-label="Уменьшить">−</button><button type="button" className="button" onClick={() => { setSelected(''); fit(); }}>Показать всех</button></div></div>
     <div ref={viewport} className={`tree-viewport${dragging ? ' is-dragging' : ''}${graph ? '' : ' is-register'}`} tabIndex={0} role="region" aria-label="Интерактивное семейное древо" aria-describedby="tree-instructions" onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} onLostPointerCapture={pointerUp} onPointerLeave={(event) => { if (!dragging) pointers.current.delete(event.pointerId); }} onKeyDown={keyboard} onClickCapture={(event) => { if (moved.current && event.detail !== 0) { event.preventDefault(); event.stopPropagation(); } }}>
       {graph && geometry ? <div className="tree-canvas" style={{ width: graph.width, height: graph.height, transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})` }}>
+        {graph.lanes?.map((lane) => <div key={lane.id} className="tree-branch-heading" style={{ left: lane.x, top: lane.y, width: lane.width }}>{lane.label}</div>)}
         {graph.periods?.map((period) => <div key={period.y} className="tree-period" style={{ left: geometry.gap, top: period.y, width: geometry.nodeWidth }}><span>{period.label}</span><small>{period.dated ? 'Годы рождения' : 'Нет известных дат'}</small></div>)}
-        <svg className="tree-edges" width={graph.width} height={graph.height} aria-hidden="true"><g className="tree-period-lines">{graph.periods?.map((period) => <line key={period.y} x1={geometry.nodeWidth + geometry.gap * 2} y1={period.y - geometry.gap / 2} x2={graph.width - geometry.gap} y2={period.y - geometry.gap / 2} />)}</g>{relationships.map((edge) => {
+        <svg className="tree-edges" width={graph.width} height={graph.height} aria-hidden="true"><g className="tree-period-lines">{graph.periods?.map((period) => <line key={period.y} x1={geometry.nodeWidth + geometry.gap * 2} y1={period.y - geometry.gap / 2} x2={graph.width - geometry.gap} y2={period.y - geometry.gap / 2} />)}{graph.lanes?.map((lane) => <line key={lane.id} x1={lane.x - geometry.gap / 2} y1={lane.y} x2={lane.x - geometry.gap / 2} y2={lane.bottom} />)}</g>{relationships.map((edge) => {
           const from = byId.get(edge.from), to = byId.get(edge.to); if (!from || !to) return null;
           return <path key={edge.id} d={edgePath(edge, from, to, geometry)} className={`tree-edge ${edge.type}${edge.kind === 'adoptive' ? ' adoptive' : ''}${edge.status && edge.status !== 'explicit' ? ' inferred' : ''}`}><title>{edge.status ? relationStatusLabels[edge.status] : 'Родственная связь'}</title></path>;
         })}</svg>

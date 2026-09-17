@@ -581,6 +581,13 @@
       "status": "explicit"
     },
     {
+      "type": "parent",
+      "parent": "vladimir-mikheev-1941",
+      "child": "yuri-vladimirovich-mikheev-1965",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
       "type": "spouse",
       "person1": "vladimir-mikheev-1941",
       "person2": "maria-efimova-1941",
