@@ -5,6 +5,8 @@ import { layoutTree, type Geometry } from './layout';
 import { fitView, scaleView, pinchView, type View } from './viewport';
 import { edgePath, marriageMarkerPosition } from './edges';
 import MarriageIcon from './MarriageIcon';
+import { getFamilyConnections } from './families';
+import FamilyConnections from './FamilyConnections';
 import './tree.css';
 
 interface Props { people: TreePerson[]; relationships: TreeRelationship[]; branches?: TreeBranch[] }
@@ -21,6 +23,7 @@ export default function GenealogyTree({ people, relationships, branches = emptyB
   const dragDistance = useRef(0);
   const graph = useMemo(() => geometry ? layoutTree(people, relationships, geometry, branches) : null, [people, relationships, geometry, branches]);
   const byId = useMemo(() => new Map(graph?.nodes.map((p) => [p.id, p]) ?? []), [graph]);
+  const families = useMemo(() => graph && geometry ? getFamilyConnections(graph.nodes, relationships, geometry) : [], [graph, relationships, geometry]);
   const branchByPerson = useMemo(() => new Map(branches.flatMap((branch) => branch.personIds.map((id) => [id, branch] as const))), [branches]);
 
   useEffect(() => {
@@ -116,7 +119,7 @@ export default function GenealogyTree({ people, relationships, branches = emptyB
       {graph && geometry ? <div className="tree-canvas" style={{ width: graph.width, height: graph.height, transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})` }}>
         {graph.lanes?.map((lane) => <div key={lane.id} className="tree-branch-heading" style={{ left: lane.x, top: lane.y, width: lane.width }}>{lane.label}</div>)}
         {graph.periods?.map((period) => <div key={period.y} className="tree-period" style={{ left: geometry.gap, top: period.y, width: geometry.nodeWidth }}><span>{period.label}</span><small>{period.dated ? 'Годы рождения' : 'Нет известных дат'}</small></div>)}
-        <svg className="tree-edges" width={graph.width} height={graph.height} aria-hidden="true"><g className="tree-period-lines">{graph.periods?.map((period) => <line key={period.y} x1={geometry.nodeWidth + geometry.gap * 2} y1={period.y - geometry.gap / 2} x2={graph.width - geometry.gap} y2={period.y - geometry.gap / 2} />)}{graph.lanes?.map((lane) => <line key={lane.id} x1={lane.x - geometry.gap / 2} y1={lane.y} x2={lane.x - geometry.gap / 2} y2={lane.bottom} />)}</g>{relationships.map((edge) => {
+        <svg className="tree-edges" width={graph.width} height={graph.height} aria-hidden="true"><g className="tree-period-lines">{graph.periods?.map((period) => <line key={period.y} x1={geometry.nodeWidth + geometry.gap * 2} y1={period.y - geometry.gap / 2} x2={graph.width - geometry.gap} y2={period.y - geometry.gap / 2} />)}{graph.lanes?.map((lane) => <line key={lane.id} x1={lane.x - geometry.gap / 2} y1={lane.y} x2={lane.x - geometry.gap / 2} y2={lane.bottom} />)}</g><FamilyConnections families={families} people={byId} />{relationships.filter((edge) => edge.type !== 'parent').map((edge) => {
           const from = byId.get(edge.from), to = byId.get(edge.to); if (!from || !to) return null;
           return <path key={edge.id} d={edgePath(edge, from, to, geometry)} className={`tree-edge ${edge.type}${edge.kind === 'adoptive' ? ' adoptive' : ''}${edge.status && edge.status !== 'explicit' ? ' inferred' : ''}`}><title>{edge.status ? relationStatusLabels[edge.status] : 'Родственная связь'}</title></path>;
         })}</svg>

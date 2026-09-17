@@ -11,6 +11,7 @@ import { layoutTree } from '../src/components/genealogy/layout';
 import { edgePath } from '../src/components/genealogy/edges';
 import { getTreeBranches } from '../src/domain/tree-branches';
 import branchRoots from '../src/data/tree-branches.json';
+import { getFamilyConnections, familyPath } from '../src/components/genealogy/families';
 
 const source = FamilySourceSchema.parse(JSON.parse(await readFile(new URL('../src/data/family.json', import.meta.url), 'utf8')));
 const catalog = validateCatalog({ ...adaptFamilySource(source), documents: [], places: [] });
@@ -132,24 +133,31 @@ test('actual family layout keeps spouses together, parents above children and al
   assert.deepEqual(branches.flatMap((branch) => branch.personIds).sort(), source.people.map((person) => person.id).sort());
 });
 
-test('real chronological relationship lines never pass through unrelated cards', () => {
+test('real family connectors preserve all parent edges and never pass through cards', () => {
   const { people, relationships } = getTreeData(catalog);
   const geometry = { nodeWidth: 220, nodeHeight: 140, gap: 40, generationGap: 100 };
   const branches = getTreeBranches(people, relationships, branchRoots);
   const graph = layoutTree(people, relationships, geometry, branches), nodes = new Map(graph.nodes.map((node) => [node.id, node]));
-  for (const edge of relationships) {
-    const tokens = edgePath(edge, nodes.get(edge.from)!, nodes.get(edge.to)!, geometry).match(/[MVH]|-?\d+(?:\.\d+)?/g)!;
+  const families = getFamilyConnections(graph.nodes, relationships, geometry);
+  const main = families.find((family) => family.parentIds.includes('yuri-vladimirovich-mikheev-1965'))!;
+  assert.deepEqual(main.parentIds, ['elvira-mikheeva-grigoryeva', 'yuri-vladimirovich-mikheev-1965']);
+  assert.deepEqual(main.childIds.slice().sort(), ['ksenia-mikheeva-1990', 'maria-mikheeva-2003', 'vladimir-mikheev-1995']);
+  assert.deepEqual([...new Set(families.flatMap((family) => family.lines.flatMap((line) => line.edges.map((edge) => edge.id))))].sort(), relationships.filter((edge) => edge.type === 'parent').map((edge) => edge.id).sort());
+  const paths = [...families.flatMap((family) => family.lines.map((line) => ({ id: line.id, path: familyPath(line.points) }))),
+    ...relationships.filter((edge) => edge.type !== 'parent').map((edge) => ({ id: edge.id, path: edgePath(edge, nodes.get(edge.from)!, nodes.get(edge.to)!, geometry) }))];
+  for (const line of paths) {
+    const tokens = line.path.match(/[MVH]|-?\d+(?:\.\d+)?/g)!;
     let x = 0, y = 0;
     while (tokens.length) {
       const command = tokens.shift(), previous = { x, y };
       if (command === 'M') { x = Number(tokens.shift()); y = Number(tokens.shift()); continue; }
       if (command === 'V') y = Number(tokens.shift());
       if (command === 'H') x = Number(tokens.shift());
-      for (const node of graph.nodes.filter((node) => node.id !== edge.from && node.id !== edge.to)) {
+      for (const node of graph.nodes) {
         const crosses = x === previous.x
           ? x > node.x && x < node.x + geometry.nodeWidth && Math.max(y, previous.y) > node.y && Math.min(y, previous.y) < node.y + geometry.nodeHeight
           : y > node.y && y < node.y + geometry.nodeHeight && Math.max(x, previous.x) > node.x && Math.min(x, previous.x) < node.x + geometry.nodeWidth;
-        assert.equal(crosses, false, `${edge.id} crosses ${node.id}`);
+        assert.equal(crosses, false, `${line.id} crosses ${node.id}`);
       }
     }
   }

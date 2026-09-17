@@ -24,6 +24,8 @@
 .tree-edge.possible_same_person { stroke: var(--color-warning); stroke-dasharray: var(--tree-identity-dash); }
 .tree-edge.inferred:not(.possible_same_person) { stroke: var(--color-warning); stroke-dasharray: var(--tree-inferred-dash); }
 .tree-edge.adoptive { stroke-dasharray: var(--tree-adoptive-dash); }
+.tree-family-junction { r: var(--tree-junction-radius); fill: var(--color-accent); }
+.tree-family-junction.inferred { fill: var(--color-warning); }
 .marriage-icon { position: relative; display: inline-block; flex-shrink: 0; width: var(--tree-marriage-icon-width); height: var(--tree-marriage-ring-size); color: var(--color-muted); vertical-align: middle; }
 .marriage-icon::before, .marriage-icon::after { content: ''; position: absolute; box-sizing: border-box; top: 0; width: var(--tree-marriage-ring-size); height: var(--tree-marriage-ring-size); border: var(--tree-edge-width) solid currentColor; border-radius: var(--radius-round); }
 .marriage-icon::before { left: 0; }

@@ -54,6 +54,7 @@
   --tree-node-gap: 40px;
   --tree-generation-gap: 100px;
   --tree-edge-width: 2px;
+  --tree-junction-radius: 3px;
   --tree-marriage-icon-width: 28px;
   --tree-marriage-ring-size: 16px;
   --tree-marriage-padding: 2px;
