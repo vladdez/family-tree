@@ -23,19 +23,35 @@ function reachable(family: FamilyConnection, start: Point, end: Point) {
   return seen.has(key(end));
 }
 
-test('both parents merge into one trunk which forks to all three siblings', () => {
+test('both parents and all three siblings share exactly one horizontal bar', () => {
   const nodes = [person('a', 40, 40), person('b', 300, 40), person('c', 40, 280), person('d', 300, 280), person('e', 560, 280)];
   const edges = ['c', 'd', 'e'].flatMap((child) => [parent('a', child), parent('b', child)]);
   const families = getFamilyConnections(nodes, edges, geometry);
   assert.equal(families.length, 1);
   const family = families[0];
   assert.deepEqual(family.parentIds, ['a', 'b']); assert.deepEqual(family.childIds, ['c', 'd', 'e']);
-  assert.equal(family.lines.filter((line) => line.id.endsWith(':spine')).length, 1);
+  assert.equal(family.lines.filter((line) => line.id.endsWith(':spine')).length, 0);
+  const bars = family.lines.filter((line) => line.points.some((point, index) => index > 0 && point.x !== line.points[index - 1].x));
+  assert.equal(bars.length, 1);
+  const bar = bars[0];
+  assert.ok(bar.points.every((point) => point.y === 230));
   assert.equal(family.lines.filter((line) => line.id.includes(':child:')).length, 3);
+  for (const line of family.lines.filter((line) => line !== bar)) assert.ok(line.points.every((point) => point.x === line.points[0].x));
   for (const motherOrFather of nodes.slice(0, 2)) for (const child of nodes.slice(2)) {
     assert.ok(reachable(family, { x: motherOrFather.x + 110, y: motherOrFather.y + 140 }, { x: child.x + 110, y: child.y }));
   }
   assert.deepEqual([...new Set(family.lines.flatMap((line) => line.edges.map((edge) => edge.id)))].sort(), edges.map((edge) => edge.id).sort());
+});
+
+test('the shared sibling bar preserves each parent link, adoption and uncertainty without changing source edges', () => {
+  const nodes = [person('a', 40, 40), person('b', 300, 40), person('c', 40, 280), person('d', 300, 280), person('e', 560, 280)];
+  const edges: TreeRelationship[] = ['c', 'd', 'e'].flatMap((child) => [parent('a', child), { ...parent('b', child), status: 'inferred_context', kind: 'adoptive' }]);
+  const snapshot = JSON.stringify({ nodes, edges });
+  const [family] = getFamilyConnections(nodes, edges, geometry);
+  assert.deepEqual(family.lines.find((line) => line.id.includes(':shared:'))!.edges, edges);
+  for (const child of ['c', 'd', 'e']) assert.deepEqual(family.lines.find((line) => line.id.endsWith(`:child:${child}`))!.edges, edges.filter((edge) => edge.to === child));
+  for (const p of ['a', 'b']) assert.deepEqual(family.lines.find((line) => line.id.endsWith(`:parent:${p}`))!.edges, edges.filter((edge) => edge.from === p));
+  assert.equal(JSON.stringify({ nodes, edges }), snapshot);
 });
 
 test('a single child receives a straight descent from the merged parents when clear', () => {

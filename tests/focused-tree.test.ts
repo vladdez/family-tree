@@ -102,6 +102,18 @@ test('focused real layout preserves era alignment, branch separation and the sha
   const main = families.find((family) => family.parentIds.includes('yuri-vladimirovich-mikheev-1965'))!;
   assert.deepEqual(main.parentIds, ['elvira-mikheeva-grigoryeva', 'yuri-vladimirovich-mikheev-1965']);
   assert.deepEqual(main.childIds.slice().sort(), ['ksenia-mikheeva-1990', 'maria-mikheeva-2003', 'vladimir-mikheev-1995']);
+  const mainBars = main.lines.filter((line) => line.points.some((point, index) => index > 0 && point.x !== line.points[index - 1].x));
+  assert.equal(mainBars.length, 1);
+  const sharedY = mainBars[0].points[0].y;
+  for (const id of main.parentIds) {
+    const node = nodes.get(id)!, line = main.lines.find((line) => line.id.endsWith(`:parent:${id}`))!;
+    assert.deepEqual(line.points, [{ x: node.x + geometry.nodeWidth / 2, y: node.y + geometry.nodeHeight }, { x: node.x + geometry.nodeWidth / 2, y: sharedY }]);
+  }
+  for (const id of main.childIds) {
+    const node = nodes.get(id)!, line = main.lines.find((line) => line.id.endsWith(`:child:${id}`))!;
+    assert.deepEqual(line.points, [{ x: node.x + geometry.nodeWidth / 2, y: sharedY }, { x: node.x + geometry.nodeWidth / 2, y: node.y }]);
+  }
+  assert.equal(main.lines.some((line) => line.id.endsWith(':spine')), false);
   assert.deepEqual([...new Set(families.flatMap((family) => family.lines.flatMap((line) => line.edges.map((edge) => edge.id))))].sort(), tree.relationships.filter((edge) => edge.type === 'parent').map((edge) => edge.id).sort());
   for (const family of families) for (const line of family.lines) for (let index = 1; index < line.points.length; index++) {
     const a = line.points[index - 1], b = line.points[index];
@@ -122,7 +134,7 @@ test('focused real layout preserves era alignment, branch separation and the sha
   }
 });
 
-test('all focused families are centred on straight trunks with symmetric sibling spacing and clear card gaps', () => {
+test('all focused families stay centred with straight descents, symmetric siblings and clear card gaps', () => {
   const tree = getFocusedTree(catalog, treeSettings), geometry = { nodeWidth: 220, nodeHeight: 180, gap: 40, generationGap: 100 };
   const branches = getTreeBranches(tree.people, tree.relationships, branchRoots);
   const graph = layoutTree(tree.people, tree.relationships, geometry, branches);
@@ -130,11 +142,12 @@ test('all focused families are centred on straight trunks with symmetric sibling
   const families = getFamilyConnections(graph.nodes, tree.relationships, geometry);
   for (const family of families) {
     const axis = family.parentIds.reduce((sum, id) => sum + nodes.get(id)!.x + geometry.nodeWidth / 2, 0) / family.parentIds.length;
-    assert.ok(family.lines.find((line) => line.id.endsWith(':spine'))!.points.every((point) => point.x === axis), family.id);
     if (family.childIds.length === 1) {
+      assert.ok(family.lines.find((line) => line.id.endsWith(':spine'))!.points.every((point) => point.x === axis), family.id);
       assert.equal(nodes.get(family.childIds[0])!.x + geometry.nodeWidth / 2, axis, family.id);
       assert.equal(family.lines.some((line) => line.id.includes(':children:')), false, family.id);
     } else {
+      assert.equal(family.lines.some((line) => line.id.endsWith(':spine')), false, family.id);
       const children = family.childIds.map((id) => nodes.get(id)!).sort((a, b) => a.x - b.x);
       assert.equal((children[0].x + children.at(-1)!.x) / 2 + geometry.nodeWidth / 2, axis);
       for (let index = 1; index < children.length; index++) assert.equal(children[index].x - children[index - 1].x, geometry.nodeWidth + geometry.gap);

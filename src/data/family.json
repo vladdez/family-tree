@@ -586,7 +586,8 @@
       "type": "parent",
       "parent": "avdotya-efremova",
       "child": "mikhey-petrov-1833",
-      "status": "inferred_context"
+      "status": "explicit",
+      "notes": "Пользователь подтвердил родительские связи Михея с Петром и Авдотьей."
     },
     {
       "type": "parent",
@@ -616,7 +617,9 @@
       "type": "parent",
       "parent": "tatyana-grigoryeva",
       "child": "konstantin-son-of-mikhey",
-      "status": "inferred_context"
+      "status": "explicit",
+      "role": "mother",
+      "notes": "Пользователь подтвердил, что Татьяна Григорьева — мать Константина, Ивана и Никифора."
     },
     {
       "type": "parent",
@@ -628,7 +631,9 @@
       "type": "parent",
       "parent": "tatyana-grigoryeva",
       "child": "ivan-son-of-mikhey",
-      "status": "inferred_context"
+      "status": "explicit",
+      "role": "mother",
+      "notes": "Пользователь подтвердил, что Татьяна Григорьева — мать Константина, Ивана и Никифора."
     },
     {
       "type": "parent",
@@ -642,7 +647,9 @@
       "type": "parent",
       "parent": "tatyana-grigoryeva",
       "child": "nikifor-1858",
-      "status": "inferred_context"
+      "status": "explicit",
+      "role": "mother",
+      "notes": "Пользователь подтвердил, что Татьяна Григорьева — мать Константина, Ивана и Никифора."
     },
     {
       "type": "spouse",

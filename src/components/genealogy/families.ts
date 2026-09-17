@@ -53,6 +53,37 @@ export function getFamilyConnections(nodes: PositionedPerson[], edges: TreeRelat
   const result: FamilyConnection[] = [];
   for (const [id, family] of families) {
     const parentRows = rowGroups(family.parentIds), childRows = rowGroups(family.childIds);
+    const parentBottom = parentRows[0][0] + nodeHeight, childTop = childRows[0][0];
+    // Adjacent rows can share one bar: both parents join it and each sibling
+    // descends from it directly. Keep the general route for uneven or blocked rows.
+    if (parentRows.length === 1 && childRows.length === 1 && family.parentIds.length > 1 && family.childIds.length > 1
+      && childTop > parentBottom && childTop - parentBottom <= generationGap) {
+      const parents = parentRows[0][1], children = childRows[0][1], y = (parentBottom + childTop) / 2;
+      const xs = [...new Set([...parents, ...children].map(center))].sort((a, b) => a - b);
+      const lines: FamilyLine[] = [
+        ...parents.map((parent) => ({ id: `${id}:parent:${parent.id}`, points: [{ x: center(parent), y: parentBottom }, { x: center(parent), y }], edges: family.edges.filter((edge) => edge.from === parent.id) })),
+        { id: `${id}:shared:${childRows[0][0]}`, points: xs.map((x) => ({ x, y })), edges: family.edges },
+        ...children.map((child) => ({ id: `${id}:child:${child.id}`, points: [{ x: center(child), y }, { x: center(child), y: childTop }], edges: family.edges.filter((edge) => edge.to === child.id) })),
+      ];
+      const previous = result.flatMap((connection) => connection.lines.flatMap((line) => line.points.slice(1).map((point, index) => [line.points[index], point])));
+      const clear = lines.every((line) => line.points.slice(1).every((b, index) => {
+        const a = line.points[index];
+        return !nodes.some((node) => a.x === b.x
+          ? a.x > node.x && a.x < node.x + nodeWidth && Math.max(a.y, b.y) > node.y && Math.min(a.y, b.y) < node.y + nodeHeight
+          : a.y > node.y && a.y < node.y + nodeHeight && Math.max(a.x, b.x) > node.x && Math.min(a.x, b.x) < node.x + nodeWidth)
+          && !previous.some(([c, d]) => overlaps(Math.min(a.x, b.x), Math.max(a.x, b.x), Math.min(c.x, d.x), Math.max(c.x, d.x))
+            && overlaps(Math.min(a.y, b.y), Math.max(a.y, b.y), Math.min(c.y, d.y), Math.max(c.y, d.y)));
+      }));
+      if (clear) {
+        occupiedBars.push({ y, left: xs[0], right: xs.at(-1)! });
+        for (const node of parents) occupiedSpines.push({ x: center(node), top: parentBottom, bottom: y });
+        for (const node of children) occupiedSpines.push({ x: center(node), top: y, bottom: childTop });
+        const junctions = xs.filter((x) => children.some((child) => center(child) === x) || (x > xs[0] && x < xs.at(-1)!))
+          .map((x) => ({ id: `${id}:shared:${x}`, x, y, edges: family.edges.filter((edge) => center(byId.get(edge.from)!) === x || center(byId.get(edge.to)!) === x) }));
+        result.push({ id, parentIds: family.parentIds, childIds: family.childIds, lines, junctions });
+        continue;
+      }
+    }
     const bounds = [...parentRows.flatMap(([y]) => [y + nodeHeight + generationGap * 0.1, y + nodeHeight + generationGap * 0.25]),
       ...childRows.flatMap(([y]) => [Math.max(gap / 4, y - generationGap * 0.7), Math.max(gap / 4, y - generationGap * 0.5)])];
     const top = Math.min(...bounds), bottom = Math.max(...bounds);
