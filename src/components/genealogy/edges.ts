@@ -19,7 +19,7 @@ export function edgePath(edge: TreeRelationship, from: PositionedPerson, to: Pos
   }
   // Lateral links travel through the space above cards, leaving names readable.
   const y1 = from.y, y2 = to.y;
-  const channel = Math.min(y1, y2) - geometry.gap * (edge.type === 'possible_same_person' ? 0.75 : edge.type === 'half_sibling' ? 0.5 : 0.25);
+  const channel = Math.min(y1, y2) - geometry.gap * (edge.type === 'possible_same_person' ? 0.75 : edge.type === 'half_sibling' || edge.type === 'sibling' ? 0.5 : 0.25);
   if (y1 !== y2) {
     const side = to.x - geometry.gap / 2;
     return `M ${x1} ${y1} V ${y1 - geometry.gap / 2} H ${side} V ${y2 - geometry.gap / 2} H ${x2} V ${y2}`;

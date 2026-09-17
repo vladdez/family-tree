@@ -12,7 +12,7 @@ function estimateYears(people: TreePerson[], edges: TreeRelationship[]) {
     if (edge.type === 'parent') {
       neighbours.get(edge.from)?.children.push(edge.to);
       neighbours.get(edge.to)?.parents.push(edge.from);
-    } else if (edge.type === 'spouse' || edge.type === 'half_sibling') {
+    } else if (edge.type === 'spouse' || edge.type === 'half_sibling' || edge.type === 'sibling') {
       neighbours.get(edge.from)?.peers.push(edge.to);
       neighbours.get(edge.to)?.peers.push(edge.from);
     }

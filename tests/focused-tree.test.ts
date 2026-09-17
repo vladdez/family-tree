@@ -33,9 +33,12 @@ test('main tree retains Vladimir, both parents, his sisters and both ancestral l
 
 test('hidden siblings and spouses remain linked inside ancestor cards with uncertainty labels', () => {
   const tree = getFocusedTree(catalog, treeSettings);
-  const half = tree.relatives['konstantin-grigoryevich-grigoryev-1935'].find((group) => group.label === 'Братья и сёстры')!.people.find((person) => person.id === 'vladimir-halfbrother-1947')!;
-  assert.match(half.annotation, /Неполнородное родство/);
-  assert.ok(half.href.includes('/people/')); assert.ok(half.lifespan.includes('1947'));
+  const brother = tree.relatives['konstantin-grigoryevich-grigoryev-1935'].find((group) => group.label === 'Братья и сёстры')!.people.find((person) => person.id === 'vladimir-halfbrother-1947')!;
+  assert.equal(brother.annotation, 'Общие родители не уточнены');
+  assert.deepEqual(catalog.people.find((person) => person.id === brother.id)!.parents, []);
+  const reciprocal = getFocusedTree(catalog, { focusPersonId: brother.id }).relatives;
+  assert.equal(Object.values(reciprocal).flatMap((groups) => groups.flatMap((group) => group.people)).some((person) => person.annotation.includes('Неполнородное')), false);
+  assert.ok(brother.href.includes('/people/')); assert.ok(brother.lifespan.includes('1947'));
   assert.ok(tree.relatives['vladimir-mikheev-1941'].find((group) => group.label === 'Супруги')!.people.some((person) => person.id === 'maria-efimova-1941'));
   assert.ok(tree.relationships.some((edge) => edge.type === 'parent' && edge.to === 'elvira-mikheeva-grigoryeva' && edge.status === 'inferred_branch_context'));
   for (const groups of Object.values(tree.relatives)) for (const group of groups) for (const person of group.people) assert.equal(tree.people.some((visible) => visible.id === person.id), false);

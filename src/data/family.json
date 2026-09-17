@@ -747,10 +747,11 @@
       "status": "explicit"
     },
     {
-      "type": "half_sibling",
+      "type": "sibling",
       "person1": "konstantin-grigoryevich-grigoryev-1935",
       "person2": "vladimir-halfbrother-1947",
-      "status": "explicit"
+      "status": "explicit",
+      "notes": "Владимир — брат Константина. Неизвестно, один или оба родителя у них общие. Пользователь предположил второй брак, но не подтвердил его; родительские и новые супружеские связи не добавляются."
     },
     {
       "type": "parent",

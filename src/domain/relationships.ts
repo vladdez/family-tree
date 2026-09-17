@@ -8,7 +8,7 @@ export function getSpouses(personId: string, catalog: Catalog) { return getPerso
 export function getSiblings(personId: string, catalog: Catalog) {
   const parents = getParents(personId, catalog);
   const ids = new Set(parents.flatMap((p) => p.children).filter((id) => id !== personId));
-  for (const relation of catalog.relations ?? []) if (relation.type === 'half_sibling') {
+  for (const relation of catalog.relations ?? []) if (relation.type === 'half_sibling' || relation.type === 'sibling') {
     if (relation.person1 === personId) ids.add(relation.person2);
     if (relation.person2 === personId) ids.add(relation.person1);
   }
@@ -33,7 +33,9 @@ export function getRelativeGroups(personId: string, catalog: Catalog) {
   const siblingGroup = group('Братья и сёстры', siblings, 'half_sibling');
   for (const sibling of siblings) {
     const half = catalog.relations?.find((r) => r.type === 'half_sibling' && relationEndpoints(r).includes(personId) && relationEndpoints(r).includes(sibling.id));
+    const unspecified = catalog.relations?.find((r) => r.type === 'sibling' && relationEndpoints(r).includes(personId) && relationEndpoints(r).includes(sibling.id));
     if (half) siblingGroup.annotations[sibling.id] = `Неполнородное родство · ${relationStatusLabels[half.status]}`;
+    else if (unspecified) siblingGroup.annotations[sibling.id] = `Общие родители не уточнены${unspecified.status === 'explicit' ? '' : ` · ${relationStatusLabels[unspecified.status]}`}`;
     else {
       const sharedParents = getPerson(personId, catalog).parents.filter((id) => sibling.parents.includes(id));
       const explicitPath = sharedParents.some((parent) => !relationAnnotation(personId, parent, 'parent', catalog) && !relationAnnotation(sibling.id, parent, 'parent', catalog));

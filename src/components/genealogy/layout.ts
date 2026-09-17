@@ -54,7 +54,7 @@ function layoutWithoutBranches(people: TreePerson[], edges: TreeRelationship[], 
     const parentOnly = layoutWithoutBranches(people, edges.filter((e) => e.type === 'parent'), geometry);
     return parentOnly;
   }
-  for (const edge of edges.filter((e) => e.type === 'half_sibling')) {
+  for (const edge of edges.filter((e) => e.type === 'half_sibling' || e.type === 'sibling')) {
     for (const [a, b] of [[find(edge.from), find(edge.to)], [find(edge.to), find(edge.from)]]) {
       if (!groupParents.get(a)?.size) groupRanks.set(a, Math.max(groupRanks.get(a) ?? 0, groupRanks.get(b) ?? 0));
     }

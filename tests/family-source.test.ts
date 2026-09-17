@@ -58,9 +58,9 @@ test('all source edges and their confidence statuses are preserved', () => {
   });
 });
 
-test('half-siblings remain reciprocal without a fabricated shared parent; possible identities stay separate', () => {
+test('direct sibling links remain reciprocal without fabricated parents; possible identities stay separate', () => {
   for (const relation of source.relations) {
-    if (relation.type === 'half_sibling') {
+    if (relation.type === 'half_sibling' || relation.type === 'sibling') {
       assert.ok(getSiblings(relation.person1, catalog).some((p) => p.id === relation.person2));
       assert.ok(getSiblings(relation.person2, catalog).some((p) => p.id === relation.person1));
     }

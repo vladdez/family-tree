@@ -152,7 +152,15 @@ export default function GenealogyTree({ people, relationships, branches = emptyB
         </article>)}
       </div> : <div className="tree-static-register">{people.map((p) => <article key={p.id} data-branch={branchByPerson.get(p.id)?.id} title={branchByPerson.get(p.id)?.label}><a href={p.href}><span>{p.name}</span><small>{p.lifespan}</small></a>{p.id === focusPersonId && <span className="tree-node-you">Вы</span>}{relatives[p.id]?.length > 0 && <details><summary>Родственники</summary><HiddenRelatives groups={relatives[p.id]} /></details>}</article>)}</div>}
     </div>
-    <div className="tree-caption"><p id="tree-instructions">Перетаскивайте поле, используйте + / − или жест двумя пальцами. С клавиатуры: стрелки, + / −, 0. Нажмите на имя, чтобы открыть историю.</p>{relationships.length > 0 && <div className="tree-legend"><span className="legend-parent">Родитель — ребёнок</span><span className="legend-spouse"><MarriageIcon /> Брак</span><span className="legend-inferred">Предполагаемая связь</span><span className="legend-half">Неполнородное родство</span><span className="legend-identity">Возможное совпадение</span><span className="legend-adoptive">Приёмное родство</span></div>}</div>
+    <div className="tree-caption"><p id="tree-instructions">Перетаскивайте поле, используйте + / − или жест двумя пальцами. С клавиатуры: стрелки, + / −, 0. Нажмите на имя, чтобы открыть историю.</p>{relationships.length > 0 && <div className="tree-legend">
+      {relationships.some((edge) => edge.type === 'parent') && <span className="legend-parent">Родитель — ребёнок</span>}
+      {relationships.some((edge) => edge.type === 'spouse') && <span className="legend-spouse"><MarriageIcon /> Брак</span>}
+      {relationships.some((edge) => edge.status && edge.status !== 'explicit') && <span className="legend-inferred">Предполагаемая связь</span>}
+      {relationships.some((edge) => edge.type === 'sibling') && <span className="legend-sibling">Братья и сёстры</span>}
+      {relationships.some((edge) => edge.type === 'half_sibling') && <span className="legend-half">Неполнородное родство</span>}
+      {relationships.some((edge) => edge.type === 'possible_same_person') && <span className="legend-identity">Возможное совпадение</span>}
+      {relationships.some((edge) => edge.kind === 'adoptive') && <span className="legend-adoptive">Приёмное родство</span>}
+    </div>}</div>
     <dialog ref={relativesDialog} className="tree-relatives-dialog" aria-labelledby="tree-relatives-title" onClose={() => setRelativePerson(null)}>
       <div className="tree-relatives-dialog-header"><h2 id="tree-relatives-title">{relativePerson ? `Родственники — ${relativePerson.name}` : 'Родственники'}</h2><button type="button" className="button" onClick={() => relativesDialog.current?.close()} autoFocus>Закрыть</button></div>
       {relativePerson && <HiddenRelatives groups={relatives[relativePerson.id] ?? []} />}

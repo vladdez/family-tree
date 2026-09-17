@@ -21,6 +21,7 @@
 .tree-edge { fill: none; stroke: var(--color-accent); stroke-width: var(--tree-edge-width); }
 .tree-edge.spouse { stroke: var(--color-muted); }
 .tree-edge.half_sibling { stroke: var(--color-muted); stroke-dasharray: var(--tree-half-dash); }
+.tree-edge.sibling { stroke: var(--color-muted); }
 .tree-edge.possible_same_person { stroke: var(--color-warning); stroke-dasharray: var(--tree-identity-dash); }
 .tree-edge.inferred:not(.possible_same_person) { stroke: var(--color-warning); stroke-dasharray: var(--tree-inferred-dash); }
 .tree-edge.adoptive { stroke-dasharray: var(--tree-adoptive-dash); }
@@ -54,6 +55,7 @@
 .tree-legend .legend-spouse::before { content: none; }
 .tree-legend .legend-inferred::before { border-top-style: dashed; border-top-color: var(--color-warning); }
 .tree-legend .legend-half::before { border-top-style: dashed; border-top-color: var(--color-muted); }
+.tree-legend .legend-sibling::before { border-top-color: var(--color-muted); }
 .tree-legend .legend-identity::before { border-top-style: dotted; border-top-color: var(--color-warning); }
 .tree-legend .legend-adoptive::before { border-top-style: dotted; }
 .tree-static-register { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--card-min)), 1fr)); gap: var(--space-lg); padding: var(--space-xl); }

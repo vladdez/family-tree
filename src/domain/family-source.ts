@@ -46,7 +46,7 @@ export function adaptFamilySource(input: unknown, profileInputs: unknown[] = [])
       const first = byId.get(relation.person1), second = byId.get(relation.person2);
       if (!first || !second) throw new Error(`Связь с неизвестным ID: ${relation.person1} ↔ ${relation.person2}`);
       if (relation.type === 'spouse') { first.spouses.push(second.id); second.spouses.push(first.id); }
-      // Half-siblings have no invented shared parent; possible identities stay distinct.
+      // Sibling links never invent a shared parent; possible identities stay distinct.
     }
   }
   return { people, relations: source.relations, unidentifiedRelatives: source.unidentifiedRelatives, issues: source.issues };

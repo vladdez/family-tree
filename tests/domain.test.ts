@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { PersonSchema, DocumentSchema, PartialDateSchema, type Catalog } from '../src/domain/schemas';
 import { validateCatalog } from '../src/domain/validation';
-import { getParents, getChildren, getSpouses, getSiblings } from '../src/domain/relationships';
+import { getParents, getChildren, getSpouses, getSiblings, getRelativeGroups } from '../src/domain/relationships';
 import { getDocumentsForPerson } from '../src/domain/documents';
 import { getTimeline } from '../src/domain/timeline';
 import { lifespan, eventDate, fullName } from '../src/domain/people';
@@ -72,6 +72,22 @@ test('shared documents stay one entity and linked marriage timeline is not dupli
   assert.deepEqual(timeline.find((e) => e.type === 'marriage')!.peopleIds, ['b']);
   assert.ok(!timeline.some((e) => e.type === 'death'));
   assert.throws(() => validateCatalog(raw([catalog.people[0], person('b', { spouses: ['a'] })], catalog.documents)), /брак должен быть отражён/);
+});
+
+test('siblings with unknown shared parents remain reciprocal without inheriting a father, mother or half-sibling label', () => {
+  const catalog = validateCatalog({ ...raw([
+    person('father', { children: ['a'] }), person('a', { parents: ['father'] }), person('b'),
+  ]), relations: [{ type: 'sibling', person1: 'a', person2: 'b', status: 'explicit' }] });
+  const snapshot = JSON.stringify(catalog);
+  assert.deepEqual(getSiblings('a', catalog).map((person) => person.id), ['b']);
+  assert.deepEqual(getSiblings('b', catalog).map((person) => person.id), ['a']);
+  assert.deepEqual(getParents('b', catalog), []);
+  assert.deepEqual(getChildren('father', catalog).map((person) => person.id), ['a']);
+  for (const [id, sibling] of [['a', 'b'], ['b', 'a']]) {
+    const group = getRelativeGroups(id, catalog).find((group) => group.label === 'Братья и сёстры')!;
+    assert.equal(group.annotations[sibling], 'Общие родители не уточнены');
+  }
+  assert.equal(JSON.stringify(catalog), snapshot);
 });
 
 test('timeline sorts partial dates and puts undated events last', () => {

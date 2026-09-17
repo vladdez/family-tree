@@ -57,6 +57,7 @@ const relationMetadata = { status: RelationStatusSchema.default('explicit'), not
 export const FamilyRelationSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('parent'), parent: id, child: id, role: z.enum(['father', 'mother', 'parent']).optional(), kind: z.enum(['biological', 'adoptive', 'unknown']).optional(), ...relationMetadata }).strict(),
   z.object({ type: z.literal('spouse'), person1: id, person2: id, ...relationMetadata }).strict(),
+  z.object({ type: z.literal('sibling'), person1: id, person2: id, ...relationMetadata }).strict(),
   z.object({ type: z.literal('half_sibling'), person1: id, person2: id, ...relationMetadata }).strict(),
   z.object({ type: z.literal('possible_same_person'), person1: id, person2: id, ...relationMetadata }).strict(),
 ]);
