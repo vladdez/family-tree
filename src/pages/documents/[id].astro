@@ -12,8 +12,9 @@ import { isImage } from '../../domain/documents';
 export function getStaticPaths() { return catalog.documents.map((document) => ({ params: { id: document.id }, props: { document } })); }
 const { document } = Astro.props;
 const description = `${document.title}. ${formatDate(document.date)}. ${document.archive.name || documentTypes[document.type]}.`;
+const cover = document.files.find((file) => isImage(file.path));
 ---
-<BaseLayout title={`${document.title} — Родословная Михеевых`} description={description} image={document.files.find((f) => isImage(f.path))?.path ?? null}>
+<BaseLayout title={`${document.title} — Родословная Михеевых`} description={description} image={cover?.preview ?? cover?.path ?? null}>
   <Breadcrumbs items={[{ label: 'Документы', path: '/documents/' }, { label: document.title }]} />
   <PageHeader title={document.title} eyebrow={documentTypes[document.type]} description={formatDate(document.date)} />
   <ArchiveReference archive={document.archive} /><ul class="document-people section">{document.peopleIds.map((id) => <li><PersonLink personId={id} /></li>)}</ul><DocumentViewer document={document} />

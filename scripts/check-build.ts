@@ -4,6 +4,7 @@ import { parse, type DefaultTreeAdapterMap } from 'parse5';
 import { projectRoot, readRawCatalog } from './data-files';
 import { validateCatalog } from '../src/domain/validation';
 import { fullName, lifespan, personDescription, showBirthOnly } from '../src/domain/people';
+import { getDocumentsForPerson, isImage } from '../src/domain/documents';
 import { getRelativeGroups } from '../src/domain/relationships';
 import { getSourceIssues, getUnidentifiedRelatives } from '../src/domain/source-notes';
 import { getPersonRedirects } from '../src/domain/person-redirects';
@@ -61,6 +62,9 @@ for (const person of catalog.people) {
   const nodes = elements(parse(await readFile(file, 'utf8')));
   const visibleText = textContent(nodes.find((n) => n.tagName === 'main')!);
   const personLinks = new Set(nodes.filter((n) => n.tagName === 'a').map((n) => attr(n, 'href')));
+  for (const document of getDocumentsForPerson(person.id, catalog)) {
+    if (!personLinks.has(`${base}documents/${document.id}/`) || !visibleText.includes(document.title)) errors.push(`${person.id}: пропущен документ ${document.id}`);
+  }
   for (const name of person.alternateNames) if (!visibleText.includes(name)) errors.push(`${person.id}: пропущено альтернативное имя ${name}`);
   if (person.maidenName && !visibleText.includes(`Девичья фамилия: ${person.maidenName}`)) errors.push(`${person.id}: пропущена девичья фамилия`);
   if (person.archivalName && !visibleText.includes('Имя сохранено в архивном написании.')) errors.push(`${person.id}: пропущена пометка архивного написания`);
@@ -82,6 +86,29 @@ for (const person of catalog.people) {
   for (const issue of getSourceIssues(person.id, catalog)) if (!visibleText.includes(issue.reason)) errors.push(`${person.id}: пропущено замечание источника`);
   for (const relative of getUnidentifiedRelatives(catalog, person.id)) if (!visibleText.includes(relative.title) || !visibleText.includes(relative.statusLabel)) errors.push(`${person.id}: пропущены безымянные родственники`);
 }
+const archiveNodes = elements(parse(await readFile(path.join(dist, 'documents', 'index.html'), 'utf8')));
+const archiveLinks = new Set(archiveNodes.filter((node) => node.tagName === 'a').map((node) => attr(node, 'href')));
+for (const document of catalog.documents) {
+  if (!archiveLinks.has(`${base}documents/${document.id}/`)) errors.push(`${document.id}: документ отсутствует в общем архиве`);
+  const nodes = elements(parse(await readFile(path.join(dist, 'documents', document.id, 'index.html'), 'utf8')));
+  const visibleText = textContent(nodes.find((node) => node.tagName === 'main')!);
+  const links = new Set(nodes.filter((node) => node.tagName === 'a').map((node) => attr(node, 'href')));
+  if (textContent(nodes.find((node) => node.tagName === 'h1')!) !== document.title) errors.push(`${document.id}: неверный заголовок документа`);
+  for (const id of document.peopleIds) {
+    const person = catalog.people.find((person) => person.id === id)!;
+    if (!links.has(`${base}people/${person.slug}/`)) errors.push(`${document.id}: нет ссылки на человека ${id}`);
+  }
+  for (const file of document.files) {
+    if (!links.has(`${base.replace(/\/$/, '')}${file.path}`)) errors.push(`${document.id}: нет ссылки на оригинал ${file.path}`);
+    if (!visibleText.includes(file.label)) errors.push(`${document.id}: пропущено описание скана ${file.path}`);
+    if (isImage(file.path) && !nodes.some((node) => node.tagName === 'img' && attr(node, 'src') === `${base.replace(/\/$/, '')}${file.preview ?? file.path}`)) errors.push(`${document.id}: не показан скан ${file.path}`);
+  }
+  for (const value of [document.archive.name, document.transcription, document.notes]) {
+    if (value && !visibleText.includes(value)) errors.push(`${document.id}: пропущены сведения документа`);
+  }
+}
+const documentPages = pages.filter((file) => path.relative(dist, file).startsWith(`documents${path.sep}`) && path.relative(dist, file) !== path.join('documents', 'index.html'));
+if (documentPages.length !== catalog.documents.length) errors.push('Число страниц документов не соответствует каталогу');
 const peoplePages = pages.filter((file) => path.relative(dist, file).startsWith(`people${path.sep}`) && path.relative(dist, file) !== path.join('people', 'index.html'));
 if (peoplePages.length !== catalog.people.length + redirects.length) errors.push('Число личных страниц и перенаправлений не соответствует источнику');
 for (const { from, person } of redirects) {
@@ -93,4 +120,4 @@ for (const { from, person } of redirects) {
   if (!nodes.some((node) => node.tagName === 'a' && attr(node, 'href') === destination)) errors.push(`${from}: нет ссылки на объединённую страницу`);
 }
 if (errors.length) { console.error(errors.join('\n')); process.exitCode = 1; }
-else console.log(`Статический сайт проверен: ${pages.length} страниц, ${checkedLinks} локальных ссылок и ресурсов, base ${base}. Все люди, связи, статусы, замечания источников и метаданные проверены.`);
+else console.log(`Статический сайт проверен: ${pages.length} страниц, ${checkedLinks} локальных ссылок и ресурсов, base ${base}. Все люди, документы, сканы, связи, статусы, замечания источников и метаданные проверены.`);

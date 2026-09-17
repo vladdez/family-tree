@@ -15,7 +15,7 @@ const searchable = [document.title, ...document.peopleIds.map((id) => personSear
 ---
 <article class="document-card" data-document-type={document.type} data-document-search={searchable}>
   <div class="document-card-head"><span class="eyebrow">{documentTypes[document.type]}</span><span class="muted">{formatDate(document.date)}</span></div>
-  {thumbnail && <a class="document-thumbnail" href={documentUrl(document.id)}><img src={url(thumbnail.path)} alt={thumbnail.label} loading="lazy" /></a>}
+  {thumbnail && <a class="document-thumbnail" href={documentUrl(document.id)}><img src={url(thumbnail.preview ?? thumbnail.path)} alt={thumbnail.label} loading="lazy" /></a>}
   <h3><a href={documentUrl(document.id)}>{document.title}</a></h3><ArchiveReference archive={document.archive} />
   <ul class="document-people">{document.peopleIds.map((id) => <li><PersonLink personId={id} /></li>)}</ul>
   <a class="text-link" href={documentUrl(document.id)}>Открыть документ →</a>
