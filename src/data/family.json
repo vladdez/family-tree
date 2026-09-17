@@ -26,25 +26,27 @@
     {
       "id": "avdotya-efremova",
       "firstName": "Авдотья",
-      "lastName": "Ефремова",
+      "lastName": "",
       "patronymic": "",
       "maidenName": "",
       "birthYears": [
         1794,
         1795
       ],
-      "deathYears": []
+      "deathYears": [],
+      "archivalName": "Авдотья Ефремова"
     },
     {
       "id": "mikhey-petrov-1833",
       "firstName": "Михей",
-      "lastName": "Петров",
+      "lastName": "",
       "patronymic": "",
       "maidenName": "",
       "birthYears": [
         1833
       ],
-      "deathYears": []
+      "deathYears": [],
+      "archivalName": "Михей Петров"
     },
     {
       "id": "vasily-son-of-petr",
@@ -61,14 +63,15 @@
     {
       "id": "tatyana-grigoryeva",
       "firstName": "Татьяна",
-      "lastName": "Григорьева",
+      "lastName": "",
       "patronymic": "",
       "maidenName": "",
       "birthYears": [
         1829,
         1830
       ],
-      "deathYears": []
+      "deathYears": [],
+      "archivalName": "Татьяна Григорьева"
     },
     {
       "id": "konstantin-son-of-mikhey",
@@ -119,11 +122,12 @@
     {
       "id": "stepan-kirillov",
       "firstName": "Степан",
-      "lastName": "Кириллов",
+      "lastName": "",
       "patronymic": "",
       "maidenName": "",
       "birthYears": [],
-      "deathYears": []
+      "deathYears": [],
+      "archivalName": "Степан Кириллов"
     },
     {
       "id": "petr-mikheev-1889",
@@ -159,11 +163,12 @@
     {
       "id": "natalya-andreeva",
       "firstName": "Наталья",
-      "lastName": "Андреева",
+      "lastName": "",
       "patronymic": "",
       "maidenName": "",
       "birthYears": [],
-      "deathYears": []
+      "deathYears": [],
+      "archivalName": "Наталья Андреева"
     },
     {
       "id": "dmitry-mikheev-1910",

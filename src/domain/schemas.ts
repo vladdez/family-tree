@@ -25,6 +25,7 @@ const personNameFields = {
   lastName: z.string().trim(),
   patronymic: z.string().trim(),
   maidenName: z.string().trim(),
+  archivalName: z.string().trim().min(1).optional(),
 };
 
 export const PersonSchema = z.object({

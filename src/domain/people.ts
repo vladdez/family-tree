@@ -5,10 +5,11 @@ export function getPerson(id: string, catalog: Catalog): Person {
   if (!person) throw new Error(`Человек не найден: ${id}`);
   return person;
 }
-export function fullName(person: Person) { return [person.firstName, person.patronymic, person.lastName].filter(Boolean).join(' '); }
+export function fullName(person: Person) { return person.archivalName ?? [person.firstName, person.patronymic, person.lastName].filter(Boolean).join(' '); }
 export function personSearchText(person: Person) {
+  const structuredName = [person.firstName, person.patronymic, person.lastName].filter(Boolean).join(' ');
   const maidenName = person.maidenName ? [person.firstName, person.patronymic, person.maidenName].filter(Boolean).join(' ') : '';
-  return [fullName(person), maidenName, ...person.alternateNames].filter(Boolean).join(' ').toLocaleLowerCase('ru').replaceAll('ё', 'е');
+  return [...new Set([fullName(person), structuredName, maidenName, ...person.alternateNames])].filter(Boolean).join(' ').toLocaleLowerCase('ru').replaceAll('ё', 'е');
 }
 export function lifespan(person: Person) {
   const year = (event: Person['birth']) => event.date?.slice(0, 4) ?? (event.alternatives.length ? event.alternatives.map((d) => d.slice(0, 4)).join(' / ') : '?');

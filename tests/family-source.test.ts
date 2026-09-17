@@ -35,7 +35,8 @@ test('the real family source defines every published node, name and year without
   assert.deepEqual(catalog.people.map((p) => p.id), source.people.map((p) => p.id));
   for (const record of source.people) {
     const person = catalog.people.find((p) => p.id === record.id)!;
-    assert.equal(fullName(person), [record.firstName, record.patronymic, record.lastName].filter(Boolean).join(' '));
+    assert.equal(fullName(person), record.archivalName ?? [record.firstName, record.patronymic, record.lastName].filter(Boolean).join(' '));
+    assert.equal(person.archivalName, record.archivalName);
     for (const field of ['firstName', 'lastName', 'patronymic', 'maidenName'] as const) assert.equal(person[field], record[field]);
     assert.deepEqual(person.alternateNames, record.alternateNames);
     for (const [event, years, date] of [[person.birth, record.birthYears ?? [], record.birth], [person.death, record.deathYears ?? [], record.death]] as const) {
@@ -128,6 +129,25 @@ test('structured names retain confirmed name parts and leave unknown parts empty
   assert.equal(fullName(person), 'Алёна Петровна Иванова');
   assert.ok(personSearchText(person).includes('алена петровна соколова'));
   assert.equal(fullName(person).includes('Соколова'), false);
+});
+
+test('uncertain archival names retain their exact wording without assigning a surname or patronymic', () => {
+  for (const [id, firstName, archivalName] of [
+    ['mikhey-petrov-1833', 'Михей', 'Михей Петров'],
+    ['avdotya-efremova', 'Авдотья', 'Авдотья Ефремова'],
+    ['tatyana-grigoryeva', 'Татьяна', 'Татьяна Григорьева'],
+    ['stepan-kirillov', 'Степан', 'Степан Кириллов'],
+    ['natalya-andreeva', 'Наталья', 'Наталья Андреева'],
+  ] as const) {
+    const person = catalog.people.find((person) => person.id === id)!;
+    assert.equal(person.firstName, firstName);
+    assert.equal(person.lastName, ''); assert.equal(person.patronymic, ''); assert.equal(person.maidenName, '');
+    assert.equal(person.archivalName, archivalName);
+    assert.equal(fullName(person), archivalName);
+    assert.ok(personSearchText(person).includes(archivalName.toLocaleLowerCase('ru').replaceAll('ё', 'е')));
+  }
+  assert.equal(fullName(catalog.people.find((person) => person.id === 'elvira-mikheeva-grigoryeva')!), 'Эльвира Константиновна Михеева');
+  assert.equal(FamilySourceSchema.safeParse({ ...source, people: [{ ...source.people[0], archivalName: ' ' }] }).success, false);
 });
 
 test('the new source format rejects an old name string, missing fields and a blank first name', () => {

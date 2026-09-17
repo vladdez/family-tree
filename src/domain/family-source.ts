@@ -26,6 +26,7 @@ export function adaptFamilySource(input: unknown, profileInputs: unknown[] = [])
     return PersonSchema.parse({
       id: record.id, slug: profile?.slug ?? record.id,
       firstName: record.firstName, lastName: record.lastName, patronymic: record.patronymic, maidenName: record.maidenName,
+      ...(record.archivalName ? { archivalName: record.archivalName } : {}),
       alternateNames: record.alternateNames,
       sex: profile?.sex ?? 'unknown',
       birth: event(record.birthYears, record.birth, profile?.birthDate, profile?.birthPlaceId),
