@@ -475,7 +475,9 @@
       "type": "parent",
       "parent": "mikhey-petrov-1833",
       "child": "nikifor-1858",
-      "status": "explicit"
+      "status": "explicit",
+      "role": "father",
+      "notes": "Пользователь подтвердил, что Михей Петров — отец Никифора."
     },
     {
       "type": "parent",
