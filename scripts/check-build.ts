@@ -3,7 +3,7 @@ import path from 'node:path';
 import { parse, type DefaultTreeAdapterMap } from 'parse5';
 import { projectRoot, readRawCatalog } from './data-files';
 import { validateCatalog } from '../src/domain/validation';
-import { fullName, lifespan, personDescription } from '../src/domain/people';
+import { fullName, lifespan, personDescription, showBirthOnly } from '../src/domain/people';
 import { getRelativeGroups } from '../src/domain/relationships';
 import { getSourceIssues, getUnidentifiedRelatives } from '../src/domain/source-notes';
 import { getPersonRedirects } from '../src/domain/person-redirects';
@@ -64,6 +64,11 @@ for (const person of catalog.people) {
   for (const name of person.alternateNames) if (!visibleText.includes(name)) errors.push(`${person.id}: пропущено альтернативное имя ${name}`);
   if (person.maidenName && !visibleText.includes(`Девичья фамилия: ${person.maidenName}`)) errors.push(`${person.id}: пропущена девичья фамилия`);
   if (person.archivalName && !visibleText.includes('Имя сохранено в архивном написании.')) errors.push(`${person.id}: пропущена пометка архивного написания`);
+  if (showBirthOnly(person)) {
+    const deathFact = nodes.find((node) => node.tagName === 'dt' && textContent(node) === 'Смерть')?.parentNode;
+    const deathValue = deathFact ? elements(deathFact).find((node) => node.tagName === 'dd') : undefined;
+    if (!deathValue || textContent(deathValue).trim()) errors.push(`${person.id}: строка смерти должна присутствовать с пустым значением`);
+  }
   const title = `${fullName(person)} · ${lifespan(person)} — Родословная Михеевых`;
   const meta = (key: string) => attr(nodes.find((n) => n.tagName === 'meta' && (attr(n, 'property') ?? attr(n, 'name')) === key)!, 'content');
   if (textContent(nodes.find((n) => n.tagName === 'h1')!) !== fullName(person)) errors.push(`${person.id}: заголовок не соответствует записи`);

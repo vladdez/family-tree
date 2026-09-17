@@ -11,8 +11,14 @@ export function personSearchText(person: Person) {
   const maidenName = person.maidenName ? [person.firstName, person.patronymic, person.maidenName].filter(Boolean).join(' ') : '';
   return [...new Set([fullName(person), structuredName, maidenName, ...person.alternateNames])].filter(Boolean).join(' ').toLocaleLowerCase('ru').replaceAll('ё', 'е');
 }
+export function showBirthOnly(person: Person) {
+  const dates = person.birth.date ? [person.birth.date] : person.birth.alternatives;
+  return !person.death.date && !person.death.alternatives.length && dates.length > 0
+    && dates.every((date) => Number(date.slice(0, 4)) >= 1935);
+}
 export function lifespan(person: Person) {
   const year = (event: Person['birth']) => event.date?.slice(0, 4) ?? (event.alternatives.length ? event.alternatives.map((d) => d.slice(0, 4)).join(' / ') : '?');
+  if (showBirthOnly(person)) return `род. ${year(person.birth)}`;
   return `${year(person.birth)} — ${year(person.death)}`;
 }
 export function eventDate(event: Person['birth']) { return event.alternatives.length ? `${event.alternatives.map(formatDate).join(' или ')} · дата не подтверждена` : formatDate(event.date); }

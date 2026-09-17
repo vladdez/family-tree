@@ -5,7 +5,7 @@ import { validateCatalog } from '../src/domain/validation';
 import { getParents, getChildren, getSpouses, getSiblings, getRelativeGroups } from '../src/domain/relationships';
 import { getDocumentsForPerson } from '../src/domain/documents';
 import { getTimeline } from '../src/domain/timeline';
-import { lifespan, eventDate, fullName } from '../src/domain/people';
+import { lifespan, eventDate, fullName, showBirthOnly } from '../src/domain/people';
 import { formatDate } from '../src/domain/dates';
 import { withBase } from '../src/domain/urls';
 import { validateMedia } from '../scripts/data-files';
@@ -32,6 +32,28 @@ test('uncertain death dates remain alternatives without choosing a year', () => 
   assert.equal(lifespan(dmitry), '1910 — 1996 / 1998'); assert.match(eventDate(dmitry.death), /1996 или 1998/);
   const death = getTimeline(dmitry.id, catalog).find((e) => e.type === 'death')!;
   assert.equal(death.date, null); assert.deepEqual(death.alternatives, ['1996', '1998']);
+});
+
+test('recent births use the born prefix without implying a death; known deaths and uncertain older births retain their dates', () => {
+  const cases = [
+    ['1934', [], null, [], '1934 — ?', false],
+    ['1935', [], null, [], 'род. 1935', true],
+    ['1969-03-18', [], null, [], 'род. 1969', true],
+    ['1995', [], null, [], 'род. 1995', true],
+    [null, ['1935', '1936'], null, [], 'род. 1935 / 1936', true],
+    [null, ['1934', '1935'], null, [], '1934 / 1935 — ?', false],
+    [null, [], null, [], '? — ?', false],
+    ['1935', [], '2024', [], '1935 — 2024', false],
+    ['1965-10-21', [], '2025', [], '1965 — 2025', false],
+    ['1941', [], null, ['2016', '2017'], '1941 — 2016 / 2017', false],
+  ] as const;
+  for (const [birth, birthAlternatives, death, deathAlternatives, expected, birthOnly] of cases) {
+    const record = person('test', { birth: { date: birth, placeId: null, alternatives: [...birthAlternatives] }, death: { date: death, placeId: null, alternatives: [...deathAlternatives] } });
+    const snapshot = JSON.stringify(record);
+    assert.equal(lifespan(record), expected);
+    assert.equal(showBirthOnly(record), birthOnly);
+    assert.equal(JSON.stringify(record), snapshot);
+  }
 });
 
 test('validation rejects duplicate IDs, slugs, missing references and one-sided links', () => {
