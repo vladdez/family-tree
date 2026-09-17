@@ -103,9 +103,7 @@
     {
       "id": "paraskeva-pavlova-1889",
       "name": "Параскева Павлова",
-      "birthYears": [
-        1889
-      ],
+      "birth": "1889-07-28",
       "deathYears": [
         1955
       ]
@@ -519,13 +517,22 @@
       "type": "parent",
       "parent": "pavel-nikolaevich-vasiliev",
       "child": "paraskeva-pavlova-1889",
-      "status": "explicit"
+      "status": "explicit",
+      "role": "father"
     },
     {
       "type": "parent",
       "parent": "natalya-andreeva",
       "child": "paraskeva-pavlova-1889",
-      "status": "explicit"
+      "status": "explicit",
+      "role": "mother"
+    },
+    {
+      "type": "spouse",
+      "person1": "pavel-nikolaevich-vasiliev",
+      "person2": "natalya-andreeva",
+      "status": "explicit",
+      "notes": "Брак подтверждён пользователем."
     },
     {
       "type": "parent",

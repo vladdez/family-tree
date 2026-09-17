@@ -27,7 +27,7 @@ test('main tree retains Vladimir, both parents, his sisters and both ancestral l
   }
   assert.ok(tree.people.length < catalog.people.length);
   assert.equal(catalog.people.length, 52);
-  assert.equal(catalog.relations?.length, 72);
+  assert.equal(catalog.relations?.length, 73);
   assert.equal(JSON.stringify(catalog), snapshot);
 });
 
