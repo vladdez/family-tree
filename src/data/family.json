@@ -419,7 +419,9 @@
       "type": "parent",
       "parent": "petr-1802",
       "child": "mikhey-petrov-1833",
-      "status": "explicit"
+      "status": "explicit",
+      "role": "father",
+      "notes": "Пользователь подтвердил, что Пётр — отец Михея Петрова."
     },
     {
       "type": "parent",
