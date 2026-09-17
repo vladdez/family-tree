@@ -6,6 +6,8 @@ import { validateCatalog } from '../src/domain/validation';
 import { fullName, lifespan, personDescription } from '../src/domain/people';
 import { getRelativeGroups } from '../src/domain/relationships';
 import { getSourceIssues, getUnidentifiedRelatives } from '../src/domain/source-notes';
+import { getPersonRedirects } from '../src/domain/person-redirects';
+import personRedirects from '../src/data/person-redirects.json';
 
 const dist = path.join(projectRoot, 'dist');
 const errors: string[] = [];
@@ -53,6 +55,7 @@ for (const page of pages) {
   for (const key of ['og:title', 'og:description', 'twitter:title', 'twitter:description']) if (!nodes.some((n) => n.tagName === 'meta' && (attr(n, 'property') ?? attr(n, 'name')) === key && attr(n, 'content'))) errors.push(`${relative}: нет ${key}`);
 }
 const catalog = validateCatalog(await readRawCatalog());
+const redirects = getPersonRedirects(catalog, personRedirects);
 for (const person of catalog.people) {
   const file = path.join(dist, 'people', person.slug, 'index.html');
   const nodes = elements(parse(await readFile(file, 'utf8')));
@@ -75,6 +78,14 @@ for (const person of catalog.people) {
   for (const relative of getUnidentifiedRelatives(catalog, person.id)) if (!visibleText.includes(relative.title) || !visibleText.includes(relative.statusLabel)) errors.push(`${person.id}: пропущены безымянные родственники`);
 }
 const peoplePages = pages.filter((file) => path.relative(dist, file).startsWith(`people${path.sep}`) && path.relative(dist, file) !== path.join('people', 'index.html'));
-if (peoplePages.length !== catalog.people.length) errors.push('Число личных страниц не соответствует числу людей в источнике');
+if (peoplePages.length !== catalog.people.length + redirects.length) errors.push('Число личных страниц и перенаправлений не соответствует источнику');
+for (const { from, person } of redirects) {
+  const nodes = elements(parse(await readFile(path.join(dist, 'people', from, 'index.html'), 'utf8')));
+  const destination = `${base}people/${person.slug}/`;
+  if (!nodes.some((node) => node.tagName === 'meta' && attr(node, 'http-equiv') === 'refresh' && attr(node, 'content') === `0;url=${destination}`)) errors.push(`${from}: неверная цель перенаправления`);
+  if (!nodes.some((node) => node.tagName === 'link' && attr(node, 'rel') === 'canonical' && attr(node, 'href') === new URL(destination, site.origin).href)) errors.push(`${from}: неверный canonical перенаправления`);
+  if (!nodes.some((node) => node.tagName === 'meta' && attr(node, 'name') === 'robots' && attr(node, 'content') === 'noindex, follow')) errors.push(`${from}: перенаправление не исключено из индексации`);
+  if (!nodes.some((node) => node.tagName === 'a' && attr(node, 'href') === destination)) errors.push(`${from}: нет ссылки на объединённую страницу`);
+}
 if (errors.length) { console.error(errors.join('\n')); process.exitCode = 1; }
 else console.log(`Статический сайт проверен: ${pages.length} страниц, ${checkedLinks} локальных ссылок и ресурсов, base ${base}. Все люди, связи, статусы, замечания источников и метаданные проверены.`);

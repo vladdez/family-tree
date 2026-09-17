@@ -200,12 +200,9 @@
     {
       "id": "alexandra-gerasimovna-pavlova",
       "name": "Александра Герасимовна Павлова",
-      "birthYears": [],
-      "deathYears": []
-    },
-    {
-      "id": "anisia-alexandra-pavlova-1912",
-      "name": "Анисия (Александра) Павлова (Герасимова)",
+      "alternateNames": [
+        "Анисия (Александра) Павлова (Герасимова)"
+      ],
       "birthYears": [
         1912
       ],
@@ -613,13 +610,13 @@
     },
     {
       "type": "spouse",
-      "person1": "anisia-alexandra-pavlova-1912",
+      "person1": "alexandra-gerasimovna-pavlova",
       "person2": "petr-pavlovich-pavlov-1912",
       "status": "explicit"
     },
     {
       "type": "parent",
-      "parent": "anisia-alexandra-pavlova-1912",
+      "parent": "alexandra-gerasimovna-pavlova",
       "child": "fyodor-son-of-anisia",
       "status": "explicit"
     },
@@ -799,12 +796,6 @@
       "status": "explicit"
     },
     {
-      "type": "possible_same_person",
-      "person1": "alexandra-gerasimovna-pavlova",
-      "person2": "anisia-alexandra-pavlova-1912",
-      "status": "unresolved"
-    },
-    {
       "type": "spouse",
       "person1": "yuri-vladimirovich-mikheev-1965",
       "person2": "elvira-mikheeva-grigoryeva",
@@ -939,12 +930,6 @@
         1998
       ],
       "reason": "В одном месте указано 1910-1996, в другом тексте указано, что умер в 1998 году."
-    },
-    {
-      "person": "alexandra-gerasimovna-pavlova",
-      "type": "identity_conflict",
-      "relatedPerson": "anisia-alexandra-pavlova-1912",
-      "reason": "Описание Александры Герасимовны и Анисии (Александры) частично совпадает; возможно, это один человек, но автоматически объединять их нельзя."
     },
     {
       "people": [

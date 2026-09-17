@@ -5,7 +5,7 @@ import { FamilySourceSchema } from '../src/domain/schemas';
 import { adaptFamilySource } from '../src/domain/family-source';
 import { validateCatalog } from '../src/domain/validation';
 import { fullName, personSearchText } from '../src/domain/people';
-import { getSiblings, getRelativeGroups, getTreeRelationships, getTreeData, relationEndpoints } from '../src/domain/relationships';
+import { getParents, getSpouses, getSiblings, getRelativeGroups, getTreeRelationships, getTreeData, relationEndpoints } from '../src/domain/relationships';
 import { getSourceIssues, getUnidentifiedRelatives } from '../src/domain/source-notes';
 import { layoutTree } from '../src/components/genealogy/layout';
 import { edgePath } from '../src/components/genealogy/edges';
@@ -15,6 +15,21 @@ import { getFamilyConnections, familyPath } from '../src/components/genealogy/fa
 
 const source = FamilySourceSchema.parse(JSON.parse(await readFile(new URL('../src/data/family.json', import.meta.url), 'utf8')));
 const catalog = validateCatalog({ ...adaptFamilySource(source), documents: [], places: [] });
+
+test('confirmed Alexandra/Anisia identity preserves dates, both children and marriage in a single record', () => {
+  const person = catalog.people.find((person) => person.id === 'alexandra-gerasimovna-pavlova')!;
+  assert.equal(person.birth.date, '1912'); assert.equal(person.death.date, '1991');
+  assert.ok(person.alternateNames.includes('Анисия (Александра) Павлова (Герасимова)'));
+  assert.deepEqual(person.spouses, ['petr-pavlovich-pavlov-1912']);
+  assert.deepEqual(person.children.slice().sort(), ['fyodor-son-of-anisia', 'maria-petrovna-grigoryeva-1940']);
+  assert.ok(getParents('maria-petrovna-grigoryeva-1940', catalog).some((parent) => parent.id === person.id));
+  assert.deepEqual(getParents('fyodor-son-of-anisia', catalog).map((parent) => parent.id), [person.id]);
+  assert.deepEqual(getSpouses('petr-pavlovich-pavlov-1912', catalog).map((spouse) => spouse.id), [person.id]);
+  assert.ok(getSiblings('maria-petrovna-grigoryeva-1940', catalog).some((sibling) => sibling.id === 'fyodor-son-of-anisia'));
+  assert.equal(getRelativeGroups(person.id, catalog).some((group) => group.label === 'Возможное совпадение записи'), false);
+  assert.equal(getSourceIssues(person.id, catalog).some((issue) => issue.type === 'identity_conflict'), false);
+  assert.equal(JSON.stringify(source).includes('anisia-alexandra-pavlova-1912'), false);
+});
 
 test('the real family source defines every published node, name and year without seed data', () => {
   assert.deepEqual(catalog.people.map((p) => p.id), source.people.map((p) => p.id));

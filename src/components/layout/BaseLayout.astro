@@ -25,6 +25,7 @@ const canonical = canonicalPath ? absolute(canonicalPath) : new URL(Astro.url.pa
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     {image && <><meta property="og:image" content={absolute(image)} /><meta name="twitter:image" content={absolute(image)} /></>}
+    <slot name="head" />
   </head>
   <body>
     <a class="skip-link" href="#main">Перейти к содержимому</a>
