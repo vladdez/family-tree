@@ -40,7 +40,10 @@ test('hidden siblings and spouses remain linked inside ancestor cards with uncer
   assert.equal(Object.values(reciprocal).flatMap((groups) => groups.flatMap((group) => group.people)).some((person) => person.annotation.includes('Неполнородное')), false);
   assert.ok(brother.href.includes('/people/')); assert.ok(brother.lifespan.includes('1947'));
   assert.ok(tree.relatives['vladimir-mikheev-1941'].find((group) => group.label === 'Супруги')!.people.some((person) => person.id === 'maria-efimova-1941'));
-  assert.ok(tree.relationships.some((edge) => edge.type === 'parent' && edge.to === 'elvira-mikheeva-grigoryeva' && edge.status === 'inferred_branch_context'));
+  assert.deepEqual(tree.relationships.filter((edge) => edge.type === 'parent' && edge.to === 'elvira-mikheeva-grigoryeva')
+    .map((edge) => [edge.from, edge.status]).sort(), [
+      ['konstantin-grigoryevich-grigoryev-1935', 'explicit'], ['maria-petrovna-grigoryeva-1940', 'explicit'],
+    ]);
   for (const groups of Object.values(tree.relatives)) for (const group of groups) for (const person of group.people) assert.equal(tree.people.some((visible) => visible.id === person.id), false);
 });
 

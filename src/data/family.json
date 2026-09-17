@@ -230,7 +230,7 @@
     },
     {
       "id": "pavel-ivanovich-ivanov",
-      "name": "Павел Иванович Иванов",
+      "name": "Павел Иванович Павлов",
       "birthYears": [],
       "deathYears": []
     },
@@ -632,7 +632,9 @@
       "type": "parent",
       "parent": "pavel-ivanovich-ivanov",
       "child": "petr-pavlovich-pavlov-1912",
-      "status": "inferred_context"
+      "status": "explicit",
+      "role": "father",
+      "notes": "Пользователь подтвердил, что Павел Иванович Павлов — отец Петра Павловича Павлова."
     },
     {
       "type": "parent",
@@ -662,13 +664,15 @@
       "type": "parent",
       "parent": "konstantin-grigoryevich-grigoryev-1935",
       "child": "elvira-mikheeva-grigoryeva",
-      "status": "inferred_branch_context"
+      "status": "explicit",
+      "notes": "Родство подтверждено пользователем."
     },
     {
       "type": "parent",
       "parent": "maria-petrovna-grigoryeva-1940",
       "child": "elvira-mikheeva-grigoryeva",
-      "status": "inferred_branch_context"
+      "status": "explicit",
+      "notes": "Родство подтверждено пользователем."
     },
     {
       "type": "spouse",
