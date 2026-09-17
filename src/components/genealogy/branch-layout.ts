@@ -11,6 +11,8 @@ export function layoutBranches(graph: TreeGraph, edges: TreeRelationship[], geom
   const rows = new Map<number, PositionedPerson[]>();
   for (const node of graph.nodes) rows.set(node.y, [...(rows.get(node.y) ?? []), node]);
   const below = branches.find((branch) => branch.kind === 'descendants');
+  const familyBranches = branches.filter((branch) => branch.kind === 'family');
+  const centralParents = new Set(edges.filter((edge) => edge.type === 'parent' && below?.personIds.includes(edge.to)).map((edge) => edge.from));
   const spans = below && ![...rows.values()].some((row) => row.some((node) => branchByPerson.get(node.id) === below.id)
     && row.some((node) => branchByPerson.get(node.id) !== below.id));
   const lanes = branches.filter((branch) => !spans || branch.id !== below!.id);
@@ -47,6 +49,13 @@ export function layoutBranches(graph: TreeGraph, edges: TreeRelationship[], geom
       const ordered = [...groups.values()].sort((a, b) => parentColumn(a) - parentColumn(b));
       const capacity = spans && branch.id === below!.id ? totalColumns : capacities.get(branch.id)!;
       let column = (offsets.get(branch.id) ?? 0) + Math.floor((capacity - records.length) / 2);
+      // Place the focal parents at the facing edges of their two family areas.
+      if (familyBranches.length === 2 && branch.kind === 'family' && records.length === 1 && centralParents.has(records[0].id)) {
+        column = offsets.get(branch.id)! + (branch.id === familyBranches[0].id ? capacity - 1 : 0);
+      }
+      if (spans && branch.id === below!.id) {
+        column = Math.max(0, Math.min(capacity - records.length, Math.round(parentColumn(records) - (records.length - 1) / 2)));
+      }
       for (const group of ordered) for (const node of group) {
         columns.set(node.id, column);
         nodes.push({ ...node, x: left + column++ * stride, y: y + top });

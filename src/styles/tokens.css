@@ -50,7 +50,7 @@
   --transition: 180ms ease;
   --tree-height: clamp(27rem, 65vh, 45rem);
   --tree-node-width: 220px;
-  --tree-node-height: 140px;
+  --tree-node-height: 180px;
   --tree-node-gap: 40px;
   --tree-generation-gap: 100px;
   --tree-edge-width: 2px;

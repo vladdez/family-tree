@@ -1,19 +1,23 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent, type KeyboardEvent } from 'react';
 import { relationStatusLabels, type TreePerson, type TreeRelationship } from '../../domain/relationships';
 import type { TreeBranch } from '../../domain/tree-branches';
+import type { HiddenRelativeGroup } from '../../domain/focused-tree';
 import { layoutTree, type Geometry } from './layout';
-import { fitView, scaleView, pinchView, type View } from './viewport';
+import { fitView, fitNodes, scaleView, pinchView, type View } from './viewport';
 import { edgePath, marriageMarkerPosition } from './edges';
 import MarriageIcon from './MarriageIcon';
 import { getFamilyConnections } from './families';
 import FamilyConnections from './FamilyConnections';
+import HiddenRelatives from './HiddenRelatives';
 import './tree.css';
 
-interface Props { people: TreePerson[]; relationships: TreeRelationship[]; branches?: TreeBranch[] }
+interface Props { people: TreePerson[]; relationships: TreeRelationship[]; branches?: TreeBranch[]; focusPersonId: string; familyPersonIds: string[]; relatives: Record<string, HiddenRelativeGroup[]> }
 const emptyBranches: TreeBranch[] = [];
 
-export default function GenealogyTree({ people, relationships, branches = emptyBranches }: Props) {
+export default function GenealogyTree({ people, relationships, branches = emptyBranches, focusPersonId, familyPersonIds, relatives }: Props) {
   const viewport = useRef<HTMLDivElement>(null);
+  const relativesDialog = useRef<HTMLDialogElement>(null);
+  const [relativePerson, setRelativePerson] = useState<TreePerson | null>(null);
   const [geometry, setGeometry] = useState<Geometry | null>(null);
   const [view, setView] = useState<View>({ x: 0, y: 0, scale: 1 });
   const [selected, setSelected] = useState('');
@@ -39,12 +43,23 @@ export default function GenealogyTree({ people, relationships, branches = emptyB
     setView(fitView({ width, height }, graph));
   }, [graph]);
 
+  const showFamily = useCallback(() => {
+    if (!viewport.current || !graph || !geometry) return;
+    const nodes = graph.nodes.filter((person) => familyPersonIds.includes(person.id));
+    const { width, height } = viewport.current.getBoundingClientRect();
+    setSelected(''); setView(nodes.length ? fitNodes({ width, height }, nodes, geometry) : fitView({ width, height }, graph));
+  }, [graph, geometry, familyPersonIds]);
+
   useEffect(() => {
     if (!viewport.current || !graph) return;
-    fit();
-    const observer = new ResizeObserver(fit); observer.observe(viewport.current);
+    showFamily();
+    const observer = new ResizeObserver(showFamily); observer.observe(viewport.current);
     return () => observer.disconnect();
-  }, [fit, graph]);
+  }, [showFamily, graph]);
+
+  useEffect(() => {
+    if (relativePerson && !relativesDialog.current?.open) relativesDialog.current?.showModal();
+  }, [relativePerson]);
 
   const zoom = useCallback((factor: number, point?: { x: number; y: number }) => {
     if (!viewport.current) return;
@@ -113,7 +128,7 @@ export default function GenealogyTree({ people, relationships, branches = emptyB
   }
 
   return <div className="genealogy-tree">
-    <div className="tree-toolbar"><label className="field tree-search">Найти на древе<select value={selected} onChange={(event) => focusPerson(event.target.value)}><option value="">Все люди</option>{people.map((p) => <option key={p.id} value={p.id}>{p.name} · {p.lifespan}</option>)}</select></label><div className="tree-controls"><button type="button" className="button" onClick={() => zoom(1.2)} aria-label="Увеличить">+</button><span className="tree-scale" aria-live="polite">{Math.round(view.scale * 100)}%</span><button type="button" className="button" onClick={() => zoom(1 / 1.2)} aria-label="Уменьшить">−</button><button type="button" className="button" onClick={() => { setSelected(''); fit(); }}>Показать всех</button></div></div>
+    <div className="tree-toolbar"><label className="field tree-search">Найти на древе<select value={selected} onChange={(event) => focusPerson(event.target.value)}><option value="">Главная линия</option>{people.map((p) => <option key={p.id} value={p.id}>{p.name} · {p.lifespan}</option>)}</select></label><div className="tree-controls"><button type="button" className="button" onClick={() => zoom(1.2)} aria-label="Увеличить">+</button><span className="tree-scale" aria-live="polite">{Math.round(view.scale * 100)}%</span><button type="button" className="button" onClick={() => zoom(1 / 1.2)} aria-label="Уменьшить">−</button><button type="button" className="button" onClick={showFamily}>Моя семья</button><button type="button" className="button" onClick={() => { setSelected(''); fit(); }}>Все предки</button></div></div>
     {branches.some((branch) => branch.kind === 'family') && <div className="tree-branch-legend" role="group" aria-label="Цвета семейных ветвей">{branches.filter((branch) => branch.kind === 'family').map((branch) => <span key={branch.id} data-branch={branch.id}>{branch.label}</span>)}</div>}
     <div ref={viewport} className={`tree-viewport${dragging ? ' is-dragging' : ''}${graph ? '' : ' is-register'}`} tabIndex={0} role="region" aria-label="Интерактивное семейное древо" aria-describedby="tree-instructions" onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} onLostPointerCapture={pointerUp} onPointerLeave={(event) => { if (!dragging) pointers.current.delete(event.pointerId); }} onKeyDown={keyboard} onClickCapture={(event) => { if (moved.current && event.detail !== 0) { event.preventDefault(); event.stopPropagation(); } }}>
       {graph && geometry ? <div className="tree-canvas" style={{ width: graph.width, height: graph.height, transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})` }}>
@@ -130,9 +145,17 @@ export default function GenealogyTree({ people, relationships, branches = emptyB
           const label = `${inferred ? 'Предполагаемые супруги' : 'Супруги'}: ${from.name} и ${to.name}${inferred ? ` · ${relationStatusLabels[edge.status!]}` : ''}`;
           return <span key={edge.id} className={`tree-marriage${inferred ? ' inferred' : ''}`} style={{ left: position.x, top: position.y }} role="img" aria-label={label} title={label}><MarriageIcon /></span>;
         })}
-        {graph.nodes.map((p) => <a className={`tree-node${selected === p.id ? ' is-selected' : ''}`} key={p.id} href={p.href} data-branch={branchByPerson.get(p.id)?.id} title={branchByPerson.get(p.id)?.label} style={{ left: p.x, top: p.y }} onFocus={(event) => { if (event.currentTarget.matches(':focus-visible')) focusPerson(p.id); }}><span className="tree-node-name">{p.name}</span><span className="tree-node-life">{p.lifespan}</span>{p.uncertain && <span className="tree-node-uncertainty">Дата требует уточнения</span>}{p.positionFromRelatives && <span className="tree-node-placement">Положение по родству</span>}<span className="tree-node-arrow" aria-hidden="true">↗</span></a>)}
-      </div> : <div className="tree-static-register">{people.map((p) => <a key={p.id} href={p.href} data-branch={branchByPerson.get(p.id)?.id} title={branchByPerson.get(p.id)?.label}><span>{p.name}</span><small>{p.lifespan}</small></a>)}</div>}
+        {graph.nodes.map((p) => <article className={`tree-node${selected === p.id ? ' is-selected' : ''}${focusPersonId === p.id ? ' is-focus-person' : ''}`} key={p.id} data-branch={branchByPerson.get(p.id)?.id} title={branchByPerson.get(p.id)?.label} style={{ left: p.x, top: p.y }}>
+          <a className="tree-node-main" href={p.href} onFocus={(event) => { if (event.currentTarget.matches(':focus-visible')) focusPerson(p.id); }}><span className="tree-node-name">{p.name}</span><span className="tree-node-life">{p.lifespan}</span>{p.uncertain && <span className="tree-node-uncertainty">Дата требует уточнения</span>}{p.positionFromRelatives && <span className="tree-node-placement">Положение по родству</span>}<span className="tree-node-arrow" aria-hidden="true">↗</span></a>
+          {p.id === focusPersonId && <span className="tree-node-you">Вы</span>}
+          {relatives[p.id]?.length > 0 && <button type="button" className="tree-relatives-button" aria-haspopup="dialog" aria-label={`Родственники: ${p.name}`} onClick={() => setRelativePerson(p)}>Родственники · {new Set(relatives[p.id].flatMap((group) => group.people.map((person) => person.id))).size}</button>}
+        </article>)}
+      </div> : <div className="tree-static-register">{people.map((p) => <article key={p.id} data-branch={branchByPerson.get(p.id)?.id} title={branchByPerson.get(p.id)?.label}><a href={p.href}><span>{p.name}</span><small>{p.lifespan}</small></a>{p.id === focusPersonId && <span className="tree-node-you">Вы</span>}{relatives[p.id]?.length > 0 && <details><summary>Родственники</summary><HiddenRelatives groups={relatives[p.id]} /></details>}</article>)}</div>}
     </div>
     <div className="tree-caption"><p id="tree-instructions">Перетаскивайте поле, используйте + / − или жест двумя пальцами. С клавиатуры: стрелки, + / −, 0. Нажмите на имя, чтобы открыть историю.</p>{relationships.length > 0 && <div className="tree-legend"><span className="legend-parent">Родитель — ребёнок</span><span className="legend-spouse"><MarriageIcon /> Брак</span><span className="legend-inferred">Предполагаемая связь</span><span className="legend-half">Неполнородное родство</span><span className="legend-identity">Возможное совпадение</span><span className="legend-adoptive">Приёмное родство</span></div>}</div>
+    <dialog ref={relativesDialog} className="tree-relatives-dialog" aria-labelledby="tree-relatives-title" onClose={() => setRelativePerson(null)}>
+      <div className="tree-relatives-dialog-header"><h2 id="tree-relatives-title">{relativePerson ? `Родственники — ${relativePerson.name}` : 'Родственники'}</h2><button type="button" className="button" onClick={() => relativesDialog.current?.close()} autoFocus>Закрыть</button></div>
+      {relativePerson && <HiddenRelatives groups={relatives[relativePerson.id] ?? []} />}
+    </dialog>
   </div>;
 }

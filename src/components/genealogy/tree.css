@@ -33,8 +33,14 @@
 .tree-marriage { position: absolute; display: flex; align-items: center; justify-content: center; width: calc(var(--tree-marriage-icon-width) + var(--tree-marriage-padding) * 2); height: calc(var(--tree-marriage-ring-size) + var(--tree-marriage-padding) * 2); transform: translate(-50%, -50%); background: var(--color-soft); border-radius: var(--radius-round); cursor: default; }
 .tree-marriage.inferred .marriage-icon { color: var(--color-warning); }
 .tree-marriage.inferred .marriage-icon::before, .tree-marriage.inferred .marriage-icon::after { border-style: dashed; }
-.tree-node { position: absolute; width: var(--tree-node-width); height: var(--tree-node-height); display: flex; flex-direction: column; justify-content: center; gap: var(--space-2xs); padding: var(--space-md) var(--space-lg); border: var(--border-width) solid var(--tree-card-border, var(--color-border)); border-radius: var(--radius-small); background: var(--tree-card-background, var(--color-surface)); box-shadow: var(--shadow-card); text-decoration: none; user-select: none; }
+.tree-node { position: absolute; width: var(--tree-node-width); height: var(--tree-node-height); display: flex; flex-direction: column; justify-content: center; gap: var(--space-2xs); padding: var(--space-sm); border: var(--border-width) solid var(--tree-card-border, var(--color-border)); border-radius: var(--radius-small); background: var(--tree-card-background, var(--color-surface)); box-shadow: var(--shadow-card); user-select: none; }
 .tree-node:hover, .tree-node.is-selected { border-color: var(--color-accent); box-shadow: var(--shadow-focus); }
+.tree-node-main { display: flex; flex: 1; flex-direction: column; justify-content: center; gap: var(--space-2xs); text-decoration: none; }
+.tree-node.is-focus-person { border: var(--tree-edge-width) solid var(--color-accent); }
+.tree-node-you { font-size: var(--font-xs); color: var(--color-accent); }
+.tree-node .tree-node-you { position: absolute; top: var(--space-2xs); left: var(--space-xs); }
+.tree-relatives-button { align-self: flex-start; padding: var(--space-2xs) var(--space-xs); background: var(--color-surface); border: var(--border-width) solid var(--tree-card-border, var(--color-border)); border-radius: var(--radius-small); color: var(--color-accent); font: var(--font-xs) var(--font-body); cursor: pointer; }
+.tree-relatives-button:hover { background: var(--color-soft); }
 .tree-node-name { font: var(--font-lg)/1.2 var(--font-heading); padding-right: var(--space-xs); }
 .tree-node-life { font-size: var(--font-xs); color: var(--tree-card-muted, var(--color-muted)); }
 .tree-node-uncertainty { font-size: var(--font-xs); color: var(--color-warning); }
@@ -51,6 +57,18 @@
 .tree-legend .legend-identity::before { border-top-style: dotted; border-top-color: var(--color-warning); }
 .tree-legend .legend-adoptive::before { border-top-style: dotted; }
 .tree-static-register { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--card-min)), 1fr)); gap: var(--space-lg); padding: var(--space-xl); }
-.tree-static-register a { padding: var(--space-lg); background: var(--tree-card-background, var(--color-surface)); border: var(--border-width) solid var(--tree-card-border, var(--color-border)); font-family: var(--font-heading); }
+.tree-static-register > article { padding: var(--space-lg); background: var(--tree-card-background, var(--color-surface)); border: var(--border-width) solid var(--tree-card-border, var(--color-border)); }
+.tree-static-register > article > a { font-family: var(--font-heading); }
 .tree-static-register small { display: block; color: var(--tree-card-muted, var(--color-muted)); font: var(--font-xs) var(--font-body); }
+.tree-static-register details { margin-top: var(--space-sm); }
+.tree-relatives-dialog { width: min(var(--reading-width), calc(100% - var(--space-xl))); max-height: calc(100dvh - var(--space-xl)); margin: auto; padding: var(--space-xl); border: var(--border-width) solid var(--color-border); border-radius: var(--radius-medium); background: var(--color-surface); color: var(--color-text); overflow: auto; }
+.tree-relatives-dialog::backdrop { background: rgb(41 46 41 / 45%); }
+.tree-relatives-dialog-header { display: flex; align-items: start; justify-content: space-between; gap: var(--space-lg); }
+.tree-relatives-dialog-header h2 { font-size: var(--font-xl); }
+.tree-relative-groups { display: grid; gap: var(--space-lg); margin-top: var(--space-lg); }
+.tree-relative-groups h3 { font: var(--font-lg) var(--font-heading); }
+.tree-relative-groups ul { list-style: none; padding: 0; margin: var(--space-sm) 0 0; }
+.tree-relative-groups li + li { margin-top: var(--space-sm); }
+.tree-relative-life, .tree-relative-annotation { display: block; font-size: var(--font-xs); color: var(--color-muted); }
+.tree-relative-annotation { color: var(--color-warning); }
 @media (max-width: 600px) { .tree-controls { width: 100%; flex-wrap: wrap; }.tree-caption { flex-direction: column; } }

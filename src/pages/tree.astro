@@ -4,18 +4,19 @@ import PageHeader from '../components/layout/PageHeader.astro';
 import GenealogyTree from '../components/genealogy/GenealogyTree';
 import UnidentifiedRelatives from '../components/person/UnidentifiedRelatives.astro';
 import { catalog } from '../domain/catalog';
-import { getTreeData } from '../domain/relationships';
+import { getFocusedTree } from '../domain/focused-tree';
 import { getTreeBranches } from '../domain/tree-branches';
 import branchRoots from '../data/tree-branches.json';
-const graph = getTreeData(catalog);
+import treeSettings from '../data/tree-view.json';
+const graph = getFocusedTree(catalog, treeSettings);
 const branches = getTreeBranches(graph.people, graph.relationships, branchRoots);
 ---
 <BaseLayout title="Семейное древо — Родословная Михеевых" description="Интерактивное семейное древо Михеевых. Найдите человека и откройте его историю, даты жизни и документы.">
-  <PageHeader eyebrow="Имена и связи" title="Семейное древо" description="Слева — родственники Юрия, справа — родственники Эльвиры. Люди одной эпохи находятся на одном уровне. Приближайте древо и открывайте историю каждого человека." />
-  <p class="note">Отцовская и материнская ветви подписаны относительно их детей — Ксении, Владимира и Марии. Годы слева помогают сравнивать эпохи между ветвями.</p>
+  <PageHeader eyebrow="Владимир Юрьевич Михеев" title="Семейное древо" description="В центре — Владимир, его отец Юрий и мать Эльвира. Рядом — сёстры Ксения и Мария. Выше — прямые предки: отцовская ветвь слева, материнская справа." />
+  <p class="note">Братья, сёстры и другие родственники предков собраны внутри их карточек. Нажмите «Родственники», чтобы раскрыть имена. Люди одной эпохи находятся на одном уровне.</p>
   {!graph.relationships.length && <p class="note tree-notice">Сейчас показаны отдельные семейные записи. Родственные связи пока не уточнены; линии появятся после их подтверждения.</p>}
-  <GenealogyTree people={graph.people} relationships={graph.relationships} branches={branches} client:load />
-  <p class="note section">Если год рождения неизвестен, положение карточки определяется по родственникам и отмечено «Положение по родству». Пунктирные линии обозначают предполагаемые связи. Неполнородное родство показано отдельной линией без добавления неизвестного общего родителя. Возможное совпадение записей не объединяет людей автоматически.</p>
-  <UnidentifiedRelatives />
+  <GenealogyTree {...graph} branches={branches} client:load />
+  <p class="note section">Если год рождения неизвестен, положение карточки определяется по родственникам и отмечено «Положение по родству». Пунктирные линии обозначают предполагаемые связи.</p>
+  <details class="section"><summary>Родственники с неизвестными именами — заметки семейных источников</summary><UnidentifiedRelatives /></details>
   <noscript><p class="note section">Имена доступны как ссылки. Для перемещения и масштабирования древа включите JavaScript.</p></noscript>
 </BaseLayout>
