@@ -62,6 +62,7 @@ for (const person of catalog.people) {
   const visibleText = textContent(nodes.find((n) => n.tagName === 'main')!);
   const personLinks = new Set(nodes.filter((n) => n.tagName === 'a').map((n) => attr(n, 'href')));
   for (const name of person.alternateNames) if (!visibleText.includes(name)) errors.push(`${person.id}: пропущено альтернативное имя ${name}`);
+  if (person.maidenName && !visibleText.includes(`Девичья фамилия: ${person.maidenName}`)) errors.push(`${person.id}: пропущена девичья фамилия`);
   const title = `${fullName(person)} · ${lifespan(person)} — Родословная Михеевых`;
   const meta = (key: string) => attr(nodes.find((n) => n.tagName === 'meta' && (attr(n, 'property') ?? attr(n, 'name')) === key)!, 'content');
   if (textContent(nodes.find((n) => n.tagName === 'h1')!) !== fullName(person)) errors.push(`${person.id}: заголовок не соответствует записи`);

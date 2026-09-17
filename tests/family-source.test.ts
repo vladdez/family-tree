@@ -35,7 +35,8 @@ test('the real family source defines every published node, name and year without
   assert.deepEqual(catalog.people.map((p) => p.id), source.people.map((p) => p.id));
   for (const record of source.people) {
     const person = catalog.people.find((p) => p.id === record.id)!;
-    assert.equal(fullName(person), record.name);
+    assert.equal(fullName(person), [record.firstName, record.patronymic, record.lastName].filter(Boolean).join(' '));
+    for (const field of ['firstName', 'lastName', 'patronymic', 'maidenName'] as const) assert.equal(person[field], record[field]);
     assert.deepEqual(person.alternateNames, record.alternateNames);
     for (const [event, years, date] of [[person.birth, record.birthYears ?? [], record.birth], [person.death, record.deathYears ?? [], record.death]] as const) {
       assert.equal(event.date, date ?? (years.length === 1 ? String(years[0]).padStart(4, '0') : null));
@@ -81,7 +82,7 @@ test('all corrections, identity issues and unnamed-relative counts remain attach
 });
 
 test('profiles enrich existing nodes and cannot silently choose an uncertain year', () => {
-  const input = { schemaVersion: 1, people: [{ id: 'a', name: 'Тест', birthYears: [1900], deathYears: [1980, 1981] }], relations: [], unidentifiedRelatives: [], issues: [] };
+  const input = { schemaVersion: 2, people: [{ id: 'a', firstName: 'Тест', lastName: '', patronymic: '', maidenName: '', birthYears: [1900], deathYears: [1980, 1981] }], relations: [], unidentifiedRelatives: [], issues: [] };
   const enriched = adaptFamilySource(input, [{ id: 'a', birthDate: '1900-03-12', biography: 'Текст профиля', portrait: null }]);
   assert.equal(enriched.people[0].birth.date, '1900-03-12'); assert.equal(enriched.people[0].biography, 'Текст профиля');
   assert.deepEqual(enriched.people[0].death.alternatives, ['1980', '1981']);
@@ -90,9 +91,9 @@ test('profiles enrich existing nodes and cannot silently choose an uncertain yea
 });
 
 test('source records preserve exact dates, year-only dates, unknown dates and alternate names', () => {
-  const input = { schemaVersion: 1, people: [
-    { id: 'a', name: 'Тест', alternateNames: ['Другое имя'], birth: '1965-10-21', death: '2025' },
-    { id: 'b', name: 'Другой тест', birth: '1990', death: null },
+  const input = { schemaVersion: 2, people: [
+    { id: 'a', firstName: 'Тест', lastName: '', patronymic: '', maidenName: '', alternateNames: ['Другое имя'], birth: '1965-10-21', death: '2025' },
+    { id: 'b', firstName: 'Другой', lastName: 'тест', patronymic: '', maidenName: '', birth: '1990', death: null },
   ], relations: [{ type: 'spouse', person1: 'a', person2: 'b' }], unidentifiedRelatives: [], issues: [] };
   const adapted = adaptFamilySource(input);
   assert.equal(adapted.people[0].birth.date, '1965-10-21'); assert.equal(adapted.people[0].death.date, '2025');
@@ -101,6 +102,44 @@ test('source records preserve exact dates, year-only dates, unknown dates and al
   assert.equal(adapted.relations[0].status, 'explicit');
   assert.throws(() => adaptFamilySource(input, [{ id: 'a', birthDate: '1965-10-22' }]), /противоречит/);
   assert.equal(FamilySourceSchema.safeParse({ ...input, people: [{ ...input.people[0], birthYears: [1965] }] }).success, false);
+});
+
+test('structured names retain confirmed name parts and leave unknown parts empty', () => {
+  for (const [id, fields, expectedName] of [
+    ['elvira-mikheeva-grigoryeva', ['Эльвира', 'Михеева', 'Константиновна', 'Григорьева'], 'Эльвира Константиновна Михеева'],
+    ['yuri-vladimirovich-mikheev-1965', ['Юрий', 'Михеев', 'Владимирович', ''], 'Юрий Владимирович Михеев'],
+    ['vladimir-mikheev-1995', ['Владимир', 'Михеев', 'Юрьевич', ''], 'Владимир Юрьевич Михеев'],
+    ['maria-efimova-1941', ['Мария', 'Михеева', 'Ефимовна', ''], 'Мария Ефимовна Михеева'],
+    ['alexandra-gerasimovna-pavlova', ['Александра', 'Павлова', 'Герасимовна', 'Герасимова'], 'Александра Герасимовна Павлова'],
+    ['ksenia-mikheeva-1990', ['Ксения', 'Михайлова', '', 'Михеева'], 'Ксения Михайлова'],
+    ['yakov', ['Яков', '', '', ''], 'Яков'],
+  ] as const) {
+    const person = catalog.people.find((person) => person.id === id)!;
+    assert.deepEqual([person.firstName, person.lastName, person.patronymic, person.maidenName], fields);
+    assert.equal(fullName(person), expectedName);
+    assert.equal('name' in person, false);
+  }
+  const ksenia = catalog.people.find((person) => person.id === 'ksenia-mikheeva-1990')!;
+  assert.ok(personSearchText(ksenia).includes('ксения михайлова'));
+  assert.ok(personSearchText(ksenia).includes('ксения михеева'));
+  const person = adaptFamilySource({ schemaVersion: 2, people: [
+    { id: 'test', firstName: ' Алёна ', lastName: ' Иванова ', patronymic: ' Петровна ', maidenName: ' Соколова ', birth: null, death: null },
+  ], relations: [], unidentifiedRelatives: [], issues: [] }).people[0];
+  assert.equal(fullName(person), 'Алёна Петровна Иванова');
+  assert.ok(personSearchText(person).includes('алена петровна соколова'));
+  assert.equal(fullName(person).includes('Соколова'), false);
+});
+
+test('the new source format rejects an old name string, missing fields and a blank first name', () => {
+  assert.equal(source.schemaVersion, 2);
+  const record = source.people[0];
+  assert.equal(FamilySourceSchema.safeParse({ ...source, schemaVersion: 1 }).success, false);
+  assert.equal(FamilySourceSchema.safeParse({ ...source, people: [{ ...record, name: 'Яков' }] }).success, false);
+  assert.equal(FamilySourceSchema.safeParse({ ...source, people: [{ ...record, firstName: ' ' }] }).success, false);
+  for (const field of ['firstName', 'lastName', 'patronymic', 'maidenName'] as const) {
+    const { [field]: omitted, ...missingField } = record;
+    assert.equal(FamilySourceSchema.safeParse({ ...source, people: [missingField] }).success, false, field);
+  }
 });
 
 test('unknown IDs in source annotations and duplicate relation entries fail validation', () => {

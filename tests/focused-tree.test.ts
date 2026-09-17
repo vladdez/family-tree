@@ -56,8 +56,8 @@ test('siblings stay inside ancestor cards while Maria Efimovna has her own card 
 });
 
 test('confirmed spouses have separate nodes; cousins, siblings of ancestors and unconfirmed spouses stay in cards', () => {
-  const people = ['me', 'sister', 'father', 'mother', 'grandfather', 'uncle', 'cousin', 'spouse', 'spouse-parent', 'unconfirmed-spouse', 'half', 'other-parent'].map((id) => ({ id, name: id, birthYears: [], death: null }));
-  const input = { schemaVersion: 1, people, relations: [
+  const people = ['me', 'sister', 'father', 'mother', 'grandfather', 'uncle', 'cousin', 'spouse', 'spouse-parent', 'unconfirmed-spouse', 'half', 'other-parent'].map((id) => ({ id, firstName: id, lastName: '', patronymic: '', maidenName: '', birthYears: [], death: null }));
+  const input = { schemaVersion: 2, people, relations: [
     { type: 'parent', parent: 'father', child: 'me' }, { type: 'parent', parent: 'mother', child: 'me', status: 'inferred_context' },
     { type: 'parent', parent: 'father', child: 'sister' }, { type: 'parent', parent: 'mother', child: 'sister' },
     { type: 'parent', parent: 'grandfather', child: 'father' }, { type: 'parent', parent: 'grandfather', child: 'uncle' },

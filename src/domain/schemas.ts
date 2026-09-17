@@ -20,10 +20,16 @@ const lifeEvent = z.object({
 }).strict().refine((e) => !e.alternatives.length || (e.date === null && e.alternatives.length >= 2 && new Set(e.alternatives).size === e.alternatives.length), 'Противоречивые даты: date = null, alternatives — минимум два разных варианта');
 const mediaPath = z.string().regex(/^\/media\/[a-zA-Z0-9_./-]+$/, 'Локальный путь должен начинаться с /media/').refine((p) => !p.includes('..') && !p.includes('//'), 'Недопустимый путь');
 const uniqueIds = z.array(id).refine((v) => new Set(v).size === v.length, 'Повторяющиеся ссылки');
+const personNameFields = {
+  firstName: z.string().trim().min(1),
+  lastName: z.string().trim(),
+  patronymic: z.string().trim(),
+  maidenName: z.string().trim(),
+};
 
 export const PersonSchema = z.object({
   id, slug: id,
-  name: z.object({ given: z.string().min(1), patronymic: z.string(), surname: z.string(), display: z.string().min(1).optional() }).strict(),
+  ...personNameFields,
   alternateNames: z.array(z.string().trim().min(1)).default([]).refine((v) => new Set(v).size === v.length, 'Повтор альтернативного имени'),
   sex: z.enum(['male', 'female', 'unknown']),
   birth: lifeEvent, death: lifeEvent,
@@ -74,12 +80,12 @@ export const FamilyIssueSchema = z.object({
 }).strict().refine((i) => i.person || i.people?.length, 'У замечания должны быть связанные люди');
 const years = z.array(z.number().int().min(1).max(9999)).refine((v) => new Set(v).size === v.length, 'Повтор года');
 export const SourcePersonSchema = z.object({
-  id, name: z.string().trim().min(1), alternateNames: PersonSchema.shape.alternateNames,
+  id, ...personNameFields, alternateNames: PersonSchema.shape.alternateNames,
   birthYears: years.optional(), deathYears: years.optional(),
   birth: PartialDateSchema.nullable().optional(), death: PartialDateSchema.nullable().optional(),
 }).strict().refine((p) => (p.birth !== undefined) !== (p.birthYears !== undefined), 'Укажите либо birth, либо birthYears').refine((p) => (p.death !== undefined) !== (p.deathYears !== undefined), 'Укажите либо death, либо deathYears');
 export const FamilySourceSchema = z.object({
-  schemaVersion: z.literal(1),
+  schemaVersion: z.literal(2),
   people: z.array(SourcePersonSchema),
   relations: z.array(FamilyRelationSchema),
   unidentifiedRelatives: z.array(UnidentifiedRelativeSchema),

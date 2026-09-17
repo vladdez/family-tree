@@ -1,15 +1,21 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "people": [
     {
       "id": "yakov",
-      "name": "Яков",
+      "firstName": "Яков",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [],
       "deathYears": []
     },
     {
       "id": "petr-1802",
-      "name": "Пётр",
+      "firstName": "Пётр",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [
         1802
       ],
@@ -19,7 +25,10 @@
     },
     {
       "id": "avdotya-efremova",
-      "name": "Авдотья Ефремова",
+      "firstName": "Авдотья",
+      "lastName": "Ефремова",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [
         1794,
         1795
@@ -28,7 +37,10 @@
     },
     {
       "id": "mikhey-petrov-1833",
-      "name": "Михей Петров",
+      "firstName": "Михей",
+      "lastName": "Петров",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [
         1833
       ],
@@ -36,7 +48,10 @@
     },
     {
       "id": "vasily-son-of-petr",
-      "name": "Василий",
+      "firstName": "Василий",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [
         1838,
         1839
@@ -45,7 +60,10 @@
     },
     {
       "id": "tatyana-grigoryeva",
-      "name": "Татьяна Григорьева",
+      "firstName": "Татьяна",
+      "lastName": "Григорьева",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [
         1829,
         1830
@@ -54,7 +72,10 @@
     },
     {
       "id": "konstantin-son-of-mikhey",
-      "name": "Константин",
+      "firstName": "Константин",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [
         1852,
         1853
@@ -63,7 +84,10 @@
     },
     {
       "id": "ivan-son-of-mikhey",
-      "name": "Иван",
+      "firstName": "Иван",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [
         1854,
         1855
@@ -72,7 +96,10 @@
     },
     {
       "id": "nikifor-1858",
-      "name": "Никифор",
+      "firstName": "Никифор",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [
         1858
       ],
@@ -80,7 +107,10 @@
     },
     {
       "id": "ekaterina-wife-of-nikifor",
-      "name": "Екатерина",
+      "firstName": "Екатерина",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [
         1857
       ],
@@ -88,13 +118,19 @@
     },
     {
       "id": "stepan-kirillov",
-      "name": "Степан Кириллов",
+      "firstName": "Степан",
+      "lastName": "Кириллов",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [],
       "deathYears": []
     },
     {
       "id": "petr-mikheev-1889",
-      "name": "Пётр Михеев",
+      "firstName": "Пётр",
+      "lastName": "Михеев",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [
         1889
       ],
@@ -102,7 +138,10 @@
     },
     {
       "id": "paraskeva-pavlova-1889",
-      "name": "Параскева Павлова",
+      "firstName": "Параскева",
+      "lastName": "Павлова",
+      "patronymic": "",
+      "maidenName": "",
       "birth": "1889-07-28",
       "deathYears": [
         1955
@@ -110,19 +149,28 @@
     },
     {
       "id": "pavel-nikolaevich-vasiliev",
-      "name": "Павел Николаевич Васильев",
+      "firstName": "Павел",
+      "lastName": "Васильев",
+      "patronymic": "Николаевич",
+      "maidenName": "",
       "birthYears": [],
       "deathYears": []
     },
     {
       "id": "natalya-andreeva",
-      "name": "Наталья Андреева",
+      "firstName": "Наталья",
+      "lastName": "Андреева",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [],
       "deathYears": []
     },
     {
       "id": "dmitry-mikheev-1910",
-      "name": "Дмитрий Михеев",
+      "firstName": "Дмитрий",
+      "lastName": "Михеев",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [
         1910
       ],
@@ -133,19 +181,28 @@
     },
     {
       "id": "alexey-son-of-petr-1889",
-      "name": "Алексей",
+      "firstName": "Алексей",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [],
       "deathYears": []
     },
     {
       "id": "vasily-son-of-petr-1889",
-      "name": "Василий",
+      "firstName": "Василий",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [],
       "deathYears": []
     },
     {
       "id": "anastasia-mikhailova-1914",
-      "name": "Анастасия Михайлова",
+      "firstName": "Анастасия",
+      "lastName": "Михайлова",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [
         1914
       ],
@@ -155,7 +212,10 @@
     },
     {
       "id": "vladimir-mikheev-1941",
-      "name": "Владимир Михеев",
+      "firstName": "Владимир",
+      "lastName": "Михеев",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [
         1941
       ],
@@ -163,7 +223,10 @@
     },
     {
       "id": "maria-efimova-1941",
-      "name": "Мария Ефимовна Михеева",
+      "firstName": "Мария",
+      "lastName": "Михеева",
+      "patronymic": "Ефимовна",
+      "maidenName": "",
       "birthYears": [
         1941
       ],
@@ -173,13 +236,19 @@
     },
     {
       "id": "efim-father-of-maria",
-      "name": "Ефим",
+      "firstName": "Ефим",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [],
       "deathYears": []
     },
     {
       "id": "elvira-mikheeva-grigoryeva",
-      "name": "Эльвира Константиновна Михеева",
+      "firstName": "Эльвира",
+      "lastName": "Михеева",
+      "patronymic": "Константиновна",
+      "maidenName": "Григорьева",
       "alternateNames": [
         "Эльвира Константиновна Григорьева",
         "Эльвира Михеева (Григорьева)"
@@ -189,7 +258,10 @@
     },
     {
       "id": "maria-petrovna-grigoryeva-1940",
-      "name": "Мария Петровна Григорьева",
+      "firstName": "Мария",
+      "lastName": "Григорьева",
+      "patronymic": "Петровна",
+      "maidenName": "",
       "birthYears": [
         1940
       ],
@@ -197,7 +269,10 @@
     },
     {
       "id": "alexandra-gerasimovna-pavlova",
-      "name": "Александра Герасимовна Павлова",
+      "firstName": "Александра",
+      "lastName": "Павлова",
+      "patronymic": "Герасимовна",
+      "maidenName": "Герасимова",
       "alternateNames": [
         "Анисия (Александра) Павлова (Герасимова)"
       ],
@@ -210,7 +285,10 @@
     },
     {
       "id": "petr-pavlovich-pavlov-1912",
-      "name": "Пётр Павлович Павлов",
+      "firstName": "Пётр",
+      "lastName": "Павлов",
+      "patronymic": "Павлович",
+      "maidenName": "",
       "birthYears": [
         1912
       ],
@@ -220,7 +298,10 @@
     },
     {
       "id": "fyodor-son-of-anisia",
-      "name": "Фёдор",
+      "firstName": "Фёдор",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [
         1937
       ],
@@ -228,37 +309,55 @@
     },
     {
       "id": "pavel-ivanovich-ivanov",
-      "name": "Павел Иванович Павлов",
+      "firstName": "Павел",
+      "lastName": "Павлов",
+      "patronymic": "Иванович",
+      "maidenName": "",
       "birthYears": [],
       "deathYears": []
     },
     {
       "id": "anton-son-of-pavel-ivanov",
-      "name": "Антон",
+      "firstName": "Антон",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [],
       "deathYears": []
     },
     {
       "id": "evdokia-daughter-of-pavel-ivanov",
-      "name": "Евдокия",
+      "firstName": "Евдокия",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [],
       "deathYears": []
     },
     {
       "id": "marfa-daughter-of-pavel-ivanov",
-      "name": "Марфа",
+      "firstName": "Марфа",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [],
       "deathYears": []
     },
     {
       "id": "anush-daughter-of-pavel-ivanov",
-      "name": "Ануш",
+      "firstName": "Ануш",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [],
       "deathYears": []
     },
     {
       "id": "konstantin-grigoryevich-grigoryev-1935",
-      "name": "Константин Григорьевич Григорьев",
+      "firstName": "Константин",
+      "lastName": "Григорьев",
+      "patronymic": "Григорьевич",
+      "maidenName": "",
       "birthYears": [
         1935
       ],
@@ -268,7 +367,10 @@
     },
     {
       "id": "grigory-maksimovich-maksimov-1898",
-      "name": "Григорий Максимович Максимов",
+      "firstName": "Григорий",
+      "lastName": "Максимов",
+      "patronymic": "Максимович",
+      "maidenName": "",
       "birthYears": [
         1898
       ],
@@ -278,7 +380,10 @@
     },
     {
       "id": "tatyana-sergeevna-maksimova-1906",
-      "name": "Татьяна Сергеевна Максимова",
+      "firstName": "Татьяна",
+      "lastName": "Максимова",
+      "patronymic": "Сергеевна",
+      "maidenName": "",
       "birthYears": [
         1906
       ],
@@ -288,37 +393,55 @@
     },
     {
       "id": "georgy-child-of-grigory-and-tatyana",
-      "name": "Георгий",
+      "firstName": "Георгий",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [],
       "deathYears": []
     },
     {
       "id": "gennady-1-child-of-grigory-and-tatyana",
-      "name": "Геннадий",
+      "firstName": "Геннадий",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [],
       "deathYears": []
     },
     {
       "id": "gennady-2-child-of-grigory-and-tatyana",
-      "name": "Геннадий",
+      "firstName": "Геннадий",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [],
       "deathYears": []
     },
     {
       "id": "rimma-child-of-grigory-and-tatyana",
-      "name": "Римма",
+      "firstName": "Римма",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [],
       "deathYears": []
     },
     {
       "id": "tamara-child-of-grigory-and-tatyana",
-      "name": "Тамара",
+      "firstName": "Тамара",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [],
       "deathYears": []
     },
     {
       "id": "vladimir-halfbrother-1947",
-      "name": "Владимир",
+      "firstName": "Владимир",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [
         1947
       ],
@@ -328,31 +451,46 @@
     },
     {
       "id": "maxim-kirillovich-kirillov",
-      "name": "Максим Кириллович Кириллов",
+      "firstName": "Максим",
+      "lastName": "Кириллов",
+      "patronymic": "Кириллович",
+      "maidenName": "",
       "birthYears": [],
       "deathYears": []
     },
     {
       "id": "fedot-son-of-maxim-kirillov",
-      "name": "Федот",
+      "firstName": "Федот",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [],
       "deathYears": []
     },
     {
       "id": "lyuku-child-of-maxim-kirillov",
-      "name": "Люку",
+      "firstName": "Люку",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [],
       "deathYears": []
     },
     {
       "id": "petyuk-child-of-maxim-kirillov",
-      "name": "Петюк",
+      "firstName": "Петюк",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [],
       "deathYears": []
     },
     {
       "id": "alexey-grigoryev-1924",
-      "name": "Алексей Григорьев",
+      "firstName": "Алексей",
+      "lastName": "Григорьев",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [
         1924
       ],
@@ -360,7 +498,10 @@
     },
     {
       "id": "maria-grigoryeva-1925",
-      "name": "Мария Григорьева",
+      "firstName": "Мария",
+      "lastName": "Григорьева",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [
         1925
       ],
@@ -368,34 +509,49 @@
     },
     {
       "id": "nikolay-grigoryev-son-of-maxim",
-      "name": "Николай Григорьев",
+      "firstName": "Николай",
+      "lastName": "Григорьев",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [],
       "deathYears": []
     },
     {
       "id": "yuri-vladimirovich-mikheev-1965",
-      "name": "Юрий Владимирович Михеев",
+      "firstName": "Юрий",
+      "lastName": "Михеев",
+      "patronymic": "Владимирович",
+      "maidenName": "",
       "birth": "1965-10-21",
       "death": "2025"
     },
     {
       "id": "ksenia-mikheeva-1990",
-      "name": "Ксения Михеева",
+      "firstName": "Ксения",
+      "lastName": "Михайлова",
+      "patronymic": "",
+      "maidenName": "Михеева",
       "alternateNames": [
-        "Ксения Михайлова"
+        "Ксения Михеева"
       ],
       "birth": "1990",
       "death": null
     },
     {
       "id": "vladimir-mikheev-1995",
-      "name": "Владимир Юрьевич Михеев",
+      "firstName": "Владимир",
+      "lastName": "Михеев",
+      "patronymic": "Юрьевич",
+      "maidenName": "",
       "birth": "1995",
       "death": null
     },
     {
       "id": "maria-mikheeva-2003",
-      "name": "Мария Михеева",
+      "firstName": "Мария",
+      "lastName": "Михеева",
+      "patronymic": "",
+      "maidenName": "",
       "birth": "2003",
       "death": null
     }

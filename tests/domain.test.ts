@@ -12,7 +12,7 @@ import { validateMedia } from '../scripts/data-files';
 
 // Synthetic fixtures are used only by tests and never included in site data.
 function person(id: string, changes: Record<string, unknown> = {}) {
-  return PersonSchema.parse({ id, slug: id, name: { given: 'Тест', patronymic: '', surname: '' }, sex: 'unknown', birth: { date: '1900', placeId: null }, death: { date: null, placeId: null }, parents: [], spouses: [], children: [], portrait: null, summary: '', biography: '', ...changes });
+  return PersonSchema.parse({ id, slug: id, firstName: 'Тест', lastName: '', patronymic: '', maidenName: '', sex: 'unknown', birth: { date: '1900', placeId: null }, death: { date: null, placeId: null }, parents: [], spouses: [], children: [], portrait: null, summary: '', biography: '', ...changes });
 }
 function document(peopleIds: string[]) {
   return DocumentSchema.parse({ id: 'source', title: 'Тестовый источник', type: 'marriage', date: '1920-06', peopleIds, files: [], archive: { name: '', fond: '', opis: '', delo: '', page: '' }, transcription: '', notes: '' });
