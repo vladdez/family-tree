@@ -13,6 +13,11 @@
   --color-warning: #755629;
   --color-warning-background: #f4eddf;
   --color-grid: #d6d9cf;
+  --color-tree-paternal-background: #dce9f5;
+  --color-tree-paternal-border: #7695b3;
+  --color-tree-maternal-background: #f3dfe8;
+  --color-tree-maternal-border: #af8096;
+  --color-tree-branch-muted: #555f59;
   --radius-small: 0.25rem;
   --radius-medium: 0.6rem;
   --radius-round: 999px;
