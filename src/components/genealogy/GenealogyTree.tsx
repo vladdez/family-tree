@@ -15,8 +15,13 @@ interface Props { people: TreePerson[]; relationships: TreeRelationship[]; branc
 const emptyBranches: TreeBranch[] = [];
 
 export default function GenealogyTree({ people, relationships, branches = emptyBranches, focusPersonId, familyPersonIds, relatives }: Props) {
+  const container = useRef<HTMLDivElement>(null);
+  const fullscreenButton = useRef<HTMLButtonElement>(null);
   const viewport = useRef<HTMLDivElement>(null);
   const relativesDialog = useRef<HTMLDialogElement>(null);
+  const [fullscreenMode, setFullscreenMode] = useState<'native' | 'fallback' | null>(null);
+  const [fullscreenPending, setFullscreenPending] = useState(false);
+  const [fullscreenMessage, setFullscreenMessage] = useState('');
   const [relativePerson, setRelativePerson] = useState<TreePerson | null>(null);
   const [geometry, setGeometry] = useState<Geometry | null>(null);
   const [view, setView] = useState<View>({ x: 0, y: 0, scale: 1 });
@@ -29,6 +34,54 @@ export default function GenealogyTree({ people, relationships, branches = emptyB
   const byId = useMemo(() => new Map(graph?.nodes.map((p) => [p.id, p]) ?? []), [graph]);
   const families = useMemo(() => graph && geometry ? getFamilyConnections(graph.nodes, relationships, geometry) : [], [graph, relationships, geometry]);
   const branchByPerson = useMemo(() => new Map(branches.flatMap((branch) => branch.personIds.map((id) => [id, branch] as const))), [branches]);
+
+  useEffect(() => {
+    const sync = () => {
+      setFullscreenMode((current) => document.fullscreenElement === container.current ? 'native' : current === 'fallback' ? current : null);
+      setFullscreenMessage('');
+    };
+    document.addEventListener('fullscreenchange', sync);
+    return () => document.removeEventListener('fullscreenchange', sync);
+  }, []);
+
+  useEffect(() => {
+    if (fullscreenMode !== 'fallback') return;
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const blocked: [HTMLElement, boolean][] = [];
+    for (let element: HTMLElement | null = container.current; element && element !== document.body; element = element.parentElement) {
+      for (const sibling of element.parentElement?.children ?? []) if (sibling !== element && sibling instanceof HTMLElement) {
+        blocked.push([sibling, sibling.inert]); sibling.inert = true;
+      }
+    }
+    const escape = (event: globalThis.KeyboardEvent) => {
+      if (event.key !== 'Escape' || relativesDialog.current?.open) return;
+      event.preventDefault(); setFullscreenMode(null);
+      fullscreenButton.current?.focus({ preventScroll: true });
+    };
+    document.addEventListener('keydown', escape);
+    return () => {
+      document.body.style.overflow = overflow;
+      for (const [element, inert] of blocked) element.inert = inert;
+      document.removeEventListener('keydown', escape);
+    };
+  }, [fullscreenMode]);
+
+  async function toggleFullscreen() {
+    const element = container.current;
+    if (!element || fullscreenPending) return;
+    setFullscreenMessage('');
+    if (fullscreenMode === 'fallback') { setFullscreenMode(null); return; }
+    setFullscreenPending(true);
+    try {
+      if (document.fullscreenElement === element) await document.exitFullscreen();
+      else if (element.requestFullscreen) await element.requestFullscreen();
+      else setFullscreenMode('fallback');
+    } catch {
+      if (document.fullscreenElement === element) setFullscreenMessage('Для выхода из полного экрана нажмите Esc.');
+      else setFullscreenMode('fallback');
+    } finally { setFullscreenPending(false); }
+  }
 
   useEffect(() => {
     if (!viewport.current) return;
@@ -53,7 +106,15 @@ export default function GenealogyTree({ people, relationships, branches = emptyB
   useEffect(() => {
     if (!viewport.current || !graph) return;
     showFamily();
-    const observer = new ResizeObserver(showFamily); observer.observe(viewport.current);
+    let size = viewport.current.getBoundingClientRect();
+    // Keep the current person and scale when fullscreen changes the available area.
+    const observer = new ResizeObserver(() => {
+      if (!viewport.current) return;
+      const next = viewport.current.getBoundingClientRect();
+      const dx = (next.width - size.width) / 2, dy = (next.height - size.height) / 2;
+      if (dx || dy) setView((current) => ({ ...current, x: current.x + dx, y: current.y + dy }));
+      size = next;
+    }); observer.observe(viewport.current);
     return () => observer.disconnect();
   }, [showFamily, graph]);
 
@@ -127,8 +188,9 @@ export default function GenealogyTree({ people, relationships, branches = emptyB
     setView({ scale, x: box.width / 2 - (node.x + geometry.nodeWidth / 2) * scale, y: box.height / 2 - (node.y + geometry.nodeHeight / 2) * scale });
   }
 
-  return <div className="genealogy-tree">
-    <div className="tree-toolbar"><label className="field tree-search">Найти на древе<select value={selected} onChange={(event) => focusPerson(event.target.value)}><option value="">Главная линия</option>{people.map((p) => <option key={p.id} value={p.id}>{p.name} · {p.lifespan}</option>)}</select></label><div className="tree-controls"><button type="button" className="button" onClick={() => zoom(1.2)} aria-label="Увеличить">+</button><span className="tree-scale" aria-live="polite">{Math.round(view.scale * 100)}%</span><button type="button" className="button" onClick={() => zoom(1 / 1.2)} aria-label="Уменьшить">−</button><button type="button" className="button" onClick={showFamily}>Моя семья</button><button type="button" className="button" onClick={() => { setSelected(''); fit(); }}>Все предки</button></div></div>
+  return <div ref={container} className={`genealogy-tree${fullscreenMode ? ' is-fullscreen' : ''}`}>
+    <div className="tree-toolbar"><label className="field tree-search">Найти на древе<select value={selected} onChange={(event) => focusPerson(event.target.value)}><option value="">Главная линия</option>{people.map((p) => <option key={p.id} value={p.id}>{p.name} · {p.lifespan}</option>)}</select></label><div className="tree-controls"><button type="button" className="button" onClick={() => zoom(1.2)} aria-label="Увеличить">+</button><span className="tree-scale" aria-live="polite">{Math.round(view.scale * 100)}%</span><button type="button" className="button" onClick={() => zoom(1 / 1.2)} aria-label="Уменьшить">−</button><button type="button" className="button" onClick={showFamily}>Моя семья</button><button type="button" className="button" onClick={() => { setSelected(''); fit(); }}>Все предки</button><button ref={fullscreenButton} type="button" className="button tree-fullscreen-button" onClick={toggleFullscreen} aria-pressed={!!fullscreenMode} disabled={!graph || fullscreenPending} title={fullscreenMode ? 'Выйти из полного экрана (Esc)' : 'Развернуть древо на весь экран'}>{fullscreenMode ? 'Выйти из полного экрана' : 'Весь экран'}</button></div></div>
+    {fullscreenMessage && <p className="tree-fullscreen-message" role="status">{fullscreenMessage}</p>}
     {branches.some((branch) => branch.kind === 'family') && <div className="tree-branch-legend" role="group" aria-label="Цвета семейных ветвей">{branches.filter((branch) => branch.kind === 'family').map((branch) => <span key={branch.id} data-branch={branch.id}>{branch.label}</span>)}</div>}
     <div ref={viewport} className={`tree-viewport${dragging ? ' is-dragging' : ''}${graph ? '' : ' is-register'}`} tabIndex={0} role="region" aria-label="Интерактивное семейное древо" aria-describedby="tree-instructions" onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} onLostPointerCapture={pointerUp} onPointerLeave={(event) => { if (!dragging) pointers.current.delete(event.pointerId); }} onKeyDown={keyboard} onClickCapture={(event) => { if (moved.current && event.detail !== 0) { event.preventDefault(); event.stopPropagation(); } }}>
       {graph && geometry ? <div className="tree-canvas" style={{ width: graph.width, height: graph.height, transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})` }}>
