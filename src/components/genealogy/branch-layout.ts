@@ -47,6 +47,11 @@ export function layoutBranches(graph: TreeGraph, edges: TreeRelationship[], geom
         return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : (group[0].x - left) / stride;
       };
       const ordered = [...groups.values()].sort((a, b) => parentColumn(a) - parentColumn(b));
+      // Keep spouses on their ancestral sides when both sides are known.
+      // Without parent positions, preserve the pair's existing order.
+      for (const group of ordered) if (group.every((node) => parents.get(node.id)!.some((id) => columns.has(id)))) {
+        group.sort((a, b) => parentColumn([a]) - parentColumn([b]));
+      }
       const capacity = spans && branch.id === below!.id ? totalColumns : capacities.get(branch.id)!;
       let column = (offsets.get(branch.id) ?? 0) + Math.floor((capacity - records.length) / 2);
       // Place the focal parents at the facing edges of their two family areas.

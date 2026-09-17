@@ -56,7 +56,10 @@ export function getFamilyConnections(nodes: PositionedPerson[], edges: TreeRelat
     const bounds = [...parentRows.flatMap(([y]) => [y + nodeHeight + generationGap * 0.1, y + nodeHeight + generationGap * 0.25]),
       ...childRows.flatMap(([y]) => [Math.max(gap / 4, y - generationGap * 0.7), Math.max(gap / 4, y - generationGap * 0.5)])];
     const top = Math.min(...bounds), bottom = Math.max(...bounds);
-    const idealX = family.parentIds.reduce((sum, parent) => sum + center(byId.get(parent)!), 0) / family.parentIds.length;
+    // A single child's connector can descend straight to its card. The safety
+    // checks below retain a column-gap route when an intervening card blocks it.
+    const idealX = family.childIds.length === 1 ? center(byId.get(family.childIds[0])!)
+      : family.parentIds.reduce((sum, parent) => sum + center(byId.get(parent)!), 0) / family.parentIds.length;
     const members = new Set([...family.parentIds, ...family.childIds]);
     const candidates = [...new Set([idealX, ...nodes.flatMap((node) => [0.25, 0.5, 0.75].flatMap((fraction) => [node.x - gap * fraction, node.x + nodeWidth + gap * fraction]))])];
     const safe = (x: number) => !nodes.some((node) => (x > node.x && x < node.x + nodeWidth && overlaps(top, bottom, node.y, node.y + nodeHeight))

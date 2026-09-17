@@ -38,6 +38,36 @@ test('both parents merge into one trunk which forks to all three siblings', () =
   assert.deepEqual([...new Set(family.lines.flatMap((line) => line.edges.map((edge) => edge.id)))].sort(), edges.map((edge) => edge.id).sort());
 });
 
+test('a single child receives a straight descent from the merged parents when clear', () => {
+  const nodes = [person('a', 40, 40), person('b', 300, 40), person('c', 300, 280)];
+  const edges = [parent('a', 'c'), parent('b', 'c')];
+  const [family] = getFamilyConnections(nodes, edges, geometry);
+  const spine = family.lines.find((line) => line.id.endsWith(':spine'))!;
+  assert.ok(spine.points.every((point) => point.x === nodes[2].x + geometry.nodeWidth / 2));
+  assert.equal(family.lines.some((line) => line.id.includes(':children:')), false);
+  for (const p of nodes.slice(0, 2)) assert.ok(reachable(family,
+    { x: p.x + 110, y: p.y + 140 }, { x: nodes[2].x + 110, y: nodes[2].y }));
+});
+
+test('a single child’s straight descent uses a column gap when an intervening card blocks it', () => {
+  const nodes = [person('a', 40, 40), person('b', 300, 40), person('c', 300, 760), person('unrelated', 300, 280)];
+  const edges = [parent('a', 'c'), parent('b', 'c')];
+  const [family] = getFamilyConnections(nodes, edges, geometry);
+  const spine = family.lines.find((line) => line.id.endsWith(':spine'))!;
+  const blocker = nodes[3];
+  assert.ok(spine.points.every((point) => point.x <= blocker.x || point.x >= blocker.x + geometry.nodeWidth));
+  for (const line of family.lines) for (let index = 1; index < line.points.length; index++) {
+    const a = line.points[index - 1], b = line.points[index];
+    for (const node of nodes) {
+      const crosses = a.x === b.x ? a.x > node.x && a.x < node.x + 220 && Math.max(a.y, b.y) > node.y && Math.min(a.y, b.y) < node.y + 140
+        : a.y > node.y && a.y < node.y + 140 && Math.max(a.x, b.x) > node.x && Math.min(a.x, b.x) < node.x + 220;
+      assert.equal(crosses, false, `${line.id} crosses ${node.id}`);
+    }
+  }
+  for (const p of nodes.slice(0, 2)) assert.ok(reachable(family,
+    { x: p.x + 110, y: p.y + 140 }, { x: nodes[2].x + 110, y: nodes[2].y }));
+});
+
 test('different parent sets keep distinct families without a false junction at another parent', () => {
   const nodes = [person('a', 40, 40), person('b', 300, 40), person('c', 560, 40), person('d', 40, 280), person('e', 300, 280)];
   const edges = [parent('a', 'd'), parent('b', 'd'), parent('a', 'e'), parent('c', 'e')];

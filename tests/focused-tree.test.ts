@@ -99,3 +99,30 @@ test('focused real layout preserves era alignment, branch separation and the sha
     }
   }
 });
+
+test('paternal cards from 1857–1858 to 1889–1906 follow their ancestry without crossed or bent descents', () => {
+  const tree = getFocusedTree(catalog, treeSettings), geometry = { nodeWidth: 220, nodeHeight: 180, gap: 40, generationGap: 100 };
+  const snapshot = JSON.stringify(tree);
+  const graph = layoutTree(tree.people, tree.relationships, geometry, getTreeBranches(tree.people, tree.relationships, branchRoots));
+  const nodes = new Map(graph.nodes.map((node) => [node.id, node]));
+  const families = getFamilyConnections(graph.nodes, tree.relationships, geometry);
+  const petr = nodes.get('petr-mikheev-1889')!, paraskeva = nodes.get('paraskeva-pavlova-1889')!;
+  const left = families.find((family) => family.childIds.includes(petr.id))!;
+  const right = families.find((family) => family.childIds.includes(paraskeva.id))!;
+  assert.ok(petr.x < paraskeva.x);
+  assert.equal(petr.y, paraskeva.y);
+  assert.equal(graph.periods!.find((period) => period.y === petr.y)!.label, '1889–1906');
+  for (const id of [...left.parentIds, ...right.parentIds]) {
+    const node = nodes.get(id)!;
+    assert.equal(graph.periods!.find((period) => period.y === node.y)!.label, '1857–1858');
+  }
+  const xs = (family: typeof left) => family.lines.flatMap((line) => line.points.map((point) => point.x));
+  assert.ok(Math.max(...xs(left)) < Math.min(...xs(right)), 'the two parent families must have disjoint routes');
+  for (const [family, child] of [[left, petr], [right, paraskeva]] as const) {
+    assert.ok(family.lines.find((line) => line.id.endsWith(':spine'))!.points.every((point) => point.x === child.x + geometry.nodeWidth / 2));
+    assert.equal(family.lines.some((line) => line.id.includes(':children:')), false);
+  }
+  assert.ok(tree.relationships.some((edge) => edge.type === 'spouse'
+    && [edge.from, edge.to].includes(petr.id) && [edge.from, edge.to].includes(paraskeva.id)));
+  assert.equal(JSON.stringify(tree), snapshot);
+});
