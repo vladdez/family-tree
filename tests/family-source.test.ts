@@ -6,7 +6,7 @@ import { adaptFamilySource } from '../src/domain/family-source';
 import { validateCatalog } from '../src/domain/validation';
 import { fullName, personSearchText } from '../src/domain/people';
 import { getParents, getSpouses, getSiblings, getRelativeGroups, getTreeRelationships, getTreeData, relationEndpoints } from '../src/domain/relationships';
-import { getSourceIssues, getUnidentifiedRelatives } from '../src/domain/source-notes';
+import { getSourceIssues, getPublicSourceIssues, getUnidentifiedRelatives } from '../src/domain/source-notes';
 import { layoutTree } from '../src/components/genealogy/layout';
 import { edgePath } from '../src/components/genealogy/edges';
 import { getTreeBranches } from '../src/domain/tree-branches';
@@ -82,6 +82,15 @@ test('all corrections, identity issues and unnamed-relative counts remain attach
   for (const relative of source.unidentifiedRelatives) for (const id of relative.people) assert.ok(getUnidentifiedRelatives(catalog, id).some((r) => r.count === relative.count && r.status === relative.status && r.relation === relative.relation));
 });
 
+test('public source notes omit correction history but retain unresolved dates and relationships', () => {
+  assert.equal(getSourceIssues('grigory-maksimovich-maksimov-1898', catalog).length, 2);
+  assert.deepEqual(getPublicSourceIssues('grigory-maksimovich-maksimov-1898', catalog), []);
+  assert.deepEqual(getPublicSourceIssues('ekaterina-wife-of-nikifor', catalog).map((issue) => issue.values), [[1949, 1951]]);
+  assert.deepEqual(getPublicSourceIssues('dmitry-mikheev-1910', catalog).map((issue) => issue.values), [[1996, 1998]]);
+  const uncertain = { ...catalog, issues: [{ person: 'a', type: 'identity_conflict' as const, reason: 'Личность не установлена.' }] };
+  assert.equal(getPublicSourceIssues('a', uncertain)[0].reason, 'Личность не установлена.');
+});
+
 test('profiles enrich existing nodes and cannot silently choose an uncertain year', () => {
   const input = { schemaVersion: 2, people: [{ id: 'a', firstName: 'Тест', lastName: '', patronymic: '', maidenName: '', birthYears: [1900], deathYears: [1980, 1981] }], relations: [], unidentifiedRelatives: [], issues: [] };
   const enriched = adaptFamilySource(input, [{ id: 'a', birthDate: '1900-03-12', birthDocumentId: 'birth-source', deathDocumentId: 'death-source', biography: 'Текст профиля', portrait: null }]);
@@ -105,6 +114,25 @@ test('source records preserve exact dates, year-only dates, unknown dates and al
   assert.equal(adapted.relations[0].status, 'explicit');
   assert.throws(() => adaptFamilySource(input, [{ id: 'a', birthDate: '1965-10-22' }]), /противоречит/);
   assert.equal(FamilySourceSchema.safeParse({ ...input, people: [{ ...input.people[0], birthYears: [1965] }] }).success, false);
+});
+
+test('wrapped profile text preserves paragraphs and supplies plain strings to pages and timelines', () => {
+  const input = { schemaVersion: 2, people: [{ id: 'a', firstName: 'Тест', lastName: '', patronymic: '', maidenName: '', birth: null, death: null }], relations: [], unidentifiedRelatives: [], issues: [] };
+  const profile = {
+    id: 'a', summary: ['Краткий текст', 'биографии.'],
+    biography: [{ title: 'Семья', text: ['Первый абзац.\n\nВторой', 'абзац.'] }],
+    notes: ['Заметка', 'к биографии.'],
+    events: [{ id: 'work', title: 'Работа', date: null, notes: ['Сведения', 'о работе.'] }],
+    marriages: [{ spouseId: 'b', date: null, notes: ['Сведения', 'о браке.'] }],
+  };
+  const person = adaptFamilySource(input, [profile]).people[0];
+  assert.equal(person.summary, 'Краткий текст биографии.');
+  assert.deepEqual(person.biography, [{ title: 'Семья', text: 'Первый абзац.\n\nВторой абзац.' }]);
+  assert.equal(person.notes, 'Заметка к биографии.');
+  assert.equal(person.events[0].notes, 'Сведения о работе.');
+  assert.equal(person.marriages[0].notes, 'Сведения о браке.');
+  assert.equal(adaptFamilySource(input, [{ id: 'a', biography: ['Короткая', 'биография.'] }]).people[0].biography, 'Короткая биография.');
+  assert.throws(() => adaptFamilySource(input, [{ id: 'a', biography: ['Текст', { title: 'Семья', text: 'Текст' }] }]));
 });
 
 test('structured names retain confirmed name parts and leave unknown parts empty', () => {

@@ -5,4 +5,4 @@ import PersonLink from './PersonLink.astro';
 interface Props { personId?: string }
 const relatives = getUnidentifiedRelatives(catalog, Astro.props.personId);
 ---
-{relatives.length > 0 && <section class="section"><h2>Родственники с неизвестными именами</h2><p class="muted">В семейных данных отмечены эти родственники. Отдельные личные записи появятся, когда будут установлены их имена.</p><div class="source-notes">{relatives.map((relative) => <article class="note"><h3>{relative.title}</h3><p><span class="badge">{relative.statusLabel}</span></p>{relative.reason && <p>{relative.reason}</p>}<ul class="document-people">{relative.people.map((id) => <li><PersonLink personId={id} /></li>)}</ul></article>)}</div></section>}
+{relatives.length > 0 && <section class="section"><h2>Родственники с неизвестными именами</h2><div class="source-notes">{relatives.map((relative) => <article class="note"><h3>{relative.title}</h3><p><span class="badge">{relative.statusLabel}</span></p>{relative.reason && <p>{relative.reason}</p>}<ul class="document-people">{relative.people.map((id) => <li><PersonLink personId={id} /></li>)}</ul></article>)}</div></section>}

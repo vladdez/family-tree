@@ -6,7 +6,7 @@ import { validateCatalog } from '../src/domain/validation';
 import { fullName, lifespan, personDescription, showBirthOnly } from '../src/domain/people';
 import { getDocumentsForPerson, isImage } from '../src/domain/documents';
 import { getRelativeGroups } from '../src/domain/relationships';
-import { getSourceIssues, getUnidentifiedRelatives } from '../src/domain/source-notes';
+import { getSourceIssues, getPublicSourceIssues, getUnidentifiedRelatives } from '../src/domain/source-notes';
 import { getPersonRedirects } from '../src/domain/person-redirects';
 import personRedirects from '../src/data/person-redirects.json';
 
@@ -89,7 +89,11 @@ for (const person of catalog.people) {
     if (!personLinks.has(`${base}people/${relative.slug}/`)) errors.push(`${person.id}: нет ссылки на родственника ${relative.id}`);
     if (group.annotations[relative.id] && !visibleText.includes(group.annotations[relative.id])) errors.push(`${person.id}: не показан статус связи ${relative.id}`);
   }
-  for (const issue of getSourceIssues(person.id, catalog)) if (!visibleText.includes(issue.reason)) errors.push(`${person.id}: пропущено замечание источника`);
+  const publicIssues = getPublicSourceIssues(person.id, catalog);
+  for (const issue of publicIssues) if (!visibleText.includes(issue.reason)) errors.push(`${person.id}: пропущено замечание источника`);
+  for (const issue of getSourceIssues(person.id, catalog)) {
+    if (!publicIssues.some((publicIssue) => publicIssue.type === issue.type && publicIssue.reason === issue.reason) && visibleText.includes(issue.reason)) errors.push(`${person.id}: опубликована служебная история исправлений`);
+  }
   for (const relative of getUnidentifiedRelatives(catalog, person.id)) if (!visibleText.includes(relative.title) || !visibleText.includes(relative.statusLabel)) errors.push(`${person.id}: пропущены безымянные родственники`);
 }
 const archiveNodes = elements(parse(await readFile(path.join(dist, 'documents', 'index.html'), 'utf8')));

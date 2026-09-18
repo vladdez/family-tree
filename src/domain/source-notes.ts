@@ -9,6 +9,9 @@ export function getSourceIssues(personId: string, catalog: Catalog) {
     peopleIds: [...new Set([...(issue.person ? [issue.person] : []), ...(issue.people ?? []), ...(issue.relatedPerson ? [issue.relatedPerson] : [])])].filter((id) => id !== personId),
   }));
 }
+export function getPublicSourceIssues(personId: string, catalog: Catalog) {
+  return getSourceIssues(personId, catalog).filter((issue) => issue.type !== 'name_correction' && issue.type !== 'date_correction');
+}
 export function getUnidentifiedRelatives(catalog: Catalog, personId?: string) {
   return (catalog.unidentifiedRelatives ?? []).filter((r) => !personId || r.people.includes(personId)).map((relative) => ({
     ...relative,

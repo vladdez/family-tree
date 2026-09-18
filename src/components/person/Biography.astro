@@ -10,7 +10,7 @@ const { biography } = Astro.props;
       <p class="prose">{section.text}</p>
     </section>
   )) : biography ? <p class="prose">{biography}</p> : (
-    <p class="muted">Биография пока не записана. Сохранены известные даты жизни; новые сведения появятся после уточнения семейных источников.</p>
+    <p class="muted">Биография пока неизвестна.</p>
   )}
 </div>
 <style>

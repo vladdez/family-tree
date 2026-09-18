@@ -25,11 +25,13 @@ const profileSource = z.object({
   href: z.union([mediaPath, z.url().refine((value) => value.startsWith('https://'), 'Источник должен использовать HTTPS')]),
   pages: z.string().trim().default(''),
 }).strict();
+const wrappedText = z.union([z.string(), z.array(z.string()).min(1)])
+  .transform((value) => Array.isArray(value) ? value.join(' ') : value);
 const biography = z.union([
-  z.string(),
+  wrappedText,
   z.array(z.object({
     title: z.string().trim().min(1),
-    text: z.string().trim().min(1),
+    text: wrappedText.pipe(z.string().trim().min(1)),
   }).strict()).min(1),
 ]);
 const uniqueIds = z.array(id).refine((v) => new Set(v).size === v.length, 'Повторяющиеся ссылки');
@@ -49,10 +51,10 @@ export const PersonSchema = z.object({
   birth: lifeEvent, death: lifeEvent,
   parents: uniqueIds, spouses: uniqueIds, children: uniqueIds,
   parentDetails: z.array(z.object({ personId: id, role: z.enum(['father', 'mother', 'parent']), kind: z.enum(['biological', 'adoptive', 'unknown']) }).strict()).default([]),
-  marriages: z.array(z.object({ spouseId: id, date: PartialDateSchema.nullable(), documentId: id.optional(), notes: z.string().default('') }).strict()).default([]),
-  events: z.array(z.object({ id, title: z.string().min(1), date: PartialDateSchema.nullable(), documentId: id.optional(), notes: z.string().default('') }).strict()).default([]),
+  marriages: z.array(z.object({ spouseId: id, date: PartialDateSchema.nullable(), documentId: id.optional(), notes: wrappedText.default('') }).strict()).default([]),
+  events: z.array(z.object({ id, title: z.string().min(1), date: PartialDateSchema.nullable(), documentId: id.optional(), notes: wrappedText.default('') }).strict()).default([]),
   portrait: mediaPath.nullable(),
-  summary: z.string(), biography, notes: z.string().default(''),
+  summary: wrappedText, biography, notes: wrappedText.default(''),
   sources: z.array(profileSource).default([]),
 }).strict();
 
@@ -112,7 +114,7 @@ export const PersonProfileSchema = z.object({
   birthDate: PartialDateSchema.nullable().optional(), deathDate: PartialDateSchema.nullable().optional(),
   birthPlaceId: id.nullable().optional(), deathPlaceId: id.nullable().optional(),
   birthDocumentId: id.optional(), deathDocumentId: id.optional(),
-  portrait: mediaPath.nullable().optional(), summary: z.string().optional(), biography: biography.optional(), notes: z.string().optional(),
+  portrait: mediaPath.nullable().optional(), summary: wrappedText.optional(), biography: biography.optional(), notes: wrappedText.optional(),
   marriages: PersonSchema.shape.marriages.optional(), events: PersonSchema.shape.events.optional(),
   sources: PersonSchema.shape.sources.optional(),
 }).strict();
