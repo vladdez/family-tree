@@ -9,5 +9,5 @@ const { event } = Astro.props;
 <li class="timeline-event">
   <div class="event-date">{event.alternatives.length ? <span class="badge">{event.alternatives.map(formatDate).join(' или ')} · требует уточнения</span> : event.date ? <time datetime={event.date}>{formatDate(event.date)}</time> : 'Дата неизвестна'}</div>
   <h3>{event.title}</h3>{event.peopleIds.map((id) => <p><PersonLink personId={id} /></p>)}
-  {event.notes && <p class="event-note">{event.notes}</p>}{event.documentId && <a class="text-link" href={documentUrl(event.documentId)}>Подтверждающий документ →</a>}
+  {event.notes && <p class="event-note prose">{event.notes}</p>}{event.documentId && <a class="text-link" href={documentUrl(event.documentId)}>Подтверждающий документ →</a>}
 </li>

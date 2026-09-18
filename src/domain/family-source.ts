@@ -33,6 +33,7 @@ export function adaptFamilySource(input: unknown, profileInputs: unknown[] = [])
       death: event(record.deathYears, record.death, profile?.deathDate, profile?.deathPlaceId, profile?.deathDocumentId),
       parents: [], spouses: [], children: [],
       portrait: profile?.portrait ?? null, summary: profile?.summary ?? '', biography: profile?.biography ?? '', notes: profile?.notes ?? '',
+      sources: profile?.sources ?? [],
       marriages: profile?.marriages ?? [], events: profile?.events ?? [],
     });
   });

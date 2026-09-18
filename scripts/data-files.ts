@@ -20,7 +20,7 @@ export async function readRawCatalog() {
   return { ...adaptFamilySource(source, profiles), documents, places };
 }
 export async function validateMedia(catalog: Catalog) {
-  const paths = new Set([...catalog.people.flatMap((p) => p.portrait ? [p.portrait] : []), ...catalog.documents.flatMap((d) => d.files.flatMap((f) => f.preview ? [f.path, f.preview] : [f.path]))]);
+  const paths = new Set([...catalog.people.flatMap((p) => [...(p.portrait ? [p.portrait] : []), ...p.sources.filter((source) => source.href.startsWith('/')).map((source) => source.href)]), ...catalog.documents.flatMap((d) => d.files.flatMap((f) => f.preview ? [f.path, f.preview] : [f.path]))]);
   for (const mediaPath of paths) {
     const absolute = path.join(projectRoot, 'public', mediaPath);
     try { if (!(await stat(absolute)).isFile()) throw new Error('не файл'); }

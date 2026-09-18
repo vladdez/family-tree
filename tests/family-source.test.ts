@@ -112,7 +112,7 @@ test('structured names retain confirmed name parts and leave unknown parts empty
     ['elvira-mikheeva-grigoryeva', ['Эльвира', 'Михеева', 'Константиновна', 'Григорьева'], 'Эльвира Константиновна Михеева'],
     ['yuri-vladimirovich-mikheev-1965', ['Юрий', 'Михеев', 'Владимирович', ''], 'Юрий Владимирович Михеев'],
     ['vladimir-mikheev-1995', ['Владимир', 'Михеев', 'Юрьевич', ''], 'Владимир Юрьевич Михеев'],
-    ['maria-efimova-1941', ['Мария', 'Михеева', 'Ефимовна', ''], 'Мария Ефимовна Михеева'],
+    ['maria-efimova-1941', ['Мария', 'Михеева', 'Ефимовна', 'Ефимова'], 'Мария Ефимовна Михеева'],
     ['alexandra-gerasimovna-pavlova', ['Александра', 'Павлова', 'Герасимовна', 'Герасимова'], 'Александра Герасимовна Павлова'],
     ['ksenia-mikheeva-1990', ['Ксения', 'Михайлова', '', 'Михеева'], 'Ксения Михайлова'],
     ['yakov', ['Яков', '', '', ''], 'Яков'],
@@ -170,7 +170,7 @@ test('unknown IDs in source annotations and duplicate relation entries fail vali
   if (source.relations.length) assert.throws(() => validateCatalog({ ...catalog, relations: [...source.relations, source.relations[0]] }), /Повтор связи/);
 });
 
-test('confirmed paternal chain reaches Yuri without inventing his mother', () => {
+test('confirmed paternal chain reaches Yuri and all six children share Vladimir and Maria as parents', () => {
   const chain = ['petr-mikheev-1889', 'dmitry-mikheev-1910', 'vladimir-mikheev-1941', 'yuri-vladimirovich-mikheev-1965'];
   for (let index = 1; index < chain.length; index++) {
     const relation = source.relations.filter((relation) => relation.type === 'parent' && relation.parent === chain[index - 1] && relation.child === chain[index]);
@@ -178,7 +178,15 @@ test('confirmed paternal chain reaches Yuri without inventing his mother', () =>
     assert.equal(relation[0].status, 'explicit');
     assert.ok(catalog.people.find((person) => person.id === chain[index - 1])!.children.includes(chain[index]));
   }
-  assert.deepEqual(catalog.people.find((person) => person.id === chain.at(-1))!.parents, ['vladimir-mikheev-1941']);
+  const parents = ['vladimir-mikheev-1941', 'maria-efimova-1941'];
+  const children = ['alevtina-daughter-of-vladimir-and-maria', 'svetlana-daughter-of-vladimir-and-maria',
+    'yuri-vladimirovich-mikheev-1965', 'sergey-son-of-vladimir-and-maria',
+    'elena-daughter-of-vladimir-and-maria', 'anastasia-daughter-of-vladimir-and-maria'];
+  for (const id of children) assert.deepEqual(catalog.people.find((person) => person.id === id)!.parents, parents);
+  for (const id of parents) {
+    assert.deepEqual(catalog.people.find((person) => person.id === id)!.children.slice().sort(), children.slice().sort());
+    assert.deepEqual(getUnidentifiedRelatives(catalog, id), []);
+  }
 });
 
 test('actual family layout keeps spouses together, parents above children and all cards distinct', () => {

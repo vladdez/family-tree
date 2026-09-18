@@ -1,0 +1,19 @@
+---
+import type { Person } from '../../domain/schemas';
+interface Props { biography: Person['biography'] }
+const { biography } = Astro.props;
+---
+<div class="biography">
+  {Array.isArray(biography) ? biography.map((section) => (
+    <section class="biography-section">
+      <h3>{section.title}</h3>
+      <p class="prose">{section.text}</p>
+    </section>
+  )) : biography ? <p class="prose">{biography}</p> : (
+    <p class="muted">Биография пока не записана. Сохранены известные даты жизни; новые сведения появятся после уточнения семейных источников.</p>
+  )}
+</div>
+<style>
+  .biography-section + .biography-section { margin-top: var(--space-xl); }
+  .biography-section h3 { margin-bottom: var(--space-sm); }
+</style>

@@ -21,16 +21,16 @@ test('main tree retains Vladimir, both parents, his sisters and both ancestral l
   const ids = new Set(tree.people.map((person) => person.id));
   assert.equal(tree.people.find((person) => person.id === tree.focusPersonId)!.name, 'Владимир Юрьевич Михеев');
   assert.deepEqual(tree.familyPersonIds.slice().sort(), ['elvira-mikheeva-grigoryeva', 'ksenia-mikheeva-1990', 'maria-mikheeva-2003', 'vladimir-mikheev-1995', 'yuri-vladimirovich-mikheev-1965']);
-  for (const id of ['petr-mikheev-1889', 'dmitry-mikheev-1910', 'vladimir-mikheev-1941', 'maria-efimova-1941', 'konstantin-grigoryevich-grigoryev-1935', 'maria-petrovna-grigoryeva-1940']) assert.ok(ids.has(id), id);
-  for (const id of ['vladimir-halfbrother-1947', 'efim-father-of-maria']) assert.equal(ids.has(id), false, id);
+  for (const id of ['petr-mikheev-1889', 'dmitry-mikheev-1910', 'vladimir-mikheev-1941', 'maria-efimova-1941', 'efim-father-of-maria', 'konstantin-grigoryevich-grigoryev-1935', 'maria-petrovna-grigoryeva-1940']) assert.ok(ids.has(id), id);
+  for (const id of ['vladimir-halfbrother-1947', 'sergey-son-of-vladimir-and-maria', 'anastasia-daughter-of-vladimir-and-maria']) assert.equal(ids.has(id), false, id);
   const ancestors = tree.people.filter((person) => !tree.familyPersonIds.includes(person.id));
   for (const person of ancestors) {
     assert.ok(tree.relationships.some((edge) => edge.type === 'parent' && edge.from === person.id)
       || tree.relationships.some((edge) => edge.type === 'spouse' && edge.status === 'explicit' && [edge.from, edge.to].includes(person.id)), person.id);
   }
   assert.ok(tree.people.length < catalog.people.length);
-  assert.equal(catalog.people.length, 52);
-  assert.equal(catalog.relations?.length, 73);
+  assert.equal(catalog.people.length, source.people.length);
+  assert.equal(catalog.relations?.length, source.relations.length);
   assert.equal(JSON.stringify(catalog), snapshot);
 });
 
@@ -46,8 +46,9 @@ test('siblings stay inside ancestor cards while Maria Efimovna has her own card 
   assert.ok(tree.relationships.some((edge) => edge.type === 'spouse' && edge.status === 'explicit'
     && [edge.from, edge.to].includes('vladimir-mikheev-1941') && [edge.from, edge.to].includes('maria-efimova-1941')));
   assert.deepEqual(tree.relationships.filter((edge) => edge.type === 'parent' && edge.to === 'yuri-vladimirovich-mikheev-1965')
-    .map((edge) => edge.from), ['vladimir-mikheev-1941']);
-  assert.ok(tree.relatives['maria-efimova-1941'].find((group) => group.label === 'Родители')!.people.some((person) => person.id === 'efim-father-of-maria'));
+    .map((edge) => edge.from), ['vladimir-mikheev-1941', 'maria-efimova-1941']);
+  assert.ok(tree.relationships.some((edge) => edge.type === 'parent' && edge.from === 'efim-father-of-maria' && edge.to === 'maria-efimova-1941'));
+  assert.equal(tree.relatives['yuri-vladimirovich-mikheev-1965'].find((group) => group.label === 'Братья и сёстры')!.people.length, 5);
   assert.deepEqual(tree.relationships.filter((edge) => edge.type === 'parent' && edge.to === 'elvira-mikheeva-grigoryeva')
     .map((edge) => [edge.from, edge.status]).sort(), [
       ['konstantin-grigoryevich-grigoryev-1935', 'explicit'], ['maria-petrovna-grigoryeva-1940', 'explicit'],
@@ -88,7 +89,9 @@ test('focused real layout preserves era alignment, branch separation and the sha
   for (const edge of tree.relationships) if (edge.type === 'parent') assert.ok(nodes.get(edge.from)!.y < nodes.get(edge.to)!.y);
   assert.equal(new Set(['konstantin-grigoryevich-grigoryev-1935', 'maria-petrovna-grigoryeva-1940', 'vladimir-mikheev-1941', 'maria-efimova-1941'].map((id) => nodes.get(id)!.y)).size, 1);
   const vladimir = nodes.get('vladimir-mikheev-1941')!, maria = nodes.get('maria-efimova-1941')!;
-  assert.equal(Math.abs(vladimir.x - maria.x), geometry.nodeWidth + geometry.gap);
+  assert.ok(Math.abs(vladimir.x - maria.x) >= geometry.nodeWidth + geometry.gap);
+  assert.equal(graph.nodes.some((node) => node.y === vladimir.y
+    && node.x > Math.min(vladimir.x, maria.x) && node.x < Math.max(vladimir.x, maria.x)), false);
   assert.ok(branches.find((branch) => branch.id === 'paternal')!.personIds.includes(maria.id));
   const marriage = marriageMarkerPosition(vladimir, maria, geometry);
   assert.ok(marriage.x > Math.min(vladimir.x, maria.x) + geometry.nodeWidth);

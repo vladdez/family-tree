@@ -20,6 +20,18 @@ const lifeEvent = z.object({
   notes: z.string().default(''),
 }).strict().refine((e) => !e.alternatives.length || (e.date === null && e.alternatives.length >= 2 && new Set(e.alternatives).size === e.alternatives.length), 'Противоречивые даты: date = null, alternatives — минимум два разных варианта');
 const mediaPath = z.string().regex(/^\/media\/[a-zA-Z0-9_./-]+$/, 'Локальный путь должен начинаться с /media/').refine((p) => !p.includes('..') && !p.includes('//'), 'Недопустимый путь');
+const profileSource = z.object({
+  title: z.string().trim().min(1),
+  href: z.union([mediaPath, z.url().refine((value) => value.startsWith('https://'), 'Источник должен использовать HTTPS')]),
+  pages: z.string().trim().default(''),
+}).strict();
+const biography = z.union([
+  z.string(),
+  z.array(z.object({
+    title: z.string().trim().min(1),
+    text: z.string().trim().min(1),
+  }).strict()).min(1),
+]);
 const uniqueIds = z.array(id).refine((v) => new Set(v).size === v.length, 'Повторяющиеся ссылки');
 const personNameFields = {
   firstName: z.string().trim().min(1),
@@ -40,7 +52,8 @@ export const PersonSchema = z.object({
   marriages: z.array(z.object({ spouseId: id, date: PartialDateSchema.nullable(), documentId: id.optional(), notes: z.string().default('') }).strict()).default([]),
   events: z.array(z.object({ id, title: z.string().min(1), date: PartialDateSchema.nullable(), documentId: id.optional(), notes: z.string().default('') }).strict()).default([]),
   portrait: mediaPath.nullable(),
-  summary: z.string(), biography: z.string(), notes: z.string().default(''),
+  summary: z.string(), biography, notes: z.string().default(''),
+  sources: z.array(profileSource).default([]),
 }).strict();
 
 export const documentTypes = {
@@ -99,8 +112,9 @@ export const PersonProfileSchema = z.object({
   birthDate: PartialDateSchema.nullable().optional(), deathDate: PartialDateSchema.nullable().optional(),
   birthPlaceId: id.nullable().optional(), deathPlaceId: id.nullable().optional(),
   birthDocumentId: id.optional(), deathDocumentId: id.optional(),
-  portrait: mediaPath.nullable().optional(), summary: z.string().optional(), biography: z.string().optional(), notes: z.string().optional(),
+  portrait: mediaPath.nullable().optional(), summary: z.string().optional(), biography: biography.optional(), notes: z.string().optional(),
   marriages: PersonSchema.shape.marriages.optional(), events: PersonSchema.shape.events.optional(),
+  sources: PersonSchema.shape.sources.optional(),
 }).strict();
 export type FamilySource = z.infer<typeof FamilySourceSchema>;
 export type FamilyRelation = z.infer<typeof FamilyRelationSchema>;

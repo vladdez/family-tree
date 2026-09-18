@@ -117,7 +117,10 @@
       "birthYears": [
         1857
       ],
-      "deathYears": []
+      "deathYears": [
+        1949,
+        1951
+      ]
     },
     {
       "id": "stepan-kirillov",
@@ -150,6 +153,15 @@
       "deathYears": [
         1955
       ]
+    },
+    {
+      "id": "nikolay-father-of-pavel-vasiliev",
+      "firstName": "Николай",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
+      "birthYears": [],
+      "deathYears": []
     },
     {
       "id": "pavel-nikolaevich-vasiliev",
@@ -231,7 +243,7 @@
       "firstName": "Мария",
       "lastName": "Михеева",
       "patronymic": "Ефимовна",
-      "maidenName": "",
+      "maidenName": "Ефимова",
       "birthYears": [
         1941
       ],
@@ -273,6 +285,17 @@
       "deathYears": []
     },
     {
+      "id": "gerasim-father-of-alexandra",
+      "firstName": "Герасим",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
+      "birthYears": [],
+      "deathYears": [
+        1914
+      ]
+    },
+    {
       "id": "alexandra-gerasimovna-pavlova",
       "firstName": "Александра",
       "lastName": "Павлова",
@@ -310,6 +333,15 @@
       "birthYears": [
         1937
       ],
+      "deathYears": []
+    },
+    {
+      "id": "ivan-father-of-pavel-pavlov",
+      "firstName": "Иван",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
+      "birthYears": [],
       "deathYears": []
     },
     {
@@ -379,9 +411,16 @@
       "birthYears": [
         1898
       ],
-      "deathYears": [
-        1943
-      ]
+      "death": "1944-11-25"
+    },
+    {
+      "id": "sergey-father-of-tatyana-maksimova",
+      "firstName": "Сергей",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
+      "birthYears": [],
+      "deathYears": []
     },
     {
       "id": "tatyana-sergeevna-maksimova-1906",
@@ -453,6 +492,15 @@
       "deathYears": [
         2013
       ]
+    },
+    {
+      "id": "kirill-father-of-maxim-kirillov",
+      "firstName": "Кирилл",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
+      "birthYears": [],
+      "deathYears": []
     },
     {
       "id": "maxim-kirillovich-kirillov",
@@ -528,7 +576,7 @@
       "patronymic": "Владимирович",
       "maidenName": "",
       "birth": "1965-10-21",
-      "death": "2025"
+      "death": "2024-11-20"
     },
     {
       "id": "ksenia-mikheeva-1990",
@@ -539,7 +587,7 @@
       "alternateNames": [
         "Ксения Михеева"
       ],
-      "birth": "1990",
+      "birth": "1990-08-11",
       "death": null
     },
     {
@@ -557,8 +605,53 @@
       "lastName": "Михеева",
       "patronymic": "",
       "maidenName": "",
-      "birth": "2003",
+      "birth": "2003-07-16",
       "death": null
+    },
+    {
+      "id": "alevtina-daughter-of-vladimir-and-maria",
+      "firstName": "Алевтина",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "svetlana-daughter-of-vladimir-and-maria",
+      "firstName": "Светлана",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "sergey-son-of-vladimir-and-maria",
+      "firstName": "Сергей",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "elena-daughter-of-vladimir-and-maria",
+      "firstName": "Елена",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "anastasia-daughter-of-vladimir-and-maria",
+      "firstName": "Анастасия",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
+      "birthYears": [],
+      "deathYears": []
     }
   ],
   "relations": [
@@ -1021,6 +1114,118 @@
       "parent": "elvira-mikheeva-grigoryeva",
       "child": "maria-mikheeva-2003",
       "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "gerasim-father-of-alexandra",
+      "child": "alexandra-gerasimovna-pavlova",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "nikolay-father-of-pavel-vasiliev",
+      "child": "pavel-nikolaevich-vasiliev",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "ivan-father-of-pavel-pavlov",
+      "child": "pavel-ivanovich-ivanov",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "sergey-father-of-tatyana-maksimova",
+      "child": "tatyana-sergeevna-maksimova-1906",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "kirill-father-of-maxim-kirillov",
+      "child": "maxim-kirillovich-kirillov",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "vladimir-mikheev-1941",
+      "child": "alevtina-daughter-of-vladimir-and-maria",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "maria-efimova-1941",
+      "child": "alevtina-daughter-of-vladimir-and-maria",
+      "role": "mother",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "vladimir-mikheev-1941",
+      "child": "svetlana-daughter-of-vladimir-and-maria",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "maria-efimova-1941",
+      "child": "svetlana-daughter-of-vladimir-and-maria",
+      "role": "mother",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "maria-efimova-1941",
+      "child": "yuri-vladimirovich-mikheev-1965",
+      "role": "mother",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "vladimir-mikheev-1941",
+      "child": "sergey-son-of-vladimir-and-maria",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "maria-efimova-1941",
+      "child": "sergey-son-of-vladimir-and-maria",
+      "role": "mother",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "vladimir-mikheev-1941",
+      "child": "elena-daughter-of-vladimir-and-maria",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "maria-efimova-1941",
+      "child": "elena-daughter-of-vladimir-and-maria",
+      "role": "mother",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "vladimir-mikheev-1941",
+      "child": "anastasia-daughter-of-vladimir-and-maria",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "maria-efimova-1941",
+      "child": "anastasia-daughter-of-vladimir-and-maria",
+      "role": "mother",
+      "status": "explicit"
     }
   ],
   "unidentifiedRelatives": [
@@ -1054,36 +1259,6 @@
       "sex": "female",
       "count": 3,
       "status": "explicit"
-    },
-    {
-      "people": [
-        "vladimir-mikheev-1941",
-        "maria-efimova-1941"
-      ],
-      "relation": "child",
-      "sex": "male",
-      "count": 2,
-      "status": "explicit"
-    },
-    {
-      "people": [
-        "vladimir-mikheev-1941",
-        "maria-efimova-1941"
-      ],
-      "relation": "child",
-      "sex": "female",
-      "count": 3,
-      "status": "explicit"
-    },
-    {
-      "people": [
-        "vladimir-mikheev-1941",
-        "maria-efimova-1941"
-      ],
-      "relation": "possible_additional_child",
-      "sex": "female",
-      "count": 1,
-      "status": "conflicting_source"
     }
   ],
   "issues": [
@@ -1117,16 +1292,33 @@
       "reason": "В одном месте указано 1910-1996, в другом тексте указано, что умер в 1998 году."
     },
     {
-      "people": [
-        "vladimir-mikheev-1941",
-        "maria-efimova-1941"
-      ],
-      "type": "children_count_conflict",
+      "person": "ekaterina-wife-of-nikifor",
+      "type": "death_year_conflict",
       "values": [
-        5,
-        6
+        1949,
+        1951
       ],
-      "reason": "Один фрагмент говорит о двух сыновьях и трёх дочерях, другой дополнительно упоминает ещё одну умершую дочь."
+      "reason": "В семейном PDF «Древо на русском» год смерти Екатерины записан как «1951(49)». Оба варианта сохранены; один из них не выбран."
+    },
+    {
+      "person": "grigory-maksimovich-maksimov-1898",
+      "type": "date_correction",
+      "values": [
+        "1943-08-28",
+        "1942-08-28"
+      ],
+      "preferred": "1942-08-28",
+      "reason": "Дата пленения исправлена по лицевой стороне личной карточки военнопленного № 22585: 28 августа 1942 года. В семейном пересказе ошибочно указан 1943 год."
+    },
+    {
+      "person": "grigory-maksimovich-maksimov-1898",
+      "type": "date_correction",
+      "values": [
+        "1943-11",
+        "1944-11-25"
+      ],
+      "preferred": "1944-11-25",
+      "reason": "Дата смерти исправлена по личной карточке военнопленного № 22585: 25 ноября 1944 года. На лицевой стороне записано «умер 25.11.44», на оборотной — Gestorben («умер»). Прежняя дата, ноябрь 1943 года, происходила из семейного пересказа."
     }
   ]
 }
