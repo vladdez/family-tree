@@ -52,7 +52,10 @@ export const PersonSchema = z.object({
   parents: uniqueIds, spouses: uniqueIds, children: uniqueIds,
   parentDetails: z.array(z.object({ personId: id, role: z.enum(['father', 'mother', 'parent']), kind: z.enum(['biological', 'adoptive', 'unknown']) }).strict()).default([]),
   marriages: z.array(z.object({ spouseId: id, date: PartialDateSchema.nullable(), documentId: id.optional(), notes: wrappedText.default('') }).strict()).default([]),
-  events: z.array(z.object({ id, title: z.string().min(1), date: PartialDateSchema.nullable(), documentId: id.optional(), notes: wrappedText.default('') }).strict()).default([]),
+  events: z.array(z.object({
+    id, title: z.string().min(1), date: PartialDateSchema.nullable(), documentId: id.optional(),
+    beforeEventId: id.optional(), notes: wrappedText.default(''),
+  }).strict().refine((event) => !event.beforeEventId || event.date === null, 'beforeEventId задаёт порядок только событий без даты')).default([]),
   portrait: mediaPath.nullable(),
   summary: wrappedText, biography, notes: wrappedText.default(''),
   sources: z.array(profileSource).default([]),

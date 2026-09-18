@@ -167,11 +167,50 @@ test('siblings with unknown shared parents remain reciprocal without inheriting 
   assert.equal(JSON.stringify(catalog), snapshot);
 });
 
-test('timeline sorts partial dates and puts undated events last', () => {
+test('timeline sorts partial dates and keeps unplaced events after dated events when death is unknown', () => {
   const catalog = validateCatalog(raw([person('a', { events: [
     { id: 'unknown', date: null, title: 'Без даты' }, { id: 'late', date: '1950-05', title: 'Позже' }, { id: 'early', date: '1920', title: 'Раньше' },
   ] })]));
   assert.deepEqual(getTimeline('a', catalog).map((e) => e.date), ['1900', '1920', '1950-05', null]);
+});
+
+test('birth opens the timeline and undated life events precede death while posthumous documents keep their dates', () => {
+  const record = person('a', { birth: { date: null, placeId: null }, death: { date: '1980', placeId: null },
+    events: [{ id: 'work', title: 'Работа', date: null }] });
+  const evidence = { ...document(['a']), type: 'other' as const, date: '2026' };
+  const catalog = validateCatalog(raw([record], [evidence]));
+  assert.deepEqual(getTimeline('a', catalog).map((event) => [event.type, event.date]), [
+    ['birth', null], ['other', null], ['death', '1980'], ['document', '2026'],
+  ]);
+});
+
+test('Grigory’s migration and peat work precede call-up without inventing dates, and death closes his timeline', async () => {
+  const catalog = validateCatalog(await readRawCatalog());
+  const id = 'grigory-maksimovich-maksimov-1898';
+  const snapshot = JSON.stringify(catalog);
+  const timeline = getTimeline(id, catalog);
+  assert.deepEqual(timeline.map((event) => event.id.slice(id.length + 1)), [
+    'birth', 'marriage:0', 'event:migration-kustanay', 'event:peat-work', 'event:military-call-up', 'event:captivity', 'death',
+  ]);
+  assert.deepEqual(timeline.map((event) => event.date), ['1898-01-01', '1930', null, null, '1942-04', '1942-08-28', '1944-11-25']);
+  assert.equal(timeline.at(-1)!.documentId, 'grigory-maksimov-prisoner-card');
+  assert.equal(JSON.stringify(catalog), snapshot);
+});
+
+test('relative event order supports undated chains and rejects missing anchors, cycles and dated overrides', () => {
+  const events = [
+    { id: 'second', title: 'Второе', date: null, beforeEventId: 'third' },
+    { id: 'first', title: 'Первое', date: null, beforeEventId: 'second' },
+    { id: 'third', title: 'Третье', date: '1942' },
+  ];
+  const catalog = validateCatalog(raw([person('a', { events })]));
+  assert.deepEqual(getTimeline('a', catalog).slice(1).map((event) => event.title), ['Первое', 'Второе', 'Третье']);
+  assert.throws(() => validateCatalog(raw([person('a', { events: [events[0]] })])), /неизвестный beforeEventId/);
+  assert.throws(() => validateCatalog(raw([person('a', { events: [
+    { ...events[0], beforeEventId: 'first' }, events[1],
+  ] })])), /цикл порядка событий/);
+  assert.throws(() => validateCatalog(raw([person('a', { events: [{ ...events[0], beforeEventId: 'second' }] })])), /цикл порядка событий/);
+  assert.throws(() => person('a', { events: [{ ...events[0], date: '1940' }] }), /только событий без даты/);
 });
 
 test('media must exist and paths cannot traverse out of public/media', async () => {
