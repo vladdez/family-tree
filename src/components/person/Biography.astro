@@ -1,5 +1,6 @@
 ---
 import type { Person } from '../../domain/schemas';
+import InlineText from './InlineText.astro';
 interface Props { biography: Person['biography'] }
 const { biography } = Astro.props;
 ---
@@ -7,9 +8,9 @@ const { biography } = Astro.props;
   {Array.isArray(biography) ? biography.map((section) => (
     <section class="biography-section">
       <h3>{section.title}</h3>
-      <p class="prose">{section.text}</p>
+      <p class="prose"><InlineText text={section.text} /></p>
     </section>
-  )) : biography ? <p class="prose">{biography}</p> : (
+  )) : biography ? <p class="prose"><InlineText text={biography} /></p> : (
     <p class="muted">Биография пока неизвестна.</p>
   )}
 </div>

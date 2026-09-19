@@ -1,0 +1,6 @@
+---
+import { parseInlineLinks } from '../../domain/inline-links';
+interface Props { text: string }
+const { text } = Astro.props;
+---
+{parseInlineLinks(text).map((part) => part.href ? <a href={part.href}>{part.text}</a> : part.text)}

@@ -6,6 +6,6 @@ interface Props { person: Person }
 const { person } = Astro.props;
 ---
 <header class="person-header">
-  <div class="portrait">{person.portrait ? <img src={url(person.portrait)} alt={`Портрет: ${fullName(person)}`} /> : <><span class="monogram" aria-hidden="true">{person.firstName[0]}</span><small>Фотография пока не добавлена</small></>}</div>
+  <div class="portrait">{person.portrait ? <img src={url(person.portrait)} alt={`Портрет: ${fullName(person)}`} /> : <><span class="monogram" aria-hidden="true">{fullName(person)[0]}</span><small>Фотография пока не добавлена</small></>}</div>
   <div><p class="eyebrow">Человек в семейном архиве</p><h1>{fullName(person)}</h1><p class="lifespan">{lifespan(person)}</p>{person.archivalName && <p class="muted">Имя сохранено в архивном написании.</p>}{person.maidenName && <p class="muted">Девичья фамилия: {person.maidenName}</p>}{person.alternateNames.length > 0 && <div class="person-aliases"><span class="muted">Другие имена</span><ul>{person.alternateNames.map((name) => <li><a class="person-link" href={personUrl(person.slug)}>{name}</a></li>)}</ul></div>}{(person.birth.alternatives.length > 0 || person.death.alternatives.length > 0) && <p><span class="badge">Даты требуют уточнения</span></p>}{person.summary && <p class="muted">{person.summary}</p>}</div>
 </header>

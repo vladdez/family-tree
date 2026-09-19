@@ -7,7 +7,7 @@ const { person } = Astro.props;
 const uncertain = person.death.alternatives.length || person.birth.alternatives.length;
 ---
 <a class="person-card" href={personUrl(person.slug)} data-person-name={personSearchText(person)}>
-  <div class="card-top"><span class="initial" aria-hidden="true">{person.firstName[0]}</span>{uncertain ? <span class="badge">Требует уточнения</span> : <span class="eyebrow">Семейная запись</span>}</div>
+  <div class="card-top"><span class="initial" aria-hidden="true">{fullName(person)[0]}</span>{uncertain ? <span class="badge">Требует уточнения</span> : <span class="eyebrow">Семейная запись</span>}</div>
   <h3>{fullName(person)}</h3><p class="lifespan">{lifespan(person)}</p>
   <div class="card-bottom"><span>Открыть историю</span><span aria-hidden="true">↗</span></div>
 </a>

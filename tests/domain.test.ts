@@ -9,6 +9,7 @@ import { lifespan, eventDate, fullName, showBirthOnly } from '../src/domain/peop
 import { formatDate } from '../src/domain/dates';
 import { withBase } from '../src/domain/urls';
 import { readRawCatalog, validateMedia } from '../scripts/data-files';
+import { parseInlineLinks } from '../src/domain/inline-links';
 
 // Synthetic fixtures are used only by tests and never included in site data.
 function person(id: string, changes: Record<string, unknown> = {}) {
@@ -18,6 +19,18 @@ function document(peopleIds: string[]) {
   return DocumentSchema.parse({ id: 'source', title: 'Тестовый источник', type: 'marriage', date: '1920-06', peopleIds, files: [], archive: { name: '', fond: '', opis: '', delo: '', page: '' }, transcription: '', notes: '' });
 }
 const raw = (people: ReturnType<typeof person>[], documents: ReturnType<typeof document>[] = []) => ({ people, documents, places: [] });
+
+test('biography links preserve surrounding text and only accept valid HTTPS links', () => {
+  assert.deepEqual(parseInlineLinks('В деревне [Шебекеч](https://ru.wikipedia.org/wiki/Шибегечи).'), [
+    { text: 'В деревне ' }, { text: 'Шебекеч', href: 'https://ru.wikipedia.org/wiki/Шибегечи' }, { text: '.' },
+  ]);
+  const plain = 'Абзац.\n\n<script>текст</script> [ссылка](javascript:alert(1)) [файл](file:///tmp/a) [ошибка](https://%)';
+  assert.deepEqual(parseInlineLinks(plain), [{ text: plain }]);
+  assert.deepEqual(parseInlineLinks('[A](https://example.org/a)[B](https://example.org/b)'), [
+    { text: 'A', href: 'https://example.org/a' }, { text: 'B', href: 'https://example.org/b' },
+  ]);
+  assert.deepEqual(parseInlineLinks(''), []);
+});
 
 test('partial dates preserve precision and validate actual calendar dates', () => {
   for (const date of ['1889', '1889-06', '1889-06-15', '2000-02-29', '0001-01-01']) assert.ok(PartialDateSchema.safeParse(date).success);
@@ -184,16 +197,21 @@ test('birth opens the timeline and undated life events precede death while posth
   ]);
 });
 
-test('Grigory’s migration and peat work precede call-up without inventing dates, and death closes his timeline', async () => {
+test('Grigory’s migration and peat work precede call-up, death closes life events, and burial records follow', async () => {
   const catalog = validateCatalog(await readRawCatalog());
   const id = 'grigory-maksimovich-maksimov-1898';
   const snapshot = JSON.stringify(catalog);
   const timeline = getTimeline(id, catalog);
-  assert.deepEqual(timeline.map((event) => event.id.slice(id.length + 1)), [
+  const lifeEvents = timeline.filter((event) => event.type !== 'document');
+  assert.deepEqual(lifeEvents.map((event) => event.id.slice(id.length + 1)), [
     'birth', 'marriage:0', 'event:migration-kustanay', 'event:peat-work', 'event:military-call-up', 'event:captivity', 'death',
   ]);
-  assert.deepEqual(timeline.map((event) => event.date), ['1898-01-01', '1930', null, null, '1942-04', '1942-08-28', '1944-11-25']);
-  assert.equal(timeline.at(-1)!.documentId, 'grigory-maksimov-prisoner-card');
+  assert.deepEqual(lifeEvents.map((event) => event.date), ['1898-01-01', '1930', null, null, '1942-04', '1942-08-28', '1944-11-25']);
+  assert.equal(lifeEvents.at(-1)!.documentId, 'grigory-maksimov-prisoner-card');
+  const records = timeline.slice(lifeEvents.length);
+  assert.equal(records.length, 4);
+  assert.ok(records.every((event) => event.type === 'document'));
+  assert.deepEqual(records.map((event) => event.date), ['2013-10-01', '2013-10-01', '2026-07-03', null]);
   assert.equal(JSON.stringify(catalog), snapshot);
 });
 

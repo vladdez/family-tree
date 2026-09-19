@@ -36,12 +36,14 @@ const biography = z.union([
 ]);
 const uniqueIds = z.array(id).refine((v) => new Set(v).size === v.length, 'Повторяющиеся ссылки');
 const personNameFields = {
-  firstName: z.string().trim().min(1),
+  firstName: z.string().trim(),
   lastName: z.string().trim(),
   patronymic: z.string().trim(),
   maidenName: z.string().trim(),
   archivalName: z.string().trim().min(1).optional(),
 };
+const hasKnownName = (person: { firstName: string; lastName: string; patronymic: string; archivalName?: string }) =>
+  Boolean(person.firstName || person.lastName || person.patronymic || person.archivalName);
 
 export const PersonSchema = z.object({
   id, slug: id,
@@ -59,7 +61,7 @@ export const PersonSchema = z.object({
   portrait: mediaPath.nullable(),
   summary: wrappedText, biography, notes: wrappedText.default(''),
   sources: z.array(profileSource).default([]),
-}).strict();
+}).strict().refine(hasKnownName, 'Укажите хотя бы одну известную часть имени');
 
 export const documentTypes = {
   metric: 'Метрические записи', marriage: 'Брак', birth: 'Рождение', death: 'Смерть',
@@ -103,7 +105,7 @@ export const SourcePersonSchema = z.object({
   id, ...personNameFields, alternateNames: PersonSchema.shape.alternateNames,
   birthYears: years.optional(), deathYears: years.optional(),
   birth: PartialDateSchema.nullable().optional(), death: PartialDateSchema.nullable().optional(),
-}).strict().refine((p) => (p.birth !== undefined) !== (p.birthYears !== undefined), 'Укажите либо birth, либо birthYears').refine((p) => (p.death !== undefined) !== (p.deathYears !== undefined), 'Укажите либо death, либо deathYears');
+}).strict().refine(hasKnownName, 'Укажите хотя бы одну известную часть имени').refine((p) => (p.birth !== undefined) !== (p.birthYears !== undefined), 'Укажите либо birth, либо birthYears').refine((p) => (p.death !== undefined) !== (p.deathYears !== undefined), 'Укажите либо death, либо deathYears');
 export const FamilySourceSchema = z.object({
   schemaVersion: z.literal(2),
   people: z.array(SourcePersonSchema),

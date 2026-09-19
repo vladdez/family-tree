@@ -278,7 +278,7 @@
       "firstName": "Мария",
       "lastName": "Григорьева",
       "patronymic": "Петровна",
-      "maidenName": "",
+      "maidenName": "Петрова",
       "birthYears": [
         1940
       ],
@@ -652,6 +652,18 @@
       "maidenName": "",
       "birthYears": [],
       "deathYears": []
+    },
+    {
+      "id": "nikolaeva-mother-of-grigory-maksimov",
+      "firstName": "",
+      "lastName": "Николаева",
+      "patronymic": "",
+      "maidenName": "",
+      "alternateNames": [
+        "Nikolaewa"
+      ],
+      "birth": null,
+      "death": null
     }
   ],
   "relations": [
@@ -1225,6 +1237,14 @@
       "parent": "maria-efimova-1941",
       "child": "anastasia-daughter-of-vladimir-and-maria",
       "role": "mother",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "nikolaeva-mother-of-grigory-maksimov",
+      "child": "grigory-maksimovich-maksimov-1898",
+      "role": "mother",
+      "kind": "biological",
       "status": "explicit"
     }
   ],

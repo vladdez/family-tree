@@ -180,7 +180,7 @@ test('uncertain archival names retain their exact wording without assigning a su
   assert.equal(FamilySourceSchema.safeParse({ ...source, people: [{ ...source.people[0], archivalName: ' ' }] }).success, false);
 });
 
-test('the new source format rejects an old name string, missing fields and a blank first name', () => {
+test('the source format rejects an old name string, missing fields and completely unknown names', () => {
   assert.equal(source.schemaVersion, 2);
   const record = source.people[0];
   assert.equal(FamilySourceSchema.safeParse({ ...source, schemaVersion: 1 }).success, false);
@@ -190,6 +190,22 @@ test('the new source format rejects an old name string, missing fields and a bla
     const { [field]: omitted, ...missingField } = record;
     assert.equal(FamilySourceSchema.safeParse({ ...source, people: [missingField] }).success, false, field);
   }
+});
+
+test('a surname alone identifies a person without inventing a first name or spouse', () => {
+  const input = { schemaVersion: 2, people: [
+    { id: 'mother', firstName: '', lastName: 'Николаева', patronymic: '', maidenName: '', birth: null, death: null },
+    { id: 'son', firstName: 'Григорий', lastName: 'Максимов', patronymic: 'Максимович', maidenName: '', birth: '1898', death: '1944' },
+  ], relations: [{ type: 'parent', parent: 'mother', child: 'son', role: 'mother' }], unidentifiedRelatives: [], issues: [] };
+  const adapted = validateCatalog({ ...adaptFamilySource(input), documents: [], places: [] });
+  const mother = adapted.people.find((person) => person.id === 'mother')!;
+  assert.equal(fullName(mother), 'Николаева');
+  assert.equal(mother.firstName, '');
+  assert.equal(mother.birth.date, null);
+  assert.deepEqual(mother.spouses, []);
+  assert.deepEqual(mother.children, ['son']);
+  assert.deepEqual(getParents('son', adapted).map(fullName), ['Николаева']);
+  assert.equal(FamilySourceSchema.safeParse({ ...input, people: [{ ...input.people[0], lastName: ' ' }] }).success, false);
 });
 
 test('unknown IDs in source annotations and duplicate relation entries fail validation', () => {
