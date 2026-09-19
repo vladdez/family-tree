@@ -2,7 +2,7 @@ import type { Catalog } from './schemas';
 import { getPerson } from './people';
 import { getChildren } from './relationships';
 import { getDocumentsForPerson } from './documents';
-import { compareDates } from './dates';
+import { compareDates, dateBounds } from './dates';
 
 export interface TimelineEntry {
   id: string; date: string | null; alternatives: string[]; title: string;
@@ -22,7 +22,15 @@ export function getTimeline(personId: string, catalog: Catalog): TimelineEntry[]
   }
   for (const e of person.events) entries.push({ ...basic(`${personId}:event:${e.id}`, e.date, e.title, 'other'), documentId: e.documentId, notes: e.notes });
   const usedDocuments = new Set(entries.flatMap((e) => e.documentId ? [e.documentId] : []));
-  for (const d of getDocumentsForPerson(personId, catalog)) if (d.showInTimeline && !usedDocuments.has(d.id)) entries.push({ ...basic(`${personId}:document:${d.id}`, d.date, d.title, d.type === 'marriage' ? 'marriage' : 'document'), documentId: d.id });
+  const deathDates = person.death.date ? [person.death.date] : person.death.alternatives;
+  const latestDeath = deathDates.map((date) => dateBounds(date).max).sort().at(-1);
+  for (const d of getDocumentsForPerson(personId, catalog)) {
+    if (!d.showInTimeline || usedDocuments.has(d.id)) continue;
+    // Undated and definitely posthumous records remain in the document section.
+    // Evidence linked to a life event keeps that event's date above.
+    if (latestDeath && (!d.date || dateBounds(d.date).min > latestDeath)) continue;
+    entries.push({ ...basic(`${personId}:document:${d.id}`, d.date, d.title, d.type === 'marriage' ? 'marriage' : 'document'), documentId: d.id });
+  }
   const before = new Map<string, TimelineEntry[]>();
   const anchored = new Set<string>();
   for (const event of person.events) if (event.beforeEventId) {
@@ -33,12 +41,12 @@ export function getTimeline(personId: string, catalog: Catalog): TimelineEntry[]
   }
   const unplaced = entries.filter((entry) => !anchored.has(entry.id) && !entry.date && (entry.type === 'other' || entry.type === 'marriage'));
   const unplacedIds = new Set(unplaced.map((entry) => entry.id));
-  const ordered = entries.filter((entry) => !anchored.has(entry.id) && !unplacedIds.has(entry.id) && entry.type !== 'birth')
+  const ordered = entries.filter((entry) => !anchored.has(entry.id) && !unplacedIds.has(entry.id) && entry.type !== 'birth' && entry.type !== 'death')
     .sort((a, b) => compareDates(a.date, b.date));
-  // Undated life events precede death; dated posthumous records retain their dates.
-  const deathIndex = ordered.findIndex((entry) => entry.type === 'death');
-  ordered.splice(deathIndex < 0 ? ordered.length : deathIndex, 0, ...unplaced);
+  ordered.push(...unplaced);
   ordered.unshift(entries.find((entry) => entry.type === 'birth')!);
+  const death = entries.find((entry) => entry.type === 'death');
+  if (death) ordered.push(death);
   const result: TimelineEntry[] = [];
   const append = (entry: TimelineEntry) => {
     for (const preceding of before.get(entry.id) ?? []) append(preceding);

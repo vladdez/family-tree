@@ -66,6 +66,10 @@ for (const person of catalog.people) {
     if (!personLinks.has(`${base}documents/${document.id}/`) || !visibleText.includes(document.title)) errors.push(`${person.id}: пропущен документ ${document.id}`);
   }
   const timelineEvents = nodes.filter((node) => node.tagName === 'li' && (attr(node, 'class') ?? '').split(/\s+/).includes('timeline-event'));
+  const timelineTitles = timelineEvents.map((node) => textContent(elements(node).find((child) => child.tagName === 'h3')!));
+  if (person.death.date || person.death.alternatives.length) {
+    if (timelineTitles.at(-1) !== 'Смерть' || timelineTitles.filter((title) => title === 'Смерть').length !== 1) errors.push(`${person.id}: смерть должна завершать хронологию`);
+  } else if (timelineTitles.includes('Смерть')) errors.push(`${person.id}: добавлено событие смерти без сведений о смерти`);
   for (const [title, event] of [['Рождение', person.birth], ['Смерть', person.death]] as const) {
     if (!event.documentId || (title === 'Смерть' && !event.date && !event.alternatives.length)) continue;
     const evidence = timelineEvents.filter((node) => elements(node).some((child) => child.tagName === 'a' && attr(child, 'href') === `${base}documents/${event.documentId}/`));

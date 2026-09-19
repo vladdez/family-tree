@@ -187,14 +187,64 @@ test('timeline sorts partial dates and keeps unplaced events after dated events 
   assert.deepEqual(getTimeline('a', catalog).map((e) => e.date), ['1900', '1920', '1950-05', null]);
 });
 
-test('birth opens the timeline and undated life events precede death while posthumous documents keep their dates', () => {
+test('death closes the timeline and late or undated records remain available only as documents', () => {
   const record = person('a', { birth: { date: null, placeId: null }, death: { date: '1980', placeId: null },
     events: [{ id: 'work', title: 'Работа', date: null }] });
   const evidence = { ...document(['a']), type: 'other' as const, date: '2026' };
-  const catalog = validateCatalog(raw([record], [evidence]));
+  const undated = { ...evidence, id: 'undated', date: null };
+  const catalog = validateCatalog(raw([record], [evidence, undated]));
   assert.deepEqual(getTimeline('a', catalog).map((event) => [event.type, event.date]), [
-    ['birth', null], ['other', null], ['death', '1980'], ['document', '2026'],
+    ['birth', null], ['other', null], ['death', '1980'],
   ]);
+  assert.deepEqual(getDocumentsForPerson('a', catalog).map((document) => document.id).sort(), ['source', 'undated']);
+});
+
+test('document dates respect partial and alternative death dates without choosing an uncertain year', () => {
+  for (const [deathDate, alternatives, includedDate, laterDate] of [
+    ['1980', [], '1980-12-31', '1981'],
+    ['1980-06', [], '1980-06-30', '1980-07'],
+    ['1980-06-15', [], '1980-06-15', '1980-06-16'],
+    ['1980-06-15', [], '1980', '1981'],
+    [null, ['1980', '1981'], '1981-12-31', '1982'],
+  ] as const) {
+    const record = person('a', { death: { date: deathDate, alternatives: [...alternatives], placeId: null } });
+    const included = { ...document(['a']), type: 'other' as const, date: includedDate };
+    const later = { ...included, id: 'later', date: laterDate };
+    const catalog = validateCatalog(raw([record], [included, later]));
+    const snapshot = JSON.stringify(catalog);
+    const timeline = getTimeline('a', catalog);
+    assert.ok(timeline.some((event) => event.documentId === included.id));
+    assert.ok(!timeline.some((event) => event.documentId === later.id));
+    assert.equal(timeline.at(-1)!.type, 'death');
+    assert.deepEqual(timeline.at(-1)!.alternatives, alternatives);
+    assert.equal(JSON.stringify(catalog), snapshot);
+  }
+});
+
+test('people with no recorded death retain dated and undated documents without adding a death event', () => {
+  const record = person('a', { birth: { date: '1990', placeId: null } });
+  const dated = { ...document(['a']), type: 'other' as const, date: '2026' };
+  const undated = { ...dated, id: 'undated', date: null };
+  const catalog = validateCatalog(raw([record], [dated, undated]));
+  assert.deepEqual(getTimeline('a', catalog).map((event) => [event.type, event.date]), [
+    ['birth', '1990'], ['document', '2026'], ['document', null],
+  ]);
+});
+
+test('every family timeline with a recorded death ends with death and retains all document associations', async () => {
+  const catalog = validateCatalog(await readRawCatalog());
+  const snapshot = JSON.stringify(catalog);
+  for (const person of catalog.people) {
+    const timeline = getTimeline(person.id, catalog);
+    const deaths = timeline.filter((event) => event.type === 'death');
+    if (person.death.date || person.death.alternatives.length) {
+      assert.equal(deaths.length, 1, person.id);
+      assert.equal(timeline.at(-1)!.type, 'death', person.id);
+    } else assert.equal(deaths.length, 0, person.id);
+    assert.deepEqual(getDocumentsForPerson(person.id, catalog).map((document) => document.id).sort(),
+      catalog.documents.filter((document) => document.peopleIds.includes(person.id)).map((document) => document.id).sort());
+  }
+  assert.equal(JSON.stringify(catalog), snapshot);
 });
 
 test('Grigory’s timeline ends at death while the four burial records remain in his documents', async () => {
