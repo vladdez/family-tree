@@ -99,7 +99,8 @@ ul { margin: 0; padding: 0; list-style: none; }
 .timeline-event { position: relative; padding-block: 0 var(--space-xl); }
 .timeline-event:last-child { padding-bottom: 0; }
 .timeline-event::before { content: ''; position: absolute; top: var(--space-xs); left: calc(-1 * var(--space-lg) - var(--space-2xs)); width: var(--space-xs); height: var(--space-xs); background: var(--color-accent); border-radius: var(--radius-round); }
-.timeline-event .event-date { font-size: var(--font-xs); color: var(--color-muted); margin-bottom: var(--space-xs); }
+.timeline-event .event-date { font-size: var(--font-md); color: var(--color-muted); margin-bottom: var(--space-xs); }
+.timeline-event .event-date .badge { font-size: inherit; }
 .timeline-event h3 { margin-bottom: var(--space-xs); }
 .timeline-event .event-note { font-size: var(--font-sm); color: var(--color-muted); }
 .filters { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-md); margin-bottom: var(--space-xl); }
