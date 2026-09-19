@@ -197,21 +197,22 @@ test('birth opens the timeline and undated life events precede death while posth
   ]);
 });
 
-test('Grigory’s migration and peat work precede call-up, death closes life events, and burial records follow', async () => {
+test('Grigory’s timeline ends at death while the four burial records remain in his documents', async () => {
   const catalog = validateCatalog(await readRawCatalog());
   const id = 'grigory-maksimovich-maksimov-1898';
   const snapshot = JSON.stringify(catalog);
   const timeline = getTimeline(id, catalog);
-  const lifeEvents = timeline.filter((event) => event.type !== 'document');
-  assert.deepEqual(lifeEvents.map((event) => event.id.slice(id.length + 1)), [
+  assert.deepEqual(timeline.map((event) => event.id.slice(id.length + 1)), [
     'birth', 'marriage:0', 'event:migration-kustanay', 'event:peat-work', 'event:military-call-up', 'event:captivity', 'death',
   ]);
-  assert.deepEqual(lifeEvents.map((event) => event.date), ['1898-01-01', '1930', null, null, '1942-04', '1942-08-28', '1944-11-25']);
-  assert.equal(lifeEvents.at(-1)!.documentId, 'grigory-maksimov-prisoner-card');
-  const records = timeline.slice(lifeEvents.length);
-  assert.equal(records.length, 4);
-  assert.ok(records.every((event) => event.type === 'document'));
-  assert.deepEqual(records.map((event) => event.date), ['2013-10-01', '2013-10-01', '2026-07-03', null]);
+  assert.deepEqual(timeline.map((event) => event.date), ['1898-01-01', '1930', null, null, '1942-04', '1942-08-28', '1944-11-25']);
+  assert.equal(timeline.at(-1)!.documentId, 'grigory-maksimov-prisoner-card');
+  const documents = getDocumentsForPerson(id, catalog);
+  for (const documentId of ['grigory-maksimov-burial-list', 'herleshausen-burial-register',
+    'grigory-maksimov-burial-ministry-reply', 'grigory-maksimov-burial-photos']) {
+    assert.ok(documents.some((document) => document.id === documentId));
+    assert.ok(!timeline.some((event) => event.documentId === documentId));
+  }
   assert.equal(JSON.stringify(catalog), snapshot);
 });
 

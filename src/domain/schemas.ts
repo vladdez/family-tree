@@ -70,6 +70,7 @@ export const documentTypes = {
 export const DocumentSchema = z.object({
   id, title: z.string().min(1), type: z.enum(['metric', 'marriage', 'birth', 'death', 'census', 'military', 'photograph', 'other']),
   date: PartialDateSchema.nullable(), peopleIds: uniqueIds.min(1),
+  showInTimeline: z.boolean().default(true),
   files: z.array(z.object({ path: mediaPath, preview: mediaPath.optional(), label: z.string().min(1) }).strict()),
   originalUrl: z.url().refine((v) => v.startsWith('https://'), 'Ссылка на оригинал должна использовать HTTPS').optional(),
   archive: z.object({ name: z.string(), fond: z.string(), opis: z.string(), delo: z.string(), page: z.string() }).strict(),

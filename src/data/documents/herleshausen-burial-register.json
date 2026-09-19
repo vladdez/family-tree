@@ -3,6 +3,7 @@
   "title": "Учётная карточка захоронения в Херлесхаузене",
   "type": "military",
   "date": "2013-10-01",
+  "showInTimeline": false,
   "peopleIds": [
     "grigory-maksimovich-maksimov-1898"
   ],

@@ -22,7 +22,7 @@ export function getTimeline(personId: string, catalog: Catalog): TimelineEntry[]
   }
   for (const e of person.events) entries.push({ ...basic(`${personId}:event:${e.id}`, e.date, e.title, 'other'), documentId: e.documentId, notes: e.notes });
   const usedDocuments = new Set(entries.flatMap((e) => e.documentId ? [e.documentId] : []));
-  for (const d of getDocumentsForPerson(personId, catalog)) if (!usedDocuments.has(d.id)) entries.push({ ...basic(`${personId}:document:${d.id}`, d.date, d.title, d.type === 'marriage' ? 'marriage' : 'document'), documentId: d.id });
+  for (const d of getDocumentsForPerson(personId, catalog)) if (d.showInTimeline && !usedDocuments.has(d.id)) entries.push({ ...basic(`${personId}:document:${d.id}`, d.date, d.title, d.type === 'marriage' ? 'marriage' : 'document'), documentId: d.id });
   const before = new Map<string, TimelineEntry[]>();
   const anchored = new Set<string>();
   for (const event of person.events) if (event.beforeEventId) {
