@@ -11,7 +11,12 @@
     "matryona-daughter-of-petr",
     "katerina-daughter-of-petr"
   ],
-  "files": [],
+  "files": [
+    {
+      "path": "/media/documents/urazgildino-census-1834-petr-yakovlev.jpg",
+      "label": "Ревизская сказка 1834 года — разворот с семьёй № 21"
+    }
+  ],
   "archive": {
     "name": "ГАУО",
     "fond": "156",
