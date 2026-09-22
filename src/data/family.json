@@ -11,6 +11,18 @@
       "deathYears": []
     },
     {
+      "id": "marya-mother-of-petr",
+      "firstName": "Марья",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
+      "birthYears": [
+        1770,
+        1771
+      ],
+      "deathYears": []
+    },
+    {
       "id": "petr-1802",
       "firstName": "Пётр",
       "lastName": "",
@@ -55,6 +67,30 @@
       "maidenName": "",
       "birthYears": [
         1838
+      ],
+      "deathYears": []
+    },
+    {
+      "id": "matryona-daughter-of-petr",
+      "firstName": "Матрёна",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
+      "birthYears": [
+        1820,
+        1821
+      ],
+      "deathYears": []
+    },
+    {
+      "id": "katerina-daughter-of-petr",
+      "firstName": "Катерина",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
+      "birthYears": [
+        1823,
+        1824
       ],
       "deathYears": []
     },
@@ -673,6 +709,19 @@
     },
     {
       "type": "spouse",
+      "person1": "yakov",
+      "person2": "marya-mother-of-petr",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "marya-mother-of-petr",
+      "child": "petr-1802",
+      "role": "mother",
+      "status": "explicit"
+    },
+    {
+      "type": "spouse",
       "person1": "petr-1802",
       "person2": "avdotya-efremova",
       "status": "explicit"
@@ -703,6 +752,34 @@
       "parent": "avdotya-efremova",
       "child": "vasily-son-of-petr",
       "status": "inferred_context"
+    },
+    {
+      "type": "parent",
+      "parent": "petr-1802",
+      "child": "matryona-daughter-of-petr",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "avdotya-efremova",
+      "child": "matryona-daughter-of-petr",
+      "role": "mother",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "petr-1802",
+      "child": "katerina-daughter-of-petr",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "avdotya-efremova",
+      "child": "katerina-daughter-of-petr",
+      "role": "mother",
+      "status": "explicit"
     },
     {
       "type": "spouse",
