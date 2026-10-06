@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { displayName, inferredPatronymic } from '../src/domain/people';
+import { displayName, inferredPatronymic, personSearchText } from '../src/domain/people';
 import type { Catalog, Person } from '../src/domain/schemas';
 import { validateCatalog } from '../src/domain/validation';
 import { readRawCatalog } from '../scripts/data-files';
@@ -42,6 +42,13 @@ test('известное отчество не заменяется вычисл
   assert.equal(displayName(personWithPatronymic, catalog), 'Пётр Павлович Павлов');
 });
 
+test('подтверждённое отчество показывается вместо сокращённой архивной формы', () => {
+  const mikhey = person('mikhey', 'Михей', 'male', { patronymic: 'Петрович', archivalName: 'Михей Петров' });
+  const catalog: Catalog = { people: [mikhey], documents: [], places: [] };
+  assert.equal(displayName(mikhey, catalog), 'Михей Петрович');
+  assert.match(personSearchText(mikhey, catalog), /михей петров/);
+});
+
 test('у всех людей с установленным отцом выводится отчество, если имя не неоднозначно', async () => {
   const catalog = validateCatalog(await readRawCatalog());
   const ambiguousHistoricalNames = new Set([
@@ -57,9 +64,11 @@ test('у всех людей с установленным отцом вывод
   });
   assert.deepEqual(missing.map((person) => person.id), []);
   const lev = catalog.people.find((person) => person.id === 'lev-son-of-vladimir-mikheev-and-elizaveta-petrova')!;
-  assert.equal(displayName(lev, catalog), 'Лев Владимирович');
+  assert.equal(displayName(lev, catalog), 'Лев Владимирович Михеев');
   assert.equal(lev.birth.placeId, 'boeblingen');
-  assert.equal(displayName(catalog.people.find((person) => person.id === 'sofia-daughter-of-ksenia-and-sergey-mikhailov')!, catalog), 'София Сергеевна');
+  assert.equal(displayName(catalog.people.find((person) => person.id === 'mikhey-petrov-1833')!, catalog), 'Михей Петрович');
+  assert.equal(displayName(catalog.people.find((person) => person.id === 'paraskeva-pavlova-1889')!, catalog), 'Параскева Павловна Павлова');
+  assert.equal(displayName(catalog.people.find((person) => person.id === 'sofia-daughter-of-ksenia-and-sergey-mikhailov')!, catalog), 'София Сергеевна Михайлова');
 });
 
 test('места рождения ближайшей семьи сохраняют подтверждённые исключения', async () => {

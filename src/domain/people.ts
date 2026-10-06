@@ -5,7 +5,10 @@ export function getPerson(id: string, catalog: Catalog): Person {
   if (!person) throw new Error(`Человек не найден: ${id}`);
   return person;
 }
-export function fullName(person: Person) { return person.archivalName ?? [person.firstName, person.patronymic, person.lastName].filter(Boolean).join(' '); }
+export function fullName(person: Person) {
+  const structuredName = [person.firstName, person.patronymic, person.lastName].filter(Boolean).join(' ');
+  return person.patronymic ? structuredName : person.archivalName ?? structuredName;
+}
 type PatronymicSex = 'male' | 'female';
 const patronymicForms: Record<string, Record<PatronymicSex | 'shortMale' | 'shortFemale', string>> = {
   'Владимир': { male: 'Владимирович', female: 'Владимировна', shortMale: 'Владимиров', shortFemale: 'Владимирова' },
@@ -56,8 +59,10 @@ export function displayName(person: Person, catalog: Catalog): string {
 }
 export function personSearchText(person: Person, catalog?: Catalog) {
   const structuredName = [person.firstName, person.patronymic, person.lastName].filter(Boolean).join(' ');
+  const shortName = [person.firstName, person.lastName].filter(Boolean).join(' ');
   const maidenName = person.maidenName ? [person.firstName, person.patronymic, person.maidenName].filter(Boolean).join(' ') : '';
-  return [...new Set([catalog ? displayName(person, catalog) : fullName(person), structuredName, maidenName, ...person.alternateNames])].filter(Boolean).join(' ').toLocaleLowerCase('ru').replaceAll('ё', 'е');
+  const shortMaidenName = person.maidenName ? [person.firstName, person.maidenName].filter(Boolean).join(' ') : '';
+  return [...new Set([catalog ? displayName(person, catalog) : fullName(person), structuredName, shortName, person.archivalName, maidenName, shortMaidenName, ...person.alternateNames])].filter(Boolean).join(' ').toLocaleLowerCase('ru').replaceAll('ё', 'е');
 }
 export function showBirthOnly(person: Person) {
   const dates = person.birth.date ? [person.birth.date] : person.birth.alternatives;

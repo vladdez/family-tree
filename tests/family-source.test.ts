@@ -35,7 +35,8 @@ test('the real family source defines every published node, name and year without
   assert.deepEqual(catalog.people.map((p) => p.id), source.people.map((p) => p.id));
   for (const record of source.people) {
     const person = catalog.people.find((p) => p.id === record.id)!;
-    assert.equal(fullName(person), record.archivalName ?? [record.firstName, record.patronymic, record.lastName].filter(Boolean).join(' '));
+    const structuredName = [record.firstName, record.patronymic, record.lastName].filter(Boolean).join(' ');
+    assert.equal(fullName(person), record.patronymic ? structuredName : record.archivalName ?? structuredName);
     assert.equal(person.archivalName, record.archivalName);
     for (const field of ['firstName', 'lastName', 'patronymic', 'maidenName'] as const) assert.equal(person[field], record[field]);
     assert.deepEqual(person.alternateNames, record.alternateNames);
@@ -142,8 +143,8 @@ test('structured names retain confirmed name parts and leave unknown parts empty
     ['vladimir-mikheev-1995', ['Владимир', 'Михеев', 'Юрьевич', ''], 'Владимир Юрьевич Михеев'],
     ['maria-efimova-1941', ['Мария', 'Михеева', 'Ефимовна', 'Ефимова'], 'Мария Ефимовна Михеева'],
     ['alexandra-gerasimovna-pavlova', ['Александра', 'Павлова', 'Герасимовна', 'Герасимова'], 'Александра Герасимовна Павлова'],
-    ['ksenia-mikheeva-1990', ['Ксения', 'Михайлова', '', 'Михеева'], 'Ксения Михайлова'],
-    ['yakov', ['Яков', '', '', ''], 'Яков'],
+    ['ksenia-mikheeva-1990', ['Ксения', 'Михайлова', 'Юрьевна', 'Михеева'], 'Ксения Юрьевна Михайлова'],
+    ['yakov', ['Яков', '', 'Сергеевич', ''], 'Яков Сергеевич'],
   ] as const) {
     const person = catalog.people.find((person) => person.id === id)!;
     assert.deepEqual([person.firstName, person.lastName, person.patronymic, person.maidenName], fields);
@@ -163,7 +164,6 @@ test('structured names retain confirmed name parts and leave unknown parts empty
 
 test('uncertain archival names retain their exact wording without assigning a surname or patronymic', () => {
   for (const [id, firstName, archivalName] of [
-    ['mikhey-petrov-1833', 'Михей', 'Михей Петров'],
     ['avdotya-efremova', 'Авдотья', 'Авдотья Ефремова'],
     ['tatyana-grigoryeva', 'Татьяна', 'Татьяна Григорьева'],
     ['stepan-kirillov', 'Степан', 'Степан Кириллов'],
@@ -176,6 +176,10 @@ test('uncertain archival names retain their exact wording without assigning a su
     assert.equal(fullName(person), archivalName);
     assert.ok(personSearchText(person).includes(archivalName.toLocaleLowerCase('ru').replaceAll('ё', 'е')));
   }
+  const mikhey = catalog.people.find((person) => person.id === 'mikhey-petrov-1833')!;
+  assert.equal(mikhey.firstName, 'Михей'); assert.equal(mikhey.lastName, ''); assert.equal(mikhey.patronymic, 'Петрович');
+  assert.equal(mikhey.archivalName, 'Михей Петров'); assert.equal(fullName(mikhey), 'Михей Петрович');
+  assert.ok(personSearchText(mikhey).includes('михей петров'));
   assert.equal(fullName(catalog.people.find((person) => person.id === 'elvira-mikheeva-grigoryeva')!), 'Эльвира Константиновна Михеева');
   assert.equal(FamilySourceSchema.safeParse({ ...source, people: [{ ...source.people[0], archivalName: ' ' }] }).success, false);
 });
@@ -185,7 +189,7 @@ test('the source format rejects an old name string, missing fields and completel
   const record = source.people[0];
   assert.equal(FamilySourceSchema.safeParse({ ...source, schemaVersion: 1 }).success, false);
   assert.equal(FamilySourceSchema.safeParse({ ...source, people: [{ ...record, name: 'Яков' }] }).success, false);
-  assert.equal(FamilySourceSchema.safeParse({ ...source, people: [{ ...record, firstName: ' ' }] }).success, false);
+  assert.equal(FamilySourceSchema.safeParse({ ...source, people: [{ ...record, firstName: ' ', lastName: ' ', patronymic: ' ', archivalName: undefined }] }).success, false);
   for (const field of ['firstName', 'lastName', 'patronymic', 'maidenName'] as const) {
     const { [field]: omitted, ...missingField } = record;
     assert.equal(FamilySourceSchema.safeParse({ ...source, people: [missingField] }).success, false, field);
