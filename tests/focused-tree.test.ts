@@ -16,11 +16,15 @@ import treeSettings from '../src/data/tree-view.json';
 const source = JSON.parse(await readFile(new URL('../src/data/family.json', import.meta.url), 'utf8'));
 const catalog = validateCatalog({ ...adaptFamilySource(source), documents: [], places: [] });
 
-test('main tree retains Vladimir, both parents, his sisters and both ancestral lines without deleting source records', () => {
+test('main tree retains Vladimir, his immediate family and both ancestral lines without deleting source records', () => {
   const snapshot = JSON.stringify(catalog), tree = getFocusedTree(catalog, treeSettings);
   const ids = new Set(tree.people.map((person) => person.id));
   assert.equal(tree.people.find((person) => person.id === tree.focusPersonId)!.name, 'Владимир Юрьевич Михеев');
-  assert.deepEqual(tree.familyPersonIds.slice().sort(), ['elvira-mikheeva-grigoryeva', 'ksenia-mikheeva-1990', 'maria-mikheeva-2003', 'vladimir-mikheev-1995', 'yuri-vladimirovich-mikheev-1965']);
+  assert.deepEqual(tree.familyPersonIds.slice().sort(), [
+    'elizaveta-petrova-beloborodova', 'elvira-mikheeva-grigoryeva', 'ksenia-mikheeva-1990',
+    'lev-son-of-vladimir-mikheev-and-elizaveta-petrova', 'maria-mikheeva-2003',
+    'vladimir-mikheev-1995', 'yuri-vladimirovich-mikheev-1965',
+  ]);
   for (const id of ['petr-mikheev-1889', 'dmitry-mikheev-1910', 'vladimir-mikheev-1941', 'maria-efimova-1941', 'efim-father-of-maria', 'konstantin-grigoryevich-grigoryev-1935', 'maria-petrovna-grigoryeva-1940']) assert.ok(ids.has(id), id);
   for (const id of ['vladimir-halfbrother-1947', 'sergey-son-of-vladimir-and-maria', 'anastasia-daughter-of-vladimir-and-maria']) assert.equal(ids.has(id), false, id);
   const ancestors = tree.people.filter((person) => !tree.familyPersonIds.includes(person.id));
@@ -49,6 +53,12 @@ test('siblings stay inside ancestor cards while Maria Efimovna has her own card 
     .map((edge) => edge.from), ['vladimir-mikheev-1941', 'maria-efimova-1941']);
   assert.ok(tree.relationships.some((edge) => edge.type === 'parent' && edge.from === 'efim-father-of-maria' && edge.to === 'maria-efimova-1941'));
   assert.equal(tree.relatives['yuri-vladimirovich-mikheev-1965'].find((group) => group.label === 'Братья и сёстры')!.people.length, 5);
+  assert.equal(catalog.people.find((person) => person.id === 'elizaveta-petrova-beloborodova')!.birth.date, '1997-01-23');
+  assert.equal(catalog.people.find((person) => person.id === 'lev-son-of-vladimir-mikheev-and-elizaveta-petrova')!.birth.date, '2026-08-21');
+  assert.ok(tree.relationships.some((edge) => edge.type === 'spouse' && edge.from === 'vladimir-mikheev-1995'
+    && edge.to === 'elizaveta-petrova-beloborodova'));
+  assert.deepEqual(tree.relationships.filter((edge) => edge.type === 'parent' && edge.to === 'lev-son-of-vladimir-mikheev-and-elizaveta-petrova')
+    .map((edge) => edge.from).sort(), ['elizaveta-petrova-beloborodova', 'vladimir-mikheev-1995']);
   assert.deepEqual(tree.relationships.filter((edge) => edge.type === 'parent' && edge.to === 'elvira-mikheeva-grigoryeva')
     .map((edge) => [edge.from, edge.status]).sort(), [
       ['konstantin-grigoryevich-grigoryev-1935', 'explicit'], ['maria-petrovna-grigoryeva-1940', 'explicit'],
@@ -100,7 +110,12 @@ test('focused real layout preserves era alignment, branch separation and the sha
   assert.equal(new Set(['ksenia-mikheeva-1990', 'vladimir-mikheev-1995', 'maria-mikheeva-2003'].map((id) => nodes.get(id)!.y)).size, 1);
   assert.ok(nodes.get('yuri-vladimirovich-mikheev-1965')!.x < nodes.get('elvira-mikheeva-grigoryeva')!.x);
   assert.ok(nodes.get('elvira-mikheeva-grigoryeva')!.x - nodes.get('yuri-vladimirovich-mikheev-1965')!.x >= geometry.nodeWidth + geometry.gap);
-  assert.equal(nodes.get('vladimir-mikheev-1995')!.x, (nodes.get('yuri-vladimirovich-mikheev-1965')!.x + nodes.get('elvira-mikheeva-grigoryeva')!.x) / 2);
+  const currentVladimir = nodes.get('vladimir-mikheev-1995')!, elizaveta = nodes.get('elizaveta-petrova-beloborodova')!;
+  assert.equal((currentVladimir.x + elizaveta.x) / 2,
+    (nodes.get('yuri-vladimirovich-mikheev-1965')!.x + nodes.get('elvira-mikheeva-grigoryeva')!.x) / 2);
+  assert.equal(Math.abs(currentVladimir.x - elizaveta.x), geometry.nodeWidth + geometry.gap);
+  assert.equal(nodes.get('lev-son-of-vladimir-mikheev-and-elizaveta-petrova')!.x + geometry.nodeWidth / 2,
+    (currentVladimir.x + elizaveta.x) / 2 + geometry.nodeWidth / 2);
   const families = getFamilyConnections(graph.nodes, tree.relationships, geometry);
   const main = families.find((family) => family.parentIds.includes('yuri-vladimirovich-mikheev-1965'))!;
   assert.deepEqual(main.parentIds, ['elvira-mikheeva-grigoryeva', 'yuri-vladimirovich-mikheev-1965']);
@@ -153,7 +168,7 @@ test('all focused families stay centred with straight descents, symmetric siblin
       assert.equal(family.lines.some((line) => line.id.endsWith(':spine')), false, family.id);
       const children = family.childIds.map((id) => nodes.get(id)!).sort((a, b) => a.x - b.x);
       assert.equal((children[0].x + children.at(-1)!.x) / 2 + geometry.nodeWidth / 2, axis);
-      for (let index = 1; index < children.length; index++) assert.equal(children[index].x - children[index - 1].x, geometry.nodeWidth + geometry.gap);
+      for (let index = 1; index < children.length; index++) assert.ok(children[index].x - children[index - 1].x >= geometry.nodeWidth + geometry.gap);
     }
   }
   for (const y of new Set(graph.nodes.map((node) => node.y))) {

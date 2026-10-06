@@ -56,4 +56,7 @@ test('у всех людей с установленным отцом вывод
     return fatherIds.length === 1 && !inferredPatronymic(person, catalog);
   });
   assert.deepEqual(missing.map((person) => person.id), []);
+  const lev = catalog.people.find((person) => person.id === 'lev-son-of-vladimir-mikheev-and-elizaveta-petrova')!;
+  assert.equal(displayName(lev, catalog), 'Лев Владимирович');
+  assert.equal(lev.birth.placeId, 'boeblingen');
 });

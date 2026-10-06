@@ -39,6 +39,13 @@ export function getTreeBranches(people: TreePerson[], edges: TreeRelationship[],
     if (!rootIds.has(child)) descendants.add(child);
     if (!visited.has(child)) { visited.add(child); queue.push(child); }
   }
+  // Keep confirmed spouses beside descendants instead of placing them in an
+  // unrelated lane. Their own ancestors are not pulled into either root line.
+  const linealDescendants = new Set(descendants);
+  for (const edge of edges) if (edge.type === 'spouse' && (!edge.status || edge.status === 'explicit')) {
+    if (linealDescendants.has(edge.from) && !rootIds.has(edge.to)) descendants.add(edge.to);
+    if (linealDescendants.has(edge.to) && !rootIds.has(edge.from)) descendants.add(edge.from);
+  }
   const memberships = new Map(people.map((person) => [person.id, new Set<string>()]));
   for (const root of roots) {
     const family = [root.personId], seen = new Set(family);

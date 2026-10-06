@@ -12,8 +12,11 @@ export function centerAncestry(graph: TreeGraph, edges: TreeRelationship[], geom
   const byId = new Map(graph.nodes.map((node) => [node.id, node]));
   const parents = new Map(graph.nodes.map((node) => [node.id, [] as string[]]));
   for (const edge of edges) if (edge.type === 'parent' && byId.has(edge.from) && byId.has(edge.to)) parents.get(edge.to)!.push(edge.from);
-  const roots = [...new Set(descendants.personIds.flatMap((id) => parents.get(id) ?? []))];
-  if (roots.length !== 2 || descendants.personIds.some((id) => parents.get(id)!.length !== 2)) return graph;
+  const familyIds = new Set(families.flatMap((branch) => branch.personIds));
+  const roots = [...new Set(descendants.personIds.flatMap((id) => parents.get(id) ?? []).filter((id) => familyIds.has(id)))];
+  const firstGeneration = descendants.personIds.filter((id) => parents.get(id)!.some((parent) => roots.includes(parent)));
+  if (roots.length !== 2 || !firstGeneration.length
+    || firstGeneration.some((id) => parents.get(id)!.length !== 2 || roots.some((root) => !parents.get(id)!.includes(root)))) return graph;
   const orderedRoots = families.map((branch) => roots.filter((id) => branch.personIds.includes(id)));
   if (orderedRoots.some((ids) => ids.length !== 1)) return graph;
   const seen = new Set<string>();

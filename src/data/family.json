@@ -723,6 +723,24 @@
       ],
       "birth": null,
       "death": null
+    },
+    {
+      "id": "elizaveta-petrova-beloborodova",
+      "firstName": "Елизавета",
+      "lastName": "Петрова",
+      "patronymic": "",
+      "maidenName": "Белобородова",
+      "birth": "1997-01-23",
+      "death": null
+    },
+    {
+      "id": "lev-son-of-vladimir-mikheev-and-elizaveta-petrova",
+      "firstName": "Лев",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
+      "birth": "2026-08-21",
+      "death": null
     }
   ],
   "relations": [
@@ -1360,6 +1378,27 @@
       "child": "grigory-maksimovich-maksimov-1898",
       "role": "mother",
       "kind": "biological",
+      "status": "explicit"
+    },
+    {
+      "type": "spouse",
+      "person1": "vladimir-mikheev-1995",
+      "person2": "elizaveta-petrova-beloborodova",
+      "status": "explicit",
+      "notes": "Пользователь указал Елизавету Петрову, урождённую Белобородову, как жену Владимира Михеева."
+    },
+    {
+      "type": "parent",
+      "parent": "vladimir-mikheev-1995",
+      "child": "lev-son-of-vladimir-mikheev-and-elizaveta-petrova",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "elizaveta-petrova-beloborodova",
+      "child": "lev-son-of-vladimir-mikheev-and-elizaveta-petrova",
+      "role": "mother",
       "status": "explicit"
     }
   ],

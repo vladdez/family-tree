@@ -1,16 +1,17 @@
 import { z } from 'zod';
 import type { Catalog } from './schemas';
-import { getParents, getRelativeGroups, getSiblings, getTreeData, type TreePerson } from './relationships';
+import { getChildren, getParents, getRelativeGroups, getSiblings, getSpouses, getTreeData, type TreePerson } from './relationships';
 
 const settingsSchema = z.object({ focusPersonId: z.string().min(1) }).strict();
 export interface HiddenRelativeGroup { label: string; people: (TreePerson & { annotation: string })[] }
 
-/** Show ancestry, confirmed spouses and the focal person's own siblings. */
+/** Show ancestry, confirmed spouses, siblings and the focal person's immediate descendants. */
 export function getFocusedTree(catalog: Catalog, settings: unknown) {
   const { focusPersonId } = settingsSchema.parse(settings);
   const tree = getTreeData(catalog), byId = new Map(tree.people.map((person) => [person.id, person]));
   if (!byId.has(focusPersonId)) throw new Error(`Неизвестный человек в настройках древа: ${focusPersonId}`);
-  const visible = new Set([focusPersonId, ...getSiblings(focusPersonId, catalog).map((person) => person.id)]);
+  const children = getChildren(focusPersonId, catalog);
+  const visible = new Set([focusPersonId, ...getSiblings(focusPersonId, catalog).map((person) => person.id), ...children.map((person) => person.id)]);
   const ancestors = new Set<string>(), pending = [focusPersonId];
   while (pending.length) {
     const id = pending.pop()!;
@@ -29,9 +30,16 @@ export function getFocusedTree(catalog: Catalog, settings: unknown) {
       .map((relative) => ({ ...byId.get(relative.id)!, annotation: group.annotations[relative.id] ?? '' })) }))
       .filter((group) => group.people.length),
   ]));
+  const familyPersonIds = [...new Set([
+    focusPersonId,
+    ...getParents(focusPersonId, catalog).map((person) => person.id),
+    ...getSiblings(focusPersonId, catalog).map((person) => person.id),
+    ...getSpouses(focusPersonId, catalog).map((person) => person.id),
+    ...children.map((person) => person.id),
+  ])].filter((id) => visible.has(id));
   return {
     focusPersonId,
-    familyPersonIds: [focusPersonId, ...getParents(focusPersonId, catalog).map((person) => person.id), ...getSiblings(focusPersonId, catalog).map((person) => person.id)],
+    familyPersonIds,
     people,
     relationships: tree.relationships.filter((edge) => visible.has(edge.from) && visible.has(edge.to)),
     relatives,
