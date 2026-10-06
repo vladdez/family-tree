@@ -11,7 +11,7 @@ import SourceNotes from '../../components/person/SourceNotes.astro';
 import UnidentifiedRelatives from '../../components/person/UnidentifiedRelatives.astro';
 import DocumentCard from '../../components/documents/DocumentCard.astro';
 import { catalog } from '../../domain/catalog';
-import { fullName, personDescription, eventDate, lifespan, showBirthOnly } from '../../domain/people';
+import { displayName, personDescription, eventDate, lifespan, showBirthOnly } from '../../domain/people';
 import { getRelativeGroups } from '../../domain/relationships';
 import { getDocumentsForPerson } from '../../domain/documents';
 import { getTimeline } from '../../domain/timeline';
@@ -27,11 +27,12 @@ const groups = getRelativeGroups(person.id, catalog);
 const documents = getDocumentsForPerson(person.id, catalog);
 const timeline = getTimeline(person.id, catalog);
 const placeName = (id: string | null) => id ? catalog.places.find((p) => p.id === id)?.name : 'Место пока неизвестно';
+const name = displayName(person, catalog);
 ---
-<BaseLayout title={`${fullName(person)} · ${lifespan(person)} — Родословная Михеевых`} description={personDescription(person)} image={person.portrait} canonicalPath={`/people/${person.slug}/`}>
+<BaseLayout title={`${name} · ${lifespan(person)} — Родословная Михеевых`} description={personDescription(person, catalog)} image={person.portrait} canonicalPath={`/people/${person.slug}/`}>
   <Fragment slot="head">{redirect && <><meta http-equiv="refresh" content={`0;url=${personUrl(person.slug)}`} /><meta name="robots" content="noindex, follow" /></>}</Fragment>
-  {redirect ? <><PageHeader eyebrow="Семейный архив" title={fullName(person)} description="Сведения об этом человеке объединены в одну личную запись." /><a class="button" href={personUrl(person.slug)}>Открыть личную страницу ↗</a></> : <>
-  <Breadcrumbs items={[{ label: 'Люди', path: '/people/' }, { label: fullName(person) }]} /><PersonHeader person={person} />
+  {redirect ? <><PageHeader eyebrow="Семейный архив" title={name} description="Сведения об этом человеке объединены в одну личную запись." /><a class="button" href={personUrl(person.slug)}>Открыть личную страницу ↗</a></> : <>
+  <Breadcrumbs items={[{ label: 'Люди', path: '/people/' }, { label: name }]} /><PersonHeader person={person} />
   <div class="person-content"><div>
     <section class="section"><h2>Биография</h2><Biography biography={person.biography} />{person.notes && <p class="note prose section">{person.notes}</p>}<ProfileSources sources={person.sources} /></section>
     <section class="section"><h2>Хронология</h2><Timeline events={timeline} /></section>

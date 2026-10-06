@@ -1,5 +1,5 @@
 import type { Catalog, RelationStatus, FamilyRelation } from './schemas';
-import { getPerson, fullName, lifespan, chronologicalPeople } from './people';
+import { getPerson, displayName, lifespan, chronologicalPeople } from './people';
 import { personUrl } from './urls';
 
 export function getParents(personId: string, catalog: Catalog) { return getPerson(personId, catalog).parents.map((id) => getPerson(id, catalog)); }
@@ -63,5 +63,5 @@ export function getTreeRelationships(catalog: Catalog): TreeRelationship[] {
   return relationships;
 }
 export function getTreeData(catalog: Catalog): { people: TreePerson[]; relationships: TreeRelationship[] } {
-  return { people: chronologicalPeople(catalog).map((p) => ({ id: p.id, name: fullName(p), lifespan: lifespan(p), href: personUrl(p.slug), uncertain: !!(p.birth.alternatives.length || p.death.alternatives.length), birthYears: [...new Set((p.birth.date ? [p.birth.date] : p.birth.alternatives).map((date) => Number(date.slice(0, 4))))] })), relationships: getTreeRelationships(catalog) };
+  return { people: chronologicalPeople(catalog).map((p) => ({ id: p.id, name: displayName(p, catalog), lifespan: lifespan(p), href: personUrl(p.slug), uncertain: !!(p.birth.alternatives.length || p.death.alternatives.length), birthYears: [...new Set((p.birth.date ? [p.birth.date] : p.birth.alternatives).map((date) => Number(date.slice(0, 4))))] })), relationships: getTreeRelationships(catalog) };
 }

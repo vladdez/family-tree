@@ -3,14 +3,14 @@ import BaseLayout from '../../components/layout/BaseLayout.astro';
 import PageHeader from '../../components/layout/PageHeader.astro';
 import { catalog } from '../../domain/catalog';
 import { buildLongevityReport, fiveNumberSummary, type LongevityBranchDefinition, type LongevityGroup } from '../../domain/longevity';
-import { fullName, lifespan } from '../../domain/people';
+import { displayName, lifespan } from '../../domain/people';
 import { personUrl } from '../../domain/urls';
 import branchData from '../../data/tree-branches.json';
 
 const report = buildLongevityReport(catalog, branchData as LongevityBranchDefinition[]);
 const number = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 1 });
 const years = (value: number | null) => value === null ? '—' : `≈ ${number.format(value)}`;
-const sortedRecords = [...report.records].sort((a, b) => b.midpoint - a.midpoint || b.max - a.max || fullName(a.person).localeCompare(fullName(b.person), 'ru'));
+const sortedRecords = [...report.records].sort((a, b) => b.midpoint - a.midpoint || b.max - a.max || displayName(a.person, catalog).localeCompare(displayName(b.person, catalog), 'ru'));
 const scale = Math.max(1, ...sortedRecords.map((record) => record.midpoint));
 const branchLabel = (ids: string[]) => ids.map((id) => report.branches.find((branch) => branch.id === id)?.label.split(' — ')[0]).filter(Boolean).join(', ');
 const plotGroup = (group: LongevityGroup, label: string) => ({
@@ -20,7 +20,7 @@ const plotGroup = (group: LongevityGroup, label: string) => ({
   summary: fiveNumberSummary(group.records.map((record) => record.midpoint)),
   points: group.records.map((record) => ({
     id: record.person.id,
-    name: fullName(record.person),
+    name: displayName(record.person, catalog),
     href: personUrl(record.person.slug),
     years: lifespan(record.person),
     age: record.midpoint,
@@ -39,7 +39,7 @@ const plotData = {
     <article class="longevity-stat"><strong>{report.records.length}</strong><span>предков с двумя датами</span></article>
     <article class="longevity-stat"><strong>{years(report.average)}</strong><span>средняя продолжительность</span></article>
     <article class="longevity-stat"><strong>{years(report.median)}</strong><span>медианный возраст</span></article>
-    {report.longest && <article class="longevity-stat"><strong>{report.longest.label}</strong><span>самая долгая жизнь · <a href={personUrl(report.longest.person.slug)}>{fullName(report.longest.person)}</a></span></article>}
+    {report.longest && <article class="longevity-stat"><strong>{report.longest.label}</strong><span>самая долгая жизнь · <a href={personUrl(report.longest.person.slug)}>{displayName(report.longest.person, catalog)}</a></span></article>}
   </section>
 
   <p class="note section methodology">Возраст с символом «≈» рассчитан по годам, потому что точный день рождения или смерти неизвестен. При нескольких вариантах дат показан диапазон. Средние значения вычислены по середине такого диапазона. Для сравнения по полу использовано заполненное поле пола или явная родственная роль «отец»/«мать»; по имени пол не определяется.</p>
@@ -53,7 +53,7 @@ const plotData = {
       {sortedRecords.map((record) => (
         <li class:list={['lifespan-row', ...record.branchIds.map((id) => `branch-${id}`)]}>
           <div class="lifespan-person">
-            <a href={personUrl(record.person.slug)}>{fullName(record.person)}</a>
+            <a href={personUrl(record.person.slug)}>{displayName(record.person, catalog)}</a>
             <span>{lifespan(record.person)} · {branchLabel(record.branchIds)}</span>
           </div>
           <div class="lifespan-bar" aria-hidden="true"><span style={`width: ${(record.midpoint / scale) * 100}%`}></span></div>

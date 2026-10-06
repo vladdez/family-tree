@@ -3,7 +3,7 @@ import BaseLayout from '../components/layout/BaseLayout.astro';
 import PersonCard from '../components/person/PersonCard.astro';
 import DocumentCard from '../components/documents/DocumentCard.astro';
 import { catalog } from '../domain/catalog';
-import { chronologicalPeople, fullName, lifespan } from '../domain/people';
+import { chronologicalPeople, displayName, lifespan } from '../domain/people';
 import { url, personUrl } from '../domain/urls';
 import { compareDates } from '../domain/dates';
 const people = chronologicalPeople(catalog);
@@ -15,7 +15,7 @@ const recentDocuments = [...catalog.documents].sort((a, b) => compareDates(b.dat
 <BaseLayout title="Родословная Михеевых — семейный архив" description="Имена, даты и документы семьи Михеевых. Интерактивное древо и отдельная история каждого человека.">
   <section class="hero">
     <div><div class="eyebrow">Родословная Михеевых</div><h1>Каждое имя —<br /><em>часть истории.</em></h1><p class="hero-copy">Собираем семейную память по крупицам: имена, даты, родственные связи и документы. Чтобы история каждого человека оставалась рядом.</p><div class="actions"><a class="button primary" href={url('/tree/')}>Исследовать древо <span aria-hidden="true">↗</span></a><a class="text-link" href={url('/people/')}>Все люди семьи</a></div></div>
-    <div class="hero-register"><div class="register-head"><span>Из семейных записей</span><span>{String(people.length).padStart(2, '0')} имён</span></div>{people.slice(0, 6).map((person, index) => <a class="register-row" href={personUrl(person.slug)}><span class="register-number">{String(index + 1).padStart(2, '0')}</span><span class="register-name">{fullName(person)}</span><span class="register-dates">{lifespan(person)}</span></a>)}<p class="register-note">{!hasRelationships && 'Родственные связи пока не уточнены. '}Даты с «?» ещё предстоит найти.</p></div>
+    <div class="hero-register"><div class="register-head"><span>Из семейных записей</span><span>{String(people.length).padStart(2, '0')} имён</span></div>{people.slice(0, 6).map((person, index) => <a class="register-row" href={personUrl(person.slug)}><span class="register-number">{String(index + 1).padStart(2, '0')}</span><span class="register-name">{displayName(person, catalog)}</span><span class="register-dates">{lifespan(person)}</span></a>)}<p class="register-note">{!hasRelationships && 'Родственные связи пока не уточнены. '}Даты с «?» ещё предстоит найти.</p></div>
   </section>
   <div class="stats"><div class="stat"><strong>{String(people.length).padStart(2, '0')}</strong><span>человек в архиве</span></div><div class="stat"><strong>{firstYear}</strong><span>самая ранняя запись о рождении</span></div><div class="stat"><strong>{String(catalog.documents.length).padStart(2, '0')}</strong><span>документов добавлено</span></div></div>
   <section class="section"><div class="section-head"><div><p class="eyebrow">Люди и их истории</p><h2>За каждым именем — жизнь</h2></div><a class="text-link" href={url('/people/')}>Открыть все записи →</a></div><div class="cards">{people.slice(-3).map((person) => <PersonCard person={person} />)}</div></section>

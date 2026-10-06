@@ -3,7 +3,7 @@ import path from 'node:path';
 import { parse, type DefaultTreeAdapterMap } from 'parse5';
 import { projectRoot, readRawCatalog } from './data-files';
 import { validateCatalog } from '../src/domain/validation';
-import { fullName, lifespan, personDescription, showBirthOnly } from '../src/domain/people';
+import { displayName, lifespan, personDescription, showBirthOnly } from '../src/domain/people';
 import { getDocumentsForPerson, isImage } from '../src/domain/documents';
 import { getRelativeGroups } from '../src/domain/relationships';
 import { getSourceIssues, getPublicSourceIssues, getUnidentifiedRelatives } from '../src/domain/source-notes';
@@ -81,11 +81,12 @@ for (const person of catalog.people) {
   if (showBirthOnly(person) && nodes.some((node) => node.tagName === 'dt' && textContent(node) === 'Смерть')) {
     errors.push(`${person.id}: показана пустая строка смерти`);
   }
-  const title = `${fullName(person)} · ${lifespan(person)} — Родословная Михеевых`;
+  const name = displayName(person, catalog);
+  const title = `${name} · ${lifespan(person)} — Родословная Михеевых`;
   const meta = (key: string) => attr(nodes.find((n) => n.tagName === 'meta' && (attr(n, 'property') ?? attr(n, 'name')) === key)!, 'content');
-  if (textContent(nodes.find((n) => n.tagName === 'h1')!) !== fullName(person)) errors.push(`${person.id}: заголовок не соответствует записи`);
+  if (textContent(nodes.find((n) => n.tagName === 'h1')!) !== name) errors.push(`${person.id}: заголовок не соответствует записи`);
   if (textContent(nodes.find((n) => n.tagName === 'title')!) !== title || meta('og:title') !== title || meta('twitter:title') !== title) errors.push(`${person.id}: неверные заголовки метаданных`);
-  if (meta('description') !== personDescription(person) || meta('og:description') !== personDescription(person) || meta('twitter:description') !== personDescription(person)) errors.push(`${person.id}: неверные описания метаданных`);
+  if (meta('description') !== personDescription(person, catalog) || meta('og:description') !== personDescription(person, catalog) || meta('twitter:description') !== personDescription(person, catalog)) errors.push(`${person.id}: неверные описания метаданных`);
   const socialImages = nodes.filter((n) => n.tagName === 'meta' && ['og:image', 'twitter:image'].includes(attr(n, 'property') ?? attr(n, 'name') ?? ''));
   if (!person.portrait && socialImages.length) errors.push(`${person.id}: вымышленное изображение в метаданных`);
   for (const image of socialImages) if (attr(image, 'content') !== new URL(`${base.replace(/\/$/, '')}${person.portrait}`, site.origin).href) errors.push(`${person.id}: неверный URL портрета`);
