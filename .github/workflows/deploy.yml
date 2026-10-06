@@ -12,7 +12,8 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: false
+  # A newer family-tree revision must never be overwritten by an older queued deployment.
+  cancel-in-progress: true
 
 jobs:
   build:
