@@ -7,8 +7,21 @@
       "lastName": "",
       "patronymic": "",
       "maidenName": "",
+      "birthYears": [
+        1747,
+        1748
+      ],
+      "death": "1809"
+    },
+    {
+      "id": "sergey-tikhanov",
+      "firstName": "Сергей",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
       "birthYears": [],
-      "deathYears": []
+      "deathYears": [],
+      "archivalName": "Сергей Тиханов"
     },
     {
       "id": "marya-mother-of-petr",
@@ -34,6 +47,18 @@
       "deathYears": [
         1855
       ]
+    },
+    {
+      "id": "timofey-son-of-yakov",
+      "firstName": "Тимофей",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
+      "birthYears": [
+        1803,
+        1804
+      ],
+      "deathYears": []
     },
     {
       "id": "avdotya-efremova",
@@ -703,8 +728,23 @@
   "relations": [
     {
       "type": "parent",
+      "parent": "sergey-tikhanov",
+      "child": "yakov",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
       "parent": "yakov",
       "child": "petr-1802",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "yakov",
+      "child": "timofey-son-of-yakov",
+      "role": "father",
       "status": "explicit"
     },
     {
