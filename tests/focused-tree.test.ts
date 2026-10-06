@@ -53,6 +53,12 @@ test('siblings stay inside ancestor cards while Maria Efimovna has her own card 
     .map((edge) => edge.from), ['vladimir-mikheev-1941', 'maria-efimova-1941']);
   assert.ok(tree.relationships.some((edge) => edge.type === 'parent' && edge.from === 'efim-father-of-maria' && edge.to === 'maria-efimova-1941'));
   assert.equal(tree.relatives['yuri-vladimirovich-mikheev-1965'].find((group) => group.label === 'Братья и сёстры')!.people.length, 5);
+  assert.equal(tree.people.some((person) => person.id === 'sergey-mikhailov-husband-of-ksenia'), false);
+  assert.equal(tree.people.some((person) => person.id === 'sofia-daughter-of-ksenia-and-sergey-mikhailov'), false);
+  assert.ok(tree.relatives['ksenia-mikheeva-1990'].find((group) => group.label === 'Супруги')!.people
+    .some((person) => person.id === 'sergey-mikhailov-husband-of-ksenia'));
+  assert.ok(tree.relatives['ksenia-mikheeva-1990'].find((group) => group.label === 'Дети')!.people
+    .some((person) => person.id === 'sofia-daughter-of-ksenia-and-sergey-mikhailov'));
   assert.equal(catalog.people.find((person) => person.id === 'elizaveta-petrova-beloborodova')!.birth.date, '1997-01-23');
   assert.equal(catalog.people.find((person) => person.id === 'lev-son-of-vladimir-mikheev-and-elizaveta-petrova')!.birth.date, '2026-08-21');
   assert.ok(tree.relationships.some((edge) => edge.type === 'spouse' && edge.from === 'vladimir-mikheev-1995'

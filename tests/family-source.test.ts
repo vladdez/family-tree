@@ -259,7 +259,8 @@ test('actual family layout keeps spouses together, parents above children and al
   assert.ok(Math.max(...father.personIds.map((id) => nodes.get(id)!.x + 220)) < Math.min(...mother.personIds.map((id) => nodes.get(id)!.x)));
   assert.deepEqual(branches.find((branch) => branch.kind === 'descendants')!.personIds.sort(), [
     'elizaveta-petrova-beloborodova', 'ksenia-mikheeva-1990',
-    'lev-son-of-vladimir-mikheev-and-elizaveta-petrova', 'maria-mikheeva-2003', 'vladimir-mikheev-1995',
+    'lev-son-of-vladimir-mikheev-and-elizaveta-petrova', 'maria-mikheeva-2003',
+    'sergey-mikhailov-husband-of-ksenia', 'sofia-daughter-of-ksenia-and-sergey-mikhailov', 'vladimir-mikheev-1995',
   ]);
   assert.deepEqual(branches.flatMap((branch) => branch.personIds).sort(), source.people.map((person) => person.id).sort());
 });

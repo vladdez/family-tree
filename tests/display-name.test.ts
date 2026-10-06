@@ -59,6 +59,7 @@ test('у всех людей с установленным отцом вывод
   const lev = catalog.people.find((person) => person.id === 'lev-son-of-vladimir-mikheev-and-elizaveta-petrova')!;
   assert.equal(displayName(lev, catalog), 'Лев Владимирович');
   assert.equal(lev.birth.placeId, 'boeblingen');
+  assert.equal(displayName(catalog.people.find((person) => person.id === 'sofia-daughter-of-ksenia-and-sergey-mikhailov')!, catalog), 'София Сергеевна');
 });
 
 test('места рождения ближайшей семьи сохраняют подтверждённые исключения', async () => {

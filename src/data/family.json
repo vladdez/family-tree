@@ -741,6 +741,24 @@
       "maidenName": "",
       "birth": "2026-08-21",
       "death": null
+    },
+    {
+      "id": "sergey-mikhailov-husband-of-ksenia",
+      "firstName": "Сергей",
+      "lastName": "Михайлов",
+      "patronymic": "",
+      "maidenName": "",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "sofia-daughter-of-ksenia-and-sergey-mikhailov",
+      "firstName": "София",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
+      "birthYears": [],
+      "deathYears": []
     }
   ],
   "relations": [
@@ -1398,6 +1416,27 @@
       "type": "parent",
       "parent": "elizaveta-petrova-beloborodova",
       "child": "lev-son-of-vladimir-mikheev-and-elizaveta-petrova",
+      "role": "mother",
+      "status": "explicit"
+    },
+    {
+      "type": "spouse",
+      "person1": "ksenia-mikheeva-1990",
+      "person2": "sergey-mikhailov-husband-of-ksenia",
+      "status": "explicit",
+      "notes": "Пользователь указал Сергея Михайлова как мужа Ксении Михайловой."
+    },
+    {
+      "type": "parent",
+      "parent": "sergey-mikhailov-husband-of-ksenia",
+      "child": "sofia-daughter-of-ksenia-and-sergey-mikhailov",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "ksenia-mikheeva-1990",
+      "child": "sofia-daughter-of-ksenia-and-sergey-mikhailov",
       "role": "mother",
       "status": "explicit"
     }
