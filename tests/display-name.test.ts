@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { displayName, inferredPatronymic } from '../src/domain/people';
 import type { Catalog, Person } from '../src/domain/schemas';
+import { validateCatalog } from '../src/domain/validation';
+import { readRawCatalog } from '../scripts/data-files';
 
 function person(id: string, firstName: string, sex: Person['sex'], options: Partial<Person> = {}): Person {
   const event = { date: null, placeId: null, alternatives: [], notes: '' };
@@ -38,4 +40,20 @@ test('известное отчество не заменяется вычисл
   const personWithPatronymic = person('petr', 'Пётр', 'male', { patronymic: 'Павлович', lastName: 'Павлов', parents: [father.id] });
   const catalog: Catalog = { people: [father, personWithPatronymic], documents: [], places: [] };
   assert.equal(displayName(personWithPatronymic, catalog), 'Пётр Павлович Павлов');
+});
+
+test('у всех людей с установленным отцом выводится отчество, если имя не неоднозначно', async () => {
+  const catalog = validateCatalog(await readRawCatalog());
+  const ambiguousHistoricalNames = new Set([
+    // «Павлова» в записи может быть как фамилией, так и старой формой отчества.
+    'paraskeva-pavlova-1889',
+  ]);
+  const missing = catalog.people.filter((person) => {
+    if (person.patronymic || person.archivalName || ambiguousHistoricalNames.has(person.id)) return false;
+    const explicitFathers = person.parentDetails.filter((parent) => parent.role === 'father').map((parent) => parent.personId);
+    const maleParents = person.parents.filter((id) => catalog.people.find((candidate) => candidate.id === id)?.sex === 'male');
+    const fatherIds = [...new Set(explicitFathers.length ? explicitFathers : maleParents)];
+    return fatherIds.length === 1 && !inferredPatronymic(person, catalog);
+  });
+  assert.deepEqual(missing.map((person) => person.id), []);
 });
