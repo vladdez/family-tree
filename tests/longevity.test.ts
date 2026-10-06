@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildLongevityReport, estimateAge } from '../src/domain/longevity';
+import { buildLongevityReport, estimateAge, fiveNumberSummary } from '../src/domain/longevity';
 import type { Catalog, Person } from '../src/domain/schemas';
 
 function person(id: string, sex: Person['sex'], birth: string | null, death: string | null, parents: string[] = []): Person {
@@ -24,6 +24,13 @@ test('неполные и альтернативные даты помечают
   });
   assert.deepEqual(estimateAge(['1747', '1748'], ['1809']), {
     min: 61, max: 62, midpoint: 61.5, exact: false, label: '61–62',
+  });
+});
+
+test('пять чисел для box plot вычисляются с интерполяцией квартилей', () => {
+  assert.deepEqual(fiveNumberSummary([]), null);
+  assert.deepEqual(fiveNumberSummary([40, 10, 30, 20]), {
+    min: 10, q1: 17.5, median: 25, q3: 32.5, max: 40,
   });
 });
 

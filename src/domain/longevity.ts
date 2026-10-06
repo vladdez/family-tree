@@ -40,6 +40,26 @@ export interface LongevityReport {
   shortest: LongevityRecord | null;
 }
 
+export interface FiveNumberSummary {
+  min: number;
+  q1: number;
+  median: number;
+  q3: number;
+  max: number;
+}
+
+export function fiveNumberSummary(input: number[]): FiveNumberSummary | null {
+  if (!input.length) return null;
+  const values = [...input].sort((a, b) => a - b);
+  const quantile = (position: number) => {
+    const index = (values.length - 1) * position;
+    const lower = Math.floor(index);
+    const fraction = index - lower;
+    return values[lower] + ((values[lower + 1] ?? values[lower]) - values[lower]) * fraction;
+  };
+  return { min: values[0], q1: quantile(0.25), median: quantile(0.5), q3: quantile(0.75), max: values.at(-1) ?? values[0] };
+}
+
 function dates(event: Person['birth']): string[] {
   return event.date ? [event.date] : event.alternatives;
 }
