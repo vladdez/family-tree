@@ -1,5 +1,13 @@
 {
   "id": "khirposi",
-  "name": "Хирпоси, Чувашия, Россия",
-  "notes": "Место рождения Григория Максимовича и Константина Григорьевича. Для рождения Константина в источнике указаны Вурнарский район и Чувашская АССР."
+  "name": "Хирпоси",
+  "district": "Вурнарский район",
+  "region": "Чувашская Республика",
+  "country": "Россия",
+  "born": [
+    "grigory-maksimovich-maksimov-1898",
+    "konstantin-grigoryevich-grigoryev-1935",
+    "elvira-mikheeva-grigoryeva"
+  ],
+  "buried": []
 }

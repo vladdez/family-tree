@@ -76,7 +76,16 @@ export const DocumentSchema = z.object({
   archive: z.object({ name: z.string(), fond: z.string(), opis: z.string(), delo: z.string(), page: z.string() }).strict(),
   transcription: z.string(), notes: z.string(),
 }).strict();
-export const PlaceSchema = z.object({ id, name: z.string().min(1), notes: z.string().default('') }).strict();
+export const PlaceSchema = z.object({
+  id,
+  name: z.string().trim().min(1),
+  district: z.string().trim().default(''),
+  region: z.string().trim().default(''),
+  country: z.string().trim().default(''),
+  previousNames: z.array(z.string().trim().min(1)).default([]),
+  born: uniqueIds.default([]),
+  buried: uniqueIds.default([]),
+}).strict();
 export type Person = z.infer<typeof PersonSchema>;
 export type FamilyDocument = z.infer<typeof DocumentSchema>;
 export type Place = z.infer<typeof PlaceSchema>;

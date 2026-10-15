@@ -26,6 +26,13 @@ export function validateCatalog(raw: { people: unknown[]; documents: unknown[]; 
   const checkPersonRefs = (references: string[], label: string) => {
     for (const id of references) if (!people.has(id)) errors.push(`${label}: неизвестный person ID ${id}`);
   };
+  for (const place of catalog.places) {
+    checkPersonRefs(place.born, `${place.id} born`);
+    checkPersonRefs(place.buried, `${place.id} buried`);
+    for (const personId of place.born) {
+      if (people.has(personId) && people.get(personId)!.birth.placeId !== place.id) errors.push(`${place.id} born: ${personId} не связан с этим местом рождения`);
+    }
+  }
   for (const relation of catalog.relations ?? []) {
     const refs = relation.type === 'parent' ? [relation.parent, relation.child] : [relation.person1, relation.person2];
     checkPersonRefs(refs, relation.type);
@@ -48,6 +55,10 @@ export function validateCatalog(raw: { people: unknown[]; documents: unknown[]; 
       }
     }
     for (const event of [person.birth, person.death]) if (event.placeId && !places.has(event.placeId)) errors.push(`${person.id}: неизвестное место ${event.placeId}`);
+    if (person.birth.placeId && places.has(person.birth.placeId)
+      && !catalog.places.find((place) => place.id === person.birth.placeId)!.born.includes(person.id)) {
+      errors.push(`${person.id}: отсутствует в born-индексе ${person.birth.placeId}`);
+    }
     unique(person.parentDetails.map((p) => p.personId), `${person.id} parentDetails`);
     for (const detail of person.parentDetails) if (!person.parents.includes(detail.personId)) errors.push(`${person.id}: parentDetails должен ссылаться на parents`);
     const b = person.birth.date && dateBounds(person.birth.date);

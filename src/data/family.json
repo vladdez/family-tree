@@ -8,7 +8,6 @@
       "patronymic": "Сергеевич",
       "maidenName": "",
       "birthYears": [
-        1747,
         1748
       ],
       "death": "1809"
@@ -19,9 +18,54 @@
       "lastName": "",
       "patronymic": "",
       "maidenName": "",
-      "birthYears": [],
-      "deathYears": [],
+      "birthYears": [
+        1698
+      ],
+      "deathYears": [
+        1786
+      ],
       "archivalName": "Сергей Тиханов"
+    },
+    {
+      "id": "matryona-wife-of-sergey-tikhanov",
+      "firstName": "Матрёна",
+      "lastName": "",
+      "patronymic": "",
+      "maidenName": "",
+      "birthYears": [
+        1718
+      ],
+      "deathYears": [],
+      "archivalName": "Матрёна Тиханова"
+    },
+    {
+      "id": "orina-tikhanova-daughter-of-sergey",
+      "firstName": "Орина",
+      "lastName": "Тиханова",
+      "patronymic": "Сергеевна",
+      "maidenName": "",
+      "birthYears": [
+        1755
+      ],
+      "deathYears": []
+    },
+    {
+      "id": "maksim-sergeev-son-of-sergey-tikhanov",
+      "firstName": "Максим",
+      "lastName": "Сергеев",
+      "patronymic": "Сергеевич",
+      "maidenName": "",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "petr-sergeev-son-of-sergey-tikhanov",
+      "firstName": "Пётр",
+      "lastName": "Сергеев",
+      "patronymic": "Сергеевич",
+      "maidenName": "",
+      "birthYears": [1760],
+      "deathYears": []
     },
     {
       "id": "marya-mother-of-petr",
@@ -55,7 +99,6 @@
       "patronymic": "Яковлевич",
       "maidenName": "",
       "birthYears": [
-        1803,
         1804
       ],
       "deathYears": []
@@ -96,26 +139,24 @@
       "deathYears": []
     },
     {
-      "id": "matryona-daughter-of-petr",
+      "id": "matryona-1821",
       "firstName": "Матрёна",
       "lastName": "",
       "patronymic": "Петровна",
       "maidenName": "",
       "birthYears": [
-        1820,
         1821
       ],
       "deathYears": []
     },
     {
-      "id": "katerina-daughter-of-petr",
+      "id": "katerina-1823",
       "firstName": "Катерина",
       "lastName": "",
       "patronymic": "Петровна",
       "maidenName": "",
       "birthYears": [
-        1823,
-        1824
+        1823
       ],
       "deathYears": []
     },
@@ -168,7 +209,7 @@
       "deathYears": []
     },
     {
-      "id": "ekaterina-wife-of-nikifor",
+      "id": "ekaterina-1857",
       "firstName": "Екатерина",
       "lastName": "",
       "patronymic": "Степановна",
@@ -770,6 +811,61 @@
       "status": "explicit"
     },
     {
+      "type": "spouse",
+      "person1": "sergey-tikhanov",
+      "person2": "matryona-wife-of-sergey-tikhanov",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "sergey-tikhanov",
+      "child": "orina-tikhanova-daughter-of-sergey",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "matryona-wife-of-sergey-tikhanov",
+      "child": "orina-tikhanova-daughter-of-sergey",
+      "role": "mother",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "sergey-tikhanov",
+      "child": "maksim-sergeev-son-of-sergey-tikhanov",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "matryona-wife-of-sergey-tikhanov",
+      "child": "maksim-sergeev-son-of-sergey-tikhanov",
+      "role": "mother",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "sergey-tikhanov",
+      "child": "petr-sergeev-son-of-sergey-tikhanov",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "matryona-wife-of-sergey-tikhanov",
+      "child": "petr-sergeev-son-of-sergey-tikhanov",
+      "role": "mother",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "matryona-wife-of-sergey-tikhanov",
+      "child": "yakov",
+      "role": "mother",
+      "status": "explicit"
+    },
+    {
       "type": "parent",
       "parent": "yakov",
       "child": "petr-1802",
@@ -832,28 +928,28 @@
     {
       "type": "parent",
       "parent": "petr-1802",
-      "child": "matryona-daughter-of-petr",
+      "child": "matryona-1821",
       "role": "father",
       "status": "explicit"
     },
     {
       "type": "parent",
       "parent": "avdotya-efremova",
-      "child": "matryona-daughter-of-petr",
+      "child": "matryona-1821",
       "role": "mother",
       "status": "explicit"
     },
     {
       "type": "parent",
       "parent": "petr-1802",
-      "child": "katerina-daughter-of-petr",
+      "child": "katerina-1823",
       "role": "father",
       "status": "explicit"
     },
     {
       "type": "parent",
       "parent": "avdotya-efremova",
-      "child": "katerina-daughter-of-petr",
+      "child": "katerina-1823",
       "role": "mother",
       "status": "explicit"
     },
@@ -910,13 +1006,13 @@
     {
       "type": "spouse",
       "person1": "nikifor-1858",
-      "person2": "ekaterina-wife-of-nikifor",
+      "person2": "ekaterina-1857",
       "status": "explicit"
     },
     {
       "type": "parent",
       "parent": "stepan-kirillov",
-      "child": "ekaterina-wife-of-nikifor",
+      "child": "ekaterina-1857",
       "status": "explicit"
     },
     {
@@ -927,7 +1023,7 @@
     },
     {
       "type": "parent",
-      "parent": "ekaterina-wife-of-nikifor",
+      "parent": "ekaterina-1857",
       "child": "petr-mikheev-1889",
       "status": "explicit"
     },
@@ -1456,7 +1552,7 @@
     {
       "people": [
         "nikifor-1858",
-        "ekaterina-wife-of-nikifor"
+        "ekaterina-1857"
       ],
       "relation": "child",
       "sex": "female",
@@ -1486,7 +1582,7 @@
       "reason": "В документе имя Николай зачёркнуто и заменено на Никифор."
     },
     {
-      "person": "ekaterina-wife-of-nikifor",
+      "person": "ekaterina-1857",
       "type": "date_correction",
       "values": [
         "1853",
@@ -1505,7 +1601,7 @@
       "reason": "В одном месте указано 1910-1996, в другом тексте указано, что умер в 1998 году."
     },
     {
-      "person": "ekaterina-wife-of-nikifor",
+      "person": "ekaterina-1857",
       "type": "death_year_conflict",
       "values": [
         1949,

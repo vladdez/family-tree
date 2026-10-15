@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { PersonSchema, DocumentSchema, PartialDateSchema, type Catalog } from '../src/domain/schemas';
+import { PersonSchema, DocumentSchema, PlaceSchema, PartialDateSchema, type Catalog } from '../src/domain/schemas';
 import { validateCatalog } from '../src/domain/validation';
 import { getParents, getChildren, getSpouses, getSiblings, getRelativeGroups } from '../src/domain/relationships';
 import { getDocumentsForPerson } from '../src/domain/documents';
@@ -36,6 +36,21 @@ test('partial dates preserve precision and validate actual calendar dates', () =
   for (const date of ['1889', '1889-06', '1889-06-15', '2000-02-29', '0001-01-01']) assert.ok(PartialDateSchema.safeParse(date).success);
   for (const date of ['1889-2', '1900-02-29', '1889-04-31', '1889-13', '0000', '1889-00', '1889-01-00']) assert.equal(PartialDateSchema.safeParse(date).success, false, date);
   assert.equal(formatDate('1889'), '1889'); assert.equal(formatDate('1889-06'), 'июнь 1889'); assert.equal(formatDate('1889-06-15'), '15 июня 1889');
+});
+
+test('places store administrative divisions and born/buried people separately', () => {
+  const place = PlaceSchema.parse({ id: 'place', name: 'Современное название', district: 'Район', region: 'Регион', country: 'Страна', previousNames: ['Уразгильдино'], born: ['person'], buried: ['other-person'] });
+  assert.equal(place.name, 'Современное название');
+  assert.equal(place.district, 'Район'); assert.equal(place.region, 'Регион'); assert.equal(place.country, 'Страна');
+  assert.deepEqual(place.previousNames, ['Уразгильдино']);
+  assert.deepEqual(place.born, ['person']); assert.deepEqual(place.buried, ['other-person']);
+  assert.deepEqual(PlaceSchema.parse({ id: 'place', name: 'Современное название' }), {
+    id: 'place', name: 'Современное название', district: '', region: '', country: '', previousNames: [], born: [], buried: [],
+  });
+  const linked = validateCatalog({ ...raw([person('person', { birth: { date: '1900', placeId: 'place' } })]), places: [{ id: 'place', name: 'Место', born: ['person'], buried: [] }] });
+  assert.deepEqual(linked.places[0].born, ['person']);
+  assert.throws(() => validateCatalog({ ...raw([person('person')]), places: [{ id: 'place', name: 'Место', born: ['missing'], buried: [] }] }), /неизвестный person ID missing/);
+  assert.throws(() => validateCatalog({ ...raw([person('person', { birth: { date: '1900', placeId: 'place' } })]), places: [{ id: 'place', name: 'Место', born: [], buried: [] }] }), /отсутствует в born-индексе/);
 });
 
 test('uncertain death dates remain alternatives without choosing a year', () => {

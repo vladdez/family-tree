@@ -76,8 +76,9 @@ test('места рождения ближайшей семьи сохраняю
   const places = new Map(catalog.people.map((person) => [person.id, person.birth.placeId]));
   for (const id of [
     'vladimir-mikheev-1995', 'yuri-vladimirovich-mikheev-1965', 'ksenia-mikheeva-1990',
-    'maria-mikheeva-2003', 'elizaveta-petrova-beloborodova',
+    'maria-mikheeva-2003',
   ]) assert.equal(places.get(id), 'lash-tayaba', id);
+  assert.equal(places.get('elizaveta-petrova-beloborodova'), 'berezniki');
   assert.equal(places.get('elvira-mikheeva-grigoryeva'), 'khirposi');
   assert.equal(places.get('lev-son-of-vladimir-mikheev-and-elizaveta-petrova'), 'boeblingen');
 });

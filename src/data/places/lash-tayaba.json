@@ -1,5 +1,19 @@
 {
   "id": "lash-tayaba",
-  "name": "Лащ-Таяба, Чувашия, Россия",
-  "notes": "Ранее село называлось Уразгильдино. В семейном тексте указано как место рождения Дмитрия Михеева; в цитируемой записи встречается написание «Лаш-Таяба»."
+  "name": "Лащ-Таяба",
+  "district": "Яльчикский район",
+  "region": "Чувашская Республика",
+  "country": "Россия",
+  "previousNames": [
+    "Уразгильдино"
+  ],
+  "born": [
+    "sergey-tikhanov",
+    "dmitry-mikheev-1910",
+    "vladimir-mikheev-1995",
+    "yuri-vladimirovich-mikheev-1965",
+    "ksenia-mikheeva-1990",
+    "maria-mikheeva-2003"
+  ],
+  "buried": []
 }

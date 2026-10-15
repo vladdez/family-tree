@@ -1,5 +1,11 @@
 {
   "id": "malye-yaushi",
   "name": "Малые Яуши",
-  "notes": "Татьяна Сергеевна Максимова названа уроженкой этой деревни. Район в семейном тексте не указан."
+  "district": "",
+  "region": "",
+  "country": "",
+  "born": [
+    "tatyana-sergeevna-maksimova-1906"
+  ],
+  "buried": []
 }

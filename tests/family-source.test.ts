@@ -86,7 +86,7 @@ test('all corrections, identity issues and unnamed-relative counts remain attach
 test('public source notes omit correction history but retain unresolved dates and relationships', () => {
   assert.equal(getSourceIssues('grigory-maksimovich-maksimov-1898', catalog).length, 2);
   assert.deepEqual(getPublicSourceIssues('grigory-maksimovich-maksimov-1898', catalog), []);
-  assert.deepEqual(getPublicSourceIssues('ekaterina-wife-of-nikifor', catalog).map((issue) => issue.values), [[1949, 1951]]);
+  assert.deepEqual(getPublicSourceIssues('ekaterina-1857', catalog).map((issue) => issue.values), [[1949, 1951]]);
   assert.deepEqual(getPublicSourceIssues('dmitry-mikheev-1910', catalog).map((issue) => issue.values), [[1996, 1998]]);
   const uncertain = { ...catalog, issues: [{ person: 'a', type: 'identity_conflict' as const, reason: 'Личность не установлена.' }] };
   assert.equal(getPublicSourceIssues('a', uncertain)[0].reason, 'Личность не установлена.');

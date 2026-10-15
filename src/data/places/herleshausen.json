@@ -1,5 +1,11 @@
 {
   "id": "herleshausen",
-  "name": "Херлесхаузен, Гессен, Германия",
-  "notes": ""
+  "name": "Херлесхаузен",
+  "district": "",
+  "region": "Гессен",
+  "country": "Германия",
+  "born": [],
+  "buried": [
+    "grigory-maksimovich-maksimov-1898"
+  ]
 }
