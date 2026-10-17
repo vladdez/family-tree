@@ -21,6 +21,7 @@ test('published addresses survive the migration to birth-year IDs', () => {
     ['ekaterina-wife-of-nikifor', 'ekaterina-1857'],
     ['matryona-daughter-of-petr', 'matryona-1821'],
     ['katerina-daughter-of-petr', 'katerina-1823'],
+    ['marya-mother-of-petr', 'marya-1771'],
   ]) {
     const redirect = redirects.find((entry) => entry.from === from);
     assert.ok(redirect, `Missing redirect for ${from}`);

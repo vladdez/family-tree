@@ -1,0 +1,15 @@
+{
+  "id": "marfa-1801",
+  "birthDate": "1801",
+  "birthPlaceId": null,
+  "deathDate": null,
+  "sex": "female",
+  "summary": "Дочь Якова и Марьи; родилась в 1801 году.",
+  "biography": "Марфа Яковлева родилась в 1801 году. Её имя и год рождения указаны в семейных сведениях из Familio.",
+  "sources": [
+    {
+      "title": "Карточка Марфы Яковлевой в Familio",
+      "href": "https://familio.org/persons/e7c63848-7e8e-434e-81ea-89449f6ce374"
+    }
+  ]
+}

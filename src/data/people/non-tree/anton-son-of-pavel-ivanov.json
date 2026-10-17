@@ -1,0 +1,17 @@
+{
+  "id": "anton-son-of-pavel-ivanov",
+  "birthDate": null,
+  "birthPlaceId": null,
+  "deathDate": null,
+  "biography": [
+    "Антон был сыном Павла Ивановича Павлова. В рассказе о коллективизации сказано, что он перевёз",
+    "второй семейный амбар для постройки дома."
+  ],
+  "sources": [
+    {
+      "title": "Семейные воспоминания «Древо на русском»",
+      "href": "/media/sources/family-history-russian.txt",
+      "pages": "5"
+    }
+  ]
+}

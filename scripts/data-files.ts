@@ -6,9 +6,20 @@ import { adaptFamilySource } from '../src/domain/family-source';
 export const projectRoot = fileURLToPath(new URL('../', import.meta.url));
 export async function readRecords(kind: 'people' | 'documents' | 'places'): Promise<unknown[]> {
   const directory = path.join(projectRoot, 'src/data', kind);
-  const names = (await readdir(directory)).filter((name) => name.endsWith('.json')).sort();
-  return Promise.all(names.map(async (name) => {
-    try { return JSON.parse(await readFile(path.join(directory, name), 'utf8')); }
+  async function jsonFiles(current: string): Promise<string[]> {
+    const entries = await readdir(current, { withFileTypes: true });
+    const nested = await Promise.all(entries.map((entry) => {
+      const fullPath = path.join(current, entry.name);
+      return entry.isDirectory() ? jsonFiles(fullPath) : entry.isFile() && entry.name.endsWith('.json') ? [fullPath] : [];
+    }));
+    return nested.flat().sort();
+  }
+  const files = kind === 'people'
+    ? await jsonFiles(directory)
+    : (await readdir(directory)).filter((name) => name.endsWith('.json')).sort().map((name) => path.join(directory, name));
+  return Promise.all(files.map(async (file) => {
+    const name = path.relative(directory, file);
+    try { return JSON.parse(await readFile(file, 'utf8')); }
     catch (error) { throw new Error(`${kind}/${name}: ${error instanceof Error ? error.message : error}`); }
   }));
 }

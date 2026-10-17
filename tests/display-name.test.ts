@@ -54,6 +54,8 @@ test('у всех людей с установленным отцом вывод
   const ambiguousHistoricalNames = new Set([
     // «Павлова» в записи может быть как фамилией, так и старой формой отчества.
     'paraskeva-pavlova-1889',
+    // Та же неоднозначность у формы «Яковлева» в новых записях дочерей Якова.
+    'agafya-1791', 'nastasya-1793', 'domna-1795', 'marfa-1801',
   ]);
   const missing = catalog.people.filter((person) => {
     if (person.patronymic || person.archivalName || ambiguousHistoricalNames.has(person.id)) return false;
@@ -63,6 +65,17 @@ test('у всех людей с установленным отцом вывод
     return fatherIds.length === 1 && !inferredPatronymic(person, catalog);
   });
   assert.deepEqual(missing.map((person) => person.id), []);
+  for (const [id, name] of [
+    ['agafya-1791', 'Агафья Яковлева'],
+    ['nastasya-1793', 'Настасья Яковлева'],
+    ['domna-1795', 'Домна Яковлева'],
+    ['marfa-1801', 'Марфа Яковлева'],
+  ]) {
+    const record = catalog.people.find((person) => person.id === id)!;
+    assert.ok(record);
+    assert.equal(inferredPatronymic(record, catalog), null);
+    assert.equal(displayName(record, catalog), name);
+  }
   const lev = catalog.people.find((person) => person.id === 'lev-son-of-vladimir-mikheev-and-elizaveta-petrova')!;
   assert.equal(displayName(lev, catalog), 'Лев Владимирович Михеев');
   assert.equal(lev.birth.placeId, 'boeblingen');

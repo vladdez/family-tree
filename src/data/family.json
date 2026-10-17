@@ -68,15 +68,48 @@
       "deathYears": []
     },
     {
-      "id": "marya-mother-of-petr",
+      "id": "marya-1771",
       "firstName": "Марья",
       "lastName": "",
       "patronymic": "",
       "maidenName": "",
-      "birthYears": [
-        1770,
-        1771
-      ],
+      "birthYears": [1771],
+      "deathYears": []
+    },
+    {
+      "id": "agafya-1791",
+      "firstName": "Агафья",
+      "lastName": "Яковлева",
+      "patronymic": "",
+      "maidenName": "",
+      "birthYears": [1791],
+      "deathYears": []
+    },
+    {
+      "id": "nastasya-1793",
+      "firstName": "Настасья",
+      "lastName": "Яковлева",
+      "patronymic": "",
+      "maidenName": "",
+      "birthYears": [1793],
+      "deathYears": []
+    },
+    {
+      "id": "domna-1795",
+      "firstName": "Домна",
+      "lastName": "Яковлева",
+      "patronymic": "",
+      "maidenName": "",
+      "birthYears": [1795],
+      "deathYears": []
+    },
+    {
+      "id": "marfa-1801",
+      "firstName": "Марфа",
+      "lastName": "Яковлева",
+      "patronymic": "",
+      "maidenName": "",
+      "birthYears": [1801],
       "deathYears": []
     },
     {
@@ -880,15 +913,78 @@
       "status": "explicit"
     },
     {
+      "type": "parent",
+      "parent": "marya-1771",
+      "child": "timofey-son-of-yakov",
+      "role": "mother",
+      "status": "explicit"
+    },
+    {
       "type": "spouse",
       "person1": "yakov",
-      "person2": "marya-mother-of-petr",
+      "person2": "marya-1771",
       "status": "explicit"
     },
     {
       "type": "parent",
-      "parent": "marya-mother-of-petr",
+      "parent": "marya-1771",
       "child": "petr-1802",
+      "role": "mother",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "yakov",
+      "child": "agafya-1791",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "marya-1771",
+      "child": "agafya-1791",
+      "role": "mother",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "yakov",
+      "child": "nastasya-1793",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "marya-1771",
+      "child": "nastasya-1793",
+      "role": "mother",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "yakov",
+      "child": "domna-1795",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "marya-1771",
+      "child": "domna-1795",
+      "role": "mother",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "yakov",
+      "child": "marfa-1801",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "marya-1771",
+      "child": "marfa-1801",
       "role": "mother",
       "status": "explicit"
     },
