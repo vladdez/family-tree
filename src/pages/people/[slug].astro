@@ -40,7 +40,8 @@ const name = displayName(person, catalog);
   {redirect ? <><PageHeader eyebrow="Семейный архив" title={name} description="Сведения об этом человеке объединены в одну личную запись." /><a class="button" href={personUrl(person.slug)}>Открыть личную страницу ↗</a></> : <>
   <Breadcrumbs items={[{ label: 'Люди', path: '/people/' }, { label: name }]} /><PersonHeader person={person} />
   <div class="person-content"><div>
-    <section class="section"><h2>Биография</h2><Biography biography={person.biography} />{person.notes && <p class="note prose section"><InlineText text={person.notes} /></p>}<ProfileSources sources={person.sources} /></section>
+    <section class="section"><h2>Биография</h2><Biography biography={person.biography} /><ProfileSources sources={person.sources} /></section>
+    {person.notes && <section class="section"><h2>Примечания</h2><p class="note prose"><InlineText text={person.notes} /></p></section>}
     <section class="section"><h2>Хронология</h2><Timeline events={timeline} /></section>
     <SourceNotes personId={person.id} />
     <UnidentifiedRelatives personId={person.id} />

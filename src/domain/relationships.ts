@@ -48,6 +48,9 @@ export function getRelativeGroups(personId: string, catalog: Catalog) {
   return groups;
 }
 export interface TreePerson { id: string; name: string; lifespan: string; href: string; uncertain: boolean; birthYears: number[]; maidenName?: string }
+export function treeDisplayName(person: Pick<TreePerson, 'name' | 'maidenName'>): string {
+  return person.maidenName ? `${person.name} (${person.maidenName})` : person.name;
+}
 export interface TreeRelationship { id: string; from: string; to: string; type: FamilyRelation['type']; status?: RelationStatus; kind?: 'biological' | 'adoptive' | 'unknown' }
 export function getTreeRelationships(catalog: Catalog): TreeRelationship[] {
   const relationships: TreeRelationship[] = [];
