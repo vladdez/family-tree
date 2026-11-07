@@ -4,4 +4,4 @@ import TimelineEvent from './TimelineEvent.astro';
 interface Props { events: TimelineEntry[] }
 const { events } = Astro.props;
 ---
-<ol class="timeline">{events.map((event) => <TimelineEvent event={event} />)}</ol>
+<ol class="timeline" role="list">{events.map((event) => <TimelineEvent event={event} />)}</ol>

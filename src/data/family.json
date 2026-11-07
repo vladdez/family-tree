@@ -380,6 +380,33 @@
       "deathYears": []
     },
     {
+      "id": "maria-daughter-of-dmitry-and-anastasia",
+      "firstName": "Мария",
+      "lastName": "",
+      "patronymic": "Дмитриевна",
+      "maidenName": "",
+      "birth": null,
+      "death": null
+    },
+    {
+      "id": "valentina-daughter-of-dmitry-and-anastasia",
+      "firstName": "Валентина",
+      "lastName": "",
+      "patronymic": "Дмитриевна",
+      "maidenName": "",
+      "birth": null,
+      "death": null
+    },
+    {
+      "id": "galina-daughter-of-dmitry-and-anastasia",
+      "firstName": "Галина",
+      "lastName": "",
+      "patronymic": "Дмитриевна",
+      "maidenName": "",
+      "birth": null,
+      "death": null
+    },
+    {
       "id": "maria-efimova-1941",
       "firstName": "Мария",
       "lastName": "Михеева",
@@ -1242,6 +1269,48 @@
     },
     {
       "type": "parent",
+      "parent": "dmitry-mikheev-1910",
+      "child": "maria-daughter-of-dmitry-and-anastasia",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "anastasia-mikhailova-1914",
+      "child": "maria-daughter-of-dmitry-and-anastasia",
+      "role": "mother",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "dmitry-mikheev-1910",
+      "child": "valentina-daughter-of-dmitry-and-anastasia",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "anastasia-mikhailova-1914",
+      "child": "valentina-daughter-of-dmitry-and-anastasia",
+      "role": "mother",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "dmitry-mikheev-1910",
+      "child": "galina-daughter-of-dmitry-and-anastasia",
+      "role": "father",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
+      "parent": "anastasia-mikhailova-1914",
+      "child": "galina-daughter-of-dmitry-and-anastasia",
+      "role": "mother",
+      "status": "explicit"
+    },
+    {
+      "type": "parent",
       "parent": "vladimir-mikheev-1941",
       "child": "yuri-vladimirovich-mikheev-1965",
       "role": "father",
@@ -1689,16 +1758,6 @@
       "relation": "child",
       "sex": "female",
       "count": 4,
-      "status": "explicit"
-    },
-    {
-      "people": [
-        "dmitry-mikheev-1910",
-        "anastasia-mikhailova-1914"
-      ],
-      "relation": "child",
-      "sex": "female",
-      "count": 3,
       "status": "explicit"
     }
   ],
