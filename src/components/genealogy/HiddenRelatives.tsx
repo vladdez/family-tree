@@ -5,6 +5,7 @@ export default function HiddenRelatives({ groups }: { groups: HiddenRelativeGrou
     <h3>{group.label}</h3>
     <ul>{group.people.map((person) => <li key={person.id}>
       <a href={person.href}>{person.name}</a><span className="tree-relative-life">{person.lifespan}</span>
+      {person.maidenName !== undefined && <span className="tree-relative-life" data-maiden-name>Девичья фамилия: {person.maidenName}</span>}
       {person.annotation && <small className="tree-relative-annotation">{person.annotation}</small>}
     </li>)}</ul>
   </section>)}</div>;

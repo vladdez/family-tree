@@ -3,7 +3,7 @@ import path from 'node:path';
 import { parse, type DefaultTreeAdapterMap } from 'parse5';
 import { projectRoot, readRawCatalog } from './data-files';
 import { validateCatalog } from '../src/domain/validation';
-import { displayName, lifespan, personDescription, showBirthOnly } from '../src/domain/people';
+import { displayName, lifespan, personDescription, showBirthOnly, maidenNameForDisplay } from '../src/domain/people';
 import { getDocumentsForPerson, isImage } from '../src/domain/documents';
 import { getRelativeGroups } from '../src/domain/relationships';
 import { getSourceIssues, getPublicSourceIssues, getUnidentifiedRelatives } from '../src/domain/source-notes';
@@ -67,16 +67,33 @@ for (const person of catalog.people) {
   }
   const timelineEvents = nodes.filter((node) => node.tagName === 'li' && (attr(node, 'class') ?? '').split(/\s+/).includes('timeline-event'));
   const timelineTitles = timelineEvents.map((node) => textContent(elements(node).find((child) => child.tagName === 'h3')!));
+  const childBirths = timelineEvents.filter((node) => textContent(elements(node).find((child) => child.tagName === 'h3')!) === 'Рождение ребёнка');
+  for (const childId of person.children) {
+    const child = catalog.people.find((candidate) => candidate.id === childId)!;
+    if (child.parentDetails.some((parent) => parent.personId === person.id && parent.kind === 'adoptive')) continue;
+    const events = childBirths.filter((node) => elements(node).some((link) => link.tagName === 'a' && attr(link, 'href') === `${base}people/${child.slug}/`));
+    if (events.length !== 1) { errors.push(`${person.id}: пропущено или повторяется рождение ребёнка ${child.id}`); continue; }
+    if (child.birth.date && !elements(events[0]).some((node) => node.tagName === 'time' && attr(node, 'datetime') === child.birth.date)) errors.push(`${person.id}: неверная дата рождения ребёнка ${child.id}`);
+    if (!child.birth.date && !child.birth.alternatives.length && !textContent(events[0]).includes('Дата неизвестна')) errors.push(`${person.id}: выдумана дата рождения ребёнка ${child.id}`);
+  }
+  for (const baptism of person.events.filter((event) => event.title === 'Крещение')) {
+    const events = timelineEvents.filter((node) => textContent(elements(node).find((child) => child.tagName === 'h3')!) === 'Крещение');
+    if (!events.some((node) => (!baptism.date || elements(node).some((child) => child.tagName === 'time' && attr(child, 'datetime') === baptism.date)) && (!baptism.documentId || elements(node).some((child) => child.tagName === 'a' && attr(child, 'href') === `${base}documents/${baptism.documentId}/`)))) errors.push(`${person.id}: пропущено крещение или его источник`);
+  }
   if (person.death.date || person.death.alternatives.length) {
     if (timelineTitles.at(-1) !== 'Смерть' || timelineTitles.filter((title) => title === 'Смерть').length !== 1) errors.push(`${person.id}: смерть должна завершать хронологию`);
   } else if (timelineTitles.includes('Смерть')) errors.push(`${person.id}: добавлено событие смерти без сведений о смерти`);
   for (const [title, event] of [['Рождение', person.birth], ['Смерть', person.death]] as const) {
     if (!event.documentId || (title === 'Смерть' && !event.date && !event.alternatives.length)) continue;
-    const evidence = timelineEvents.filter((node) => elements(node).some((child) => child.tagName === 'a' && attr(child, 'href') === `${base}documents/${event.documentId}/`));
+    const evidence = timelineEvents.filter((node) => textContent(elements(node).find((child) => child.tagName === 'h3')!) === title && elements(node).some((child) => child.tagName === 'a' && attr(child, 'href') === `${base}documents/${event.documentId}/`));
     if (evidence.length !== 1 || textContent(elements(evidence[0]).find((node) => node.tagName === 'h3')!) !== title) errors.push(`${person.id}: источник события «${title}» отсутствует или показан отдельным событием`);
   }
   for (const name of person.alternateNames) if (!visibleText.includes(name)) errors.push(`${person.id}: пропущено альтернативное имя ${name}`);
-  if (person.maidenName && !visibleText.includes(`Девичья фамилия: ${person.maidenName}`)) errors.push(`${person.id}: пропущена девичья фамилия`);
+  const maidenName = maidenNameForDisplay(person);
+  if (maidenName !== null) {
+    const field = nodes.find((node) => attr(node, 'data-maiden-name') !== undefined);
+    if (!field || textContent(field).trim() !== `Девичья фамилия: ${maidenName}`.trim()) errors.push(`${person.id}: неверно показан пункт «Девичья фамилия»`);
+  }
   if (person.archivalName && !visibleText.includes('Имя сохранено в архивном написании.')) errors.push(`${person.id}: пропущена пометка архивного написания`);
   if (showBirthOnly(person) && nodes.some((node) => node.tagName === 'dt' && textContent(node) === 'Смерть')) {
     errors.push(`${person.id}: показана пустая строка смерти`);

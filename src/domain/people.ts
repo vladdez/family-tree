@@ -38,6 +38,9 @@ function patronymicSex(person: Person): PatronymicSex | null {
   if (femaleFirstNames.has(person.firstName)) return 'female';
   return null;
 }
+export function maidenNameForDisplay(person: Person): string | null {
+  return patronymicSex(person) === 'female' || person.maidenName ? person.maidenName : null;
+}
 export function inferredPatronymic(person: Person, catalog: Catalog): string | null {
   if (person.patronymic || person.archivalName) return null;
   const explicitFathers = person.parentDetails.filter((parent) => parent.role === 'father').map((parent) => parent.personId);

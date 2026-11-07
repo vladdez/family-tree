@@ -1,6 +1,6 @@
 import type { Catalog } from './schemas';
 import { getPerson } from './people';
-import { getChildren } from './relationships';
+import { getChildren, relationStatusLabels } from './relationships';
 import { getDocumentsForPerson } from './documents';
 import { compareDates, dateBounds } from './dates';
 
@@ -18,7 +18,10 @@ export function getTimeline(personId: string, catalog: Catalog): TimelineEntry[]
   person.marriages.forEach((m, index) => entries.push({ ...basic(`${personId}:marriage:${index}`, m.date, 'Брак', 'marriage'), documentId: m.documentId, peopleIds: [m.spouseId], notes: m.notes }));
   for (const child of getChildren(personId, catalog)) {
     const kind = child.parentDetails.find((p) => p.personId === personId)?.kind;
-    if (kind === 'biological' && child.birth.date) entries.push({ ...basic(`${personId}:child:${child.id}`, child.birth.date, 'Рождение ребёнка', 'other'), peopleIds: [child.id] });
+    if (kind === 'adoptive') continue;
+    const relation = catalog.relations?.find((r) => r.type === 'parent' && r.parent === personId && r.child === child.id);
+    const annotation = relation && relation.status !== 'explicit' ? relationStatusLabels[relation.status] : '';
+    entries.push({ ...basic(`${personId}:child:${child.id}`, child.birth.date, 'Рождение ребёнка', 'other'), alternatives: child.birth.alternatives, peopleIds: [child.id], notes: [child.birth.notes, annotation].filter(Boolean).join(' ') });
   }
   for (const e of person.events) entries.push({ ...basic(`${personId}:event:${e.id}`, e.date, e.title, 'other'), documentId: e.documentId, notes: e.notes });
   const usedDocuments = new Set(entries.flatMap((e) => e.documentId ? [e.documentId] : []));
@@ -39,12 +42,14 @@ export function getTimeline(personId: string, catalog: Catalog): TimelineEntry[]
     before.set(targetId, [...(before.get(targetId) ?? []), entry]);
     anchored.add(entry.id);
   }
-  const unplaced = entries.filter((entry) => !anchored.has(entry.id) && !entry.date && (entry.type === 'other' || entry.type === 'marriage'));
+  const unplaced = entries.filter((entry) => !anchored.has(entry.id) && !entry.date && !entry.alternatives.length && (entry.type === 'other' || entry.type === 'marriage'));
   const unplacedIds = new Set(unplaced.map((entry) => entry.id));
-  const ordered = entries.filter((entry) => !anchored.has(entry.id) && !unplacedIds.has(entry.id) && entry.type !== 'birth' && entry.type !== 'death')
-    .sort((a, b) => compareDates(a.date, b.date));
+  const birth = entries.find((entry) => entry.type === 'birth')!;
+  const sortDate = (entry: TimelineEntry) => entry.date ?? entry.alternatives.slice().sort(compareDates)[0] ?? null;
+  const ordered = entries.filter((entry) => !anchored.has(entry.id) && !unplacedIds.has(entry.id) && (entry !== birth || sortDate(birth)) && entry.type !== 'death')
+    .sort((a, b) => compareDates(sortDate(a), sortDate(b)));
   ordered.push(...unplaced);
-  ordered.unshift(entries.find((entry) => entry.type === 'birth')!);
+  if (!sortDate(birth)) ordered.unshift(birth);
   const death = entries.find((entry) => entry.type === 'death');
   if (death) ordered.push(death);
   const result: TimelineEntry[] = [];

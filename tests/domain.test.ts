@@ -156,7 +156,7 @@ test('life event evidence is shown once without merging a parent’s birth in th
   }
 });
 
-test('real shared birth scans are attached to Petr, Paraskeva and Dmitry’s births without duplicate timeline entries', async () => {
+test('shared metric records support distinct birth and baptism events without an extra document event', async () => {
   const catalog = validateCatalog(await readRawCatalog());
   for (const [id, documentId] of [
     ['petr-mikheev-1889', 'petr-paraskeva-births-1889'],
@@ -165,18 +165,68 @@ test('real shared birth scans are attached to Petr, Paraskeva and Dmitry’s bir
   ]) {
     const record = catalog.people.find((person) => person.id === id)!;
     const timeline = getTimeline(id, catalog);
-    const evidence = timeline.filter((event) => event.documentId === documentId);
+    const evidence = timeline.filter((event) => event.documentId === documentId && event.type === 'birth');
     assert.equal(timeline.filter((event) => event.type === 'birth').length, 1);
     assert.equal(evidence.length, 1);
     assert.equal(evidence[0].title, 'Рождение');
     assert.equal(evidence[0].type, 'birth');
     assert.equal(evidence[0].date, record.birth.date);
     assert.deepEqual(evidence[0].alternatives, record.birth.alternatives);
+    assert.equal(timeline.filter((event) => event.documentId === documentId && event.type === 'document').length, 0);
+    const baptism = timeline.filter((event) => event.title === 'Крещение');
+    assert.equal(baptism.length, 1);
+    assert.equal(baptism[0].documentId, documentId);
+    assert.match(baptism[0].notes, /по старому стилю/);
+    assert.equal(baptism[0].date, {
+      'petr-mikheev-1889': '1889-07-11',
+      'paraskeva-pavlova-1889': '1889-07-14',
+      'dmitry-mikheev-1910': '1910-09-04',
+    }[id]);
     assert.ok(getDocumentsForPerson(id, catalog).some((document) => document.id === documentId));
   }
   assert.equal(catalog.people.find((person) => person.id === 'paraskeva-pavlova-1889')!.birth.date, '1889-07-28');
   assert.equal(getTimeline('petr-mikheev-1889', catalog).find((event) => event.documentId === 'dmitry-birth-1910')!.type, 'document');
   assert.equal(getTimeline('nikifor-1858', catalog).find((event) => event.documentId === 'petr-paraskeva-births-1889')!.type, 'document');
+});
+
+test('parents see every child birth, including unknown dates, without assuming adoption is biological', () => {
+  const childIds = ['exact', 'year', 'uncertain', 'adopted', 'undated'];
+  const child = (id: string, birth: Record<string, unknown>, kind: 'biological' | 'adoptive' | 'unknown' = 'unknown') => person(id, {
+    parents: ['parent'], parentDetails: [{ personId: 'parent', role: 'parent', kind }], birth: { placeId: null, ...birth },
+  });
+  const catalog = validateCatalog(raw([
+    person('parent', { birth: { date: '1900', placeId: null }, children: childIds }),
+    child('exact', { date: '1921-06-05' }),
+    child('year', { date: '1920' }, 'biological'),
+    child('uncertain', { date: null, alternatives: ['1922', '1923'] }),
+    child('adopted', { date: '1924' }, 'adoptive'),
+    child('undated', { date: null }),
+  ]));
+  const snapshot = JSON.stringify(catalog);
+  const births = getTimeline('parent', catalog).filter((event) => event.title === 'Рождение ребёнка');
+  assert.deepEqual(births.map((event) => event.peopleIds), [['year'], ['exact'], ['uncertain'], ['undated']]);
+  assert.equal(births[0].date, '1920');
+  assert.equal(births[1].date, '1921-06-05');
+  assert.equal(births[2].date, null);
+  assert.deepEqual(births[2].alternatives, ['1922', '1923']);
+  assert.equal(births[3].date, null);
+  assert.deepEqual(births[3].alternatives, []);
+  assert.equal(JSON.stringify(catalog), snapshot);
+});
+
+test('real parents have child births and baptism remains in date order when source dates disagree', async () => {
+  const catalog = validateCatalog(await readRawCatalog());
+  for (const id of ['dmitry-mikheev-1910', 'anastasia-mikhailova-1914']) {
+    const birth = getTimeline(id, catalog).find((event) => event.peopleIds.includes('vladimir-mikheev-1941'))!;
+    assert.equal(birth.title, 'Рождение ребёнка');
+    assert.equal(birth.date, '1941');
+  }
+  const timeline = getTimeline('paraskeva-pavlova-1889', catalog);
+  assert.equal(timeline[0].title, 'Крещение');
+  assert.equal(timeline[0].date, '1889-07-14');
+  assert.equal(timeline[1].type, 'birth');
+  assert.equal(timeline[1].date, '1889-07-28');
+  assert.match(timeline[0].notes, /расходится с архивной/);
 });
 
 test('siblings with unknown shared parents remain reciprocal without inheriting a father, mother or half-sibling label', () => {
@@ -268,9 +318,10 @@ test('Grigory’s timeline ends at death while the four burial records remain in
   const snapshot = JSON.stringify(catalog);
   const timeline = getTimeline(id, catalog);
   assert.deepEqual(timeline.map((event) => event.id.slice(id.length + 1)), [
-    'birth', 'marriage:0', 'event:migration-kustanay', 'event:peat-work', 'event:military-call-up', 'event:captivity', 'death',
+    'birth', 'marriage:0', 'child:konstantin-grigoryevich-grigoryev-1935', 'event:migration-kustanay', 'event:peat-work', 'event:military-call-up', 'event:captivity',
+    'child:georgy-child-of-grigory-and-tatyana', 'child:gennady-1-child-of-grigory-and-tatyana', 'child:gennady-2-child-of-grigory-and-tatyana', 'child:rimma-child-of-grigory-and-tatyana', 'child:tamara-child-of-grigory-and-tatyana', 'death',
   ]);
-  assert.deepEqual(timeline.map((event) => event.date), ['1898-01-01', '1930', null, null, '1942-04', '1942-08-28', '1944-11-25']);
+  assert.deepEqual(timeline.map((event) => event.date), ['1898-01-01', '1930', '1935-11-07', null, null, '1942-04', '1942-08-28', null, null, null, null, null, '1944-11-25']);
   assert.equal(timeline.at(-1)!.documentId, 'grigory-maksimov-prisoner-card');
   const documents = getDocumentsForPerson(id, catalog);
   for (const documentId of ['grigory-maksimov-burial-list', 'herleshausen-burial-register',

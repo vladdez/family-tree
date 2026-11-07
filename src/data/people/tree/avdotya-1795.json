@@ -1,0 +1,23 @@
+{
+  "id": "avdotya-efremova",
+  "birthDate": "1795",
+  "birthPlaceId": null,
+  "deathDate": null,
+  "sex": "female",
+  "notes": [
+    "Год рождения 1795 указан по переданной выписке из Familio. В семейных воспоминаниях",
+    "приведены варианты 1794/1795. В ревизии 1850 года Авдотье 56 лет, что даёт",
+    "приблизительно 1794 год. Точная дата рождения не установлена."
+  ],
+  "sources": [
+    {
+      "title": "Familio — Михей Петров",
+      "href": "https://familio.org/persons/83c6b435-57af-45f9-9023-bd36d9b6909f"
+    },
+    {
+      "title": "Семейные воспоминания «Древо на русском»",
+      "href": "/media/sources/family-history-russian.txt",
+      "pages": "1"
+    }
+  ]
+}

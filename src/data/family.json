@@ -143,7 +143,7 @@
       "patronymic": "",
       "maidenName": "",
       "birthYears": [
-        1794
+        1795
       ],
       "deathYears": [],
       "archivalName": "Авдотья Ефремова"
@@ -200,7 +200,6 @@
       "patronymic": "",
       "maidenName": "",
       "birthYears": [
-        1829,
         1830
       ],
       "deathYears": [],
@@ -209,11 +208,10 @@
     {
       "id": "konstantin-son-of-mikhey",
       "firstName": "Константин",
-      "lastName": "",
+      "lastName": "Михеев",
       "patronymic": "Михеевич",
       "maidenName": "",
       "birthYears": [
-        1852,
         1853
       ],
       "deathYears": []
@@ -226,7 +224,8 @@
       "maidenName": "",
       "birthYears": [
         1854,
-        1855
+        1855,
+        1858
       ],
       "deathYears": []
     },
@@ -239,6 +238,24 @@
       "birthYears": [
         1858
       ],
+      "deathYears": []
+    },
+    {
+      "id": "olga-daughter-of-mikhey",
+      "firstName": "Ольга",
+      "lastName": "",
+      "patronymic": "Михеевна",
+      "maidenName": "",
+      "birthYears": [],
+      "deathYears": []
+    },
+    {
+      "id": "ulyana-daughter-of-mikhey",
+      "firstName": "Ульяна",
+      "lastName": "",
+      "patronymic": "Михеевна",
+      "maidenName": "",
+      "birthYears": [],
       "deathYears": []
     },
     {
@@ -321,13 +338,8 @@
       "lastName": "Михеев",
       "patronymic": "Петрович",
       "maidenName": "",
-      "birthYears": [
-        1910
-      ],
-      "deathYears": [
-        1996,
-        1998
-      ]
+      "birth": "1910-08-26",
+      "death": "1996-09-28"
     },
     {
       "id": "alexey-son-of-petr-1889",
@@ -350,15 +362,11 @@
     {
       "id": "anastasia-mikhailova-1914",
       "firstName": "Анастасия",
-      "lastName": "Михайлова",
-      "patronymic": "",
-      "maidenName": "",
-      "birthYears": [
-        1914
-      ],
-      "deathYears": [
-        1994
-      ]
+      "lastName": "Михеева",
+      "patronymic": "Демидовна",
+      "maidenName": "Михайлова",
+      "birth": "1914-12-31",
+      "death": "1994-06-06"
     },
     {
       "id": "vladimir-mikheev-1941",
@@ -377,12 +385,8 @@
       "lastName": "Михеева",
       "patronymic": "Ефимовна",
       "maidenName": "Ефимова",
-      "birthYears": [
-        1941
-      ],
-      "deathYears": [
-        2017
-      ]
+      "birth": "1941-04-01",
+      "death": "2017-08-05"
     },
     {
       "id": "efim-father-of-maria",
@@ -1107,6 +1111,38 @@
     },
     {
       "type": "parent",
+      "parent": "mikhey-petrov-1833",
+      "child": "olga-daughter-of-mikhey",
+      "role": "father",
+      "status": "explicit",
+      "notes": "По переданной пользователем выписке из карточки Михея Петрова на Familio."
+    },
+    {
+      "type": "parent",
+      "parent": "tatyana-grigoryeva",
+      "child": "olga-daughter-of-mikhey",
+      "role": "mother",
+      "status": "explicit",
+      "notes": "По переданной пользователем выписке из карточки Михея Петрова на Familio."
+    },
+    {
+      "type": "parent",
+      "parent": "mikhey-petrov-1833",
+      "child": "ulyana-daughter-of-mikhey",
+      "role": "father",
+      "status": "explicit",
+      "notes": "По переданной пользователем выписке из карточки Михея Петрова на Familio."
+    },
+    {
+      "type": "parent",
+      "parent": "tatyana-grigoryeva",
+      "child": "ulyana-daughter-of-mikhey",
+      "role": "mother",
+      "status": "explicit",
+      "notes": "По переданной пользователем выписке из карточки Михея Петрова на Familio."
+    },
+    {
+      "type": "parent",
       "parent": "stepan-kirillov",
       "child": "ekaterina-1857",
       "status": "explicit"
@@ -1639,11 +1675,11 @@
         "mikhey-petrov-1833",
         "tatyana-grigoryeva"
       ],
-      "relation": "child",
+      "relation": "possible_additional_child",
       "sex": "male",
       "count": 1,
-      "status": "uncertain",
-      "reason": "В источнике сказано, что у Михея было 4 сына, но по именам перечислены только Константин, Иван и Никифор."
+      "status": "conflicting_source",
+      "reason": "В семейных воспоминаниях говорится о четырёх сыновьях, но названы только Константин, Иван и Никифор. В выписке из Familio перечислены пять детей: эти три сына и две дочери — Ольга и Ульяна. Существование ещё одного сына не подтверждено."
     },
     {
       "people": [
@@ -1689,12 +1725,14 @@
     },
     {
       "person": "dmitry-mikheev-1910",
-      "type": "death_year_conflict",
+      "type": "date_correction",
       "values": [
-        1996,
-        1998
+        "1996",
+        "1998",
+        "1996-09-28"
       ],
-      "reason": "В одном месте указано 1910-1996, в другом тексте указано, что умер в 1998 году."
+      "preferred": "1996-09-28",
+      "reason": "На могиле указана дата смерти: 28 сентября 1996 года. В семейных источниках встречаются годы 1996 и 1998."
     },
     {
       "person": "ekaterina-1857",

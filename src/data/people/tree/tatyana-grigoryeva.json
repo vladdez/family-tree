@@ -1,7 +1,26 @@
 {
   "id": "tatyana-grigoryeva",
-  "birthDate": null,
+  "birthDate": "1830",
   "birthPlaceId": null,
   "deathDate": null,
-  "sex": "female"
+  "sex": "female",
+  "biography": [
+    "Жена Михея Петрова. Дата брака неизвестна. В выписке из Familio названы их дети:",
+    "Константин, Иван, Никифор, Ольга и Ульяна."
+  ],
+  "notes": [
+    "Год рождения 1830 указан по переданной выписке из Familio. В семейных воспоминаниях",
+    "приведены варианты 1829/1830."
+  ],
+  "sources": [
+    {
+      "title": "Familio — Михей Петров",
+      "href": "https://familio.org/persons/83c6b435-57af-45f9-9023-bd36d9b6909f"
+    },
+    {
+      "title": "Семейные воспоминания «Древо на русском»",
+      "href": "/media/sources/family-history-russian.txt",
+      "pages": "2"
+    }
+  ]
 }
