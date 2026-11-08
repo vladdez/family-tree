@@ -1,0 +1,23 @@
+{
+  "id": "maria-mikheeva-moscow-school-trip",
+  "title": "Школьная поездка Марии Ефимовны Михеевой в Москву",
+  "type": "photograph",
+  "date": null,
+  "peopleIds": ["maria-efimova-1941"],
+  "showInTimeline": false,
+  "files": [
+    {
+      "path": "/media/photos/maria-efimovna-mikheeva-moscow-school-trip.jpg",
+      "label": "Групповая фотография во время школьной поездки в Москву"
+    }
+  ],
+  "archive": {
+    "name": "Семейный архив",
+    "fond": "",
+    "opis": "",
+    "delo": "",
+    "page": ""
+  },
+  "transcription": "",
+  "notes": "Возможное время поездки — 1954–1955 учебный год. Оценка основана на дате рождения Марии, 1 апреля 1941 года, и предположении, что она пошла в школу в семь лет, в сентябре 1948 года. Точная дата поездки и название выставки не установлены."
+}

@@ -1741,17 +1741,6 @@
   "unidentifiedRelatives": [
     {
       "people": [
-        "mikhey-petrov-1833",
-        "tatyana-grigoryeva"
-      ],
-      "relation": "possible_additional_child",
-      "sex": "male",
-      "count": 1,
-      "status": "conflicting_source",
-      "reason": "В семейных воспоминаниях говорится о четырёх сыновьях, но названы только Константин, Иван и Никифор. В выписке из Familio перечислены пять детей: эти три сына и две дочери — Ольга и Ульяна. Существование ещё одного сына не подтверждено."
-    },
-    {
-      "people": [
         "nikifor-1858",
         "ekaterina-1857"
       ],
