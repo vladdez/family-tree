@@ -411,14 +411,14 @@
       "firstName": "Мария",
       "lastName": "Михеева",
       "patronymic": "Ефимовна",
-      "maidenName": "Ефимова",
+      "maidenName": "Кузнецова",
       "birth": "1941-04-01",
       "death": "2017-08-05"
     },
     {
       "id": "efim-father-of-maria",
       "firstName": "Ефим",
-      "lastName": "",
+      "lastName": "Кузнецов",
       "patronymic": "",
       "maidenName": "",
       "birthYears": [],

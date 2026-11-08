@@ -5,7 +5,7 @@ import { validateCatalog } from '../src/domain/validation';
 import { getParents, getChildren, getSpouses, getSiblings, getRelativeGroups } from '../src/domain/relationships';
 import { getDocumentsForPerson } from '../src/domain/documents';
 import { getTimeline } from '../src/domain/timeline';
-import { lifespan, eventDate, fullName, showBirthOnly } from '../src/domain/people';
+import { lifespan, eventDate, fullName, showBirthOnly, featuredPeople } from '../src/domain/people';
 import { formatDate } from '../src/domain/dates';
 import { withBase } from '../src/domain/urls';
 import { readRawCatalog, validateMedia } from '../scripts/data-files';
@@ -19,6 +19,25 @@ function document(peopleIds: string[]) {
   return DocumentSchema.parse({ id: 'source', title: 'Тестовый источник', type: 'marriage', date: '1920-06', peopleIds, files: [], archive: { name: '', fond: '', opis: '', delo: '', page: '' }, transcription: '', notes: '' });
 }
 const raw = (people: ReturnType<typeof person>[], documents: ReturnType<typeof document>[] = []) => ({ people, documents, places: [] });
+
+test('home stories favour developed biographies and never fill slots with sparse records', () => {
+  const biography = 'Работал в школе, организовал библиотеку, собирал воспоминания жителей деревни. '.repeat(12).trim();
+  const records = [
+    person('empty', { birth: { date: null, placeId: null }, summary: biography, notes: biography }),
+    person('short', { biography: 'Жил в деревне.', notes: biography }),
+    person('alpha', { firstName: 'Анна', biography }),
+    person('beta', { firstName: 'Борис', biography: [{ title: 'Работа', text: biography }] }),
+    person('longest', { biography: biography + ' ' + biography }),
+    person('fourth', { firstName: 'Яков', biography }),
+  ];
+  const catalog = validateCatalog(raw(records));
+  const snapshot = JSON.stringify(catalog);
+  assert.deepEqual(featuredPeople(catalog).map((p) => p.id), ['longest', 'alpha', 'beta']);
+  assert.deepEqual(featuredPeople({ ...catalog, people: [...catalog.people].reverse() }).map((p) => p.id), ['longest', 'alpha', 'beta']);
+  assert.deepEqual(featuredPeople({ ...catalog, people: records.slice(0, 2) }), []);
+  assert.deepEqual(featuredPeople({ ...catalog, people: records.slice(0, 3) }).map((p) => p.id), ['alpha']);
+  assert.equal(JSON.stringify(catalog), snapshot);
+});
 
 test('biography links preserve surrounding text and only accept valid HTTPS links', () => {
   assert.deepEqual(parseInlineLinks('В деревне [Шебекеч](https://ru.wikipedia.org/wiki/Шибегечи).'), [

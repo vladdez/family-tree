@@ -1,7 +1,8 @@
 ---
 import type { TimelineEntry } from '../../domain/timeline';
 import TimelineEvent from './TimelineEvent.astro';
-interface Props { events: TimelineEntry[] }
-const { events } = Astro.props;
+import type { ProfileFootnote } from '../../domain/profile-footnotes';
+interface Props { events: TimelineEntry[]; footnotes?: ProfileFootnote[] }
+const { events, footnotes = [] } = Astro.props;
 ---
-<ol class="timeline" role="list">{events.map((event) => <TimelineEvent event={event} />)}</ol>
+<ol class="timeline" role="list">{events.map((event) => <TimelineEvent event={event} footnotes={footnotes} />)}</ol>

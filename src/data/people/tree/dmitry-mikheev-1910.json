@@ -1,8 +1,6 @@
 {
   "id": "dmitry-mikheev-1910",
-  "birthDate": "1910-08-26",
   "birthPlaceId": "lash-tayaba",
-  "deathDate": "1996-09-28",
   "sex": "male",
   "portrait": "/media/documents/dmitry-mikheev-1910-memory-road.jpg",
   "birthDocumentId": "dmitry-birth-1910",
@@ -27,7 +25,8 @@
     },
     {
       "title": "Награды",
-      "text": "В семейном тексте приведена наградная запись об ордене Отечественной войны II степени с датой документа 6 апреля 1985 года."
+      "sourceRefs": [2],
+      "text": "Награждён орденом Отечественной войны II степени. Наградной документ датирован 6 апреля 1985 года."
     },
     {
       "title": "Семья",
@@ -77,7 +76,7 @@
   ],
   "sources": [
     {
-      "title": "Семейные воспоминания «Древо на русском»",
+      "title": "Семейные воспоминания «Семейное древо»",
       "href": "/media/sources/family-history-russian.txt",
       "pages": "2–3"
     },

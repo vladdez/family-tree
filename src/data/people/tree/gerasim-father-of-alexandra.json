@@ -1,8 +1,6 @@
 {
   "id": "gerasim-father-of-alexandra",
-  "birthDate": null,
   "birthPlaceId": null,
-  "deathDate": "1914",
   "sex": "male",
   "summary": "Отец Александры (Анисии); погиб на войне в 1914 году.",
   "biography": [
@@ -11,7 +9,7 @@
   ],
   "sources": [
     {
-      "title": "Семейные воспоминания «Древо на русском»",
+      "title": "Семейные воспоминания «Семейное древо»",
       "href": "/media/sources/family-history-russian.txt",
       "pages": "4–5"
     }

@@ -1,8 +1,6 @@
 {
   "id": "ivan-son-of-mikhey",
-  "birthDate": null,
   "birthPlaceId": "lash-tayaba",
-  "deathDate": null,
   "sex": "male",
   "summary": "Брат Никифора; они жили по соседству.",
   "biography": [
@@ -17,7 +15,7 @@
   ],
   "sources": [
     {
-      "title": "Семейные воспоминания «Древо на русском»",
+      "title": "Семейные воспоминания «Семейное древо»",
       "href": "/media/sources/family-history-russian.txt",
       "pages": "2"
     },

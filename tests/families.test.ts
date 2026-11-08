@@ -5,7 +5,7 @@ import type { PositionedPerson } from '../src/components/genealogy/layout';
 import { getFamilyConnections, type FamilyConnection, type Point } from '../src/components/genealogy/families';
 
 const geometry = { nodeWidth: 220, nodeHeight: 140, gap: 40, generationGap: 100 };
-const person = (id: string, x: number, y: number): PositionedPerson => ({ id, x, y, name: id, href: `/people/${id}/`, lifespan: '? — ?', birthYears: [], uncertain: false });
+const person = (id: string, x: number, y: number): PositionedPerson => ({ id, x, y, name: id, href: `/people/${id}/`, lifespan: '? — ?', birthYears: [] });
 const parent = (from: string, to: string): TreeRelationship => ({ id: `${from}:${to}`, from, to, type: 'parent', status: 'explicit' });
 const key = (point: Point) => `${point.x}:${point.y}`;
 

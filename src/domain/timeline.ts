@@ -8,6 +8,7 @@ export interface TimelineEntry {
   id: string; date: string | null; alternatives: string[]; title: string;
   type: 'birth' | 'death' | 'marriage' | 'document' | 'other';
   documentId?: string; peopleIds: string[]; notes: string;
+  sourceRefs?: number[];
 }
 export function getTimeline(personId: string, catalog: Catalog): TimelineEntry[] {
   const person = getPerson(personId, catalog);
@@ -23,7 +24,7 @@ export function getTimeline(personId: string, catalog: Catalog): TimelineEntry[]
     const annotation = relation && relation.status !== 'explicit' ? relationStatusLabels[relation.status] : '';
     entries.push({ ...basic(`${personId}:child:${child.id}`, child.birth.date, 'Рождение ребёнка', 'other'), alternatives: child.birth.alternatives, peopleIds: [child.id], notes: [child.birth.notes, annotation].filter(Boolean).join(' ') });
   }
-  for (const e of person.events) entries.push({ ...basic(`${personId}:event:${e.id}`, e.date, e.title, 'other'), documentId: e.documentId, notes: e.notes });
+  for (const e of person.events) entries.push({ ...basic(`${personId}:event:${e.id}`, e.date, e.title, 'other'), documentId: e.documentId, notes: e.notes, ...(e.sourceRefs ? { sourceRefs: e.sourceRefs } : {}) });
   const usedDocuments = new Set(entries.flatMap((e) => e.documentId ? [e.documentId] : []));
   const deathDates = person.death.date ? [person.death.date] : person.death.alternatives;
   const latestDeath = deathDates.map((date) => dateBounds(date).max).sort().at(-1);

@@ -83,3 +83,14 @@ export function chronologicalPeople(catalog: Catalog) {
   const key = (p: Person) => p.birth.date ?? [...p.birth.alternatives].sort()[0] ?? null;
   return [...catalog.people].sort((a, b) => compareDates(key(a), key(b)) || displayName(a, catalog).localeCompare(displayName(b, catalog), 'ru'));
 }
+
+/** Home-page stories favour developed biographies; notes and metadata do not count. */
+export function featuredPeople(catalog: Catalog): Person[] {
+  return catalog.people.map((person) => {
+    const text = typeof person.biography === 'string' ? person.biography : person.biography.map((section) => section.text).join(' ');
+    const words = text.trim().split(/\s+/u).filter(Boolean).length;
+    return { person, words };
+  }).filter(({ words }) => words >= 80)
+    .sort((a, b) => b.words - a.words || displayName(a.person, catalog).localeCompare(displayName(b.person, catalog), 'ru') || a.person.id.localeCompare(b.person.id))
+    .slice(0, 3).map(({ person }) => person);
+}

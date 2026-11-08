@@ -67,6 +67,14 @@ for (const person of catalog.people) {
   }
   const timelineEvents = nodes.filter((node) => node.tagName === 'li' && (attr(node, 'class') ?? '').split(/\s+/).includes('timeline-event'));
   const timelineTitles = timelineEvents.map((node) => textContent(elements(node).find((child) => child.tagName === 'h3')!));
+  const hasEventDocument = (node: DefaultTreeAdapterMap['element'], documentId: string) => elements(node).some((child) => child.tagName === 'a' && (attr(child, 'data-document-id') === documentId || attr(child, 'href') === `${base}documents/${documentId}/`));
+  const footnotes = nodes.filter((node) => node.tagName === 'li' && attr(node, 'data-footnote') !== undefined);
+  const footnoteIds = footnotes.map((node) => attr(node, 'id'));
+  if (new Set(footnoteIds).size !== footnoteIds.length) errors.push(`${person.id}: повтор номера сноски`);
+  for (const reference of nodes.filter((node) => node.tagName === 'a' && attr(node, 'data-footnote-ref') !== undefined)) {
+    const target = (attr(reference, 'href') ?? '').replace(/^#/, '');
+    if (!footnotes.some((node) => attr(node, 'id') === target && elements(node).some((child) => child.tagName === 'a' && attr(child, 'href')))) errors.push(`${person.id}: сноска ${target} не ведёт к источнику`);
+  }
   const childBirths = timelineEvents.filter((node) => textContent(elements(node).find((child) => child.tagName === 'h3')!) === 'Рождение ребёнка');
   for (const childId of person.children) {
     const child = catalog.people.find((candidate) => candidate.id === childId)!;
@@ -78,14 +86,14 @@ for (const person of catalog.people) {
   }
   for (const baptism of person.events.filter((event) => event.title === 'Крещение')) {
     const events = timelineEvents.filter((node) => textContent(elements(node).find((child) => child.tagName === 'h3')!) === 'Крещение');
-    if (!events.some((node) => (!baptism.date || elements(node).some((child) => child.tagName === 'time' && attr(child, 'datetime') === baptism.date)) && (!baptism.documentId || elements(node).some((child) => child.tagName === 'a' && attr(child, 'href') === `${base}documents/${baptism.documentId}/`)))) errors.push(`${person.id}: пропущено крещение или его источник`);
+    if (!events.some((node) => (!baptism.date || elements(node).some((child) => child.tagName === 'time' && attr(child, 'datetime') === baptism.date)) && (!baptism.documentId || hasEventDocument(node, baptism.documentId)))) errors.push(`${person.id}: пропущено крещение или его источник`);
   }
   if (person.death.date || person.death.alternatives.length) {
     if (timelineTitles.at(-1) !== 'Смерть' || timelineTitles.filter((title) => title === 'Смерть').length !== 1) errors.push(`${person.id}: смерть должна завершать хронологию`);
   } else if (timelineTitles.includes('Смерть')) errors.push(`${person.id}: добавлено событие смерти без сведений о смерти`);
   for (const [title, event] of [['Рождение', person.birth], ['Смерть', person.death]] as const) {
     if (!event.documentId || (title === 'Смерть' && !event.date && !event.alternatives.length)) continue;
-    const evidence = timelineEvents.filter((node) => textContent(elements(node).find((child) => child.tagName === 'h3')!) === title && elements(node).some((child) => child.tagName === 'a' && attr(child, 'href') === `${base}documents/${event.documentId}/`));
+    const evidence = timelineEvents.filter((node) => textContent(elements(node).find((child) => child.tagName === 'h3')!) === title && hasEventDocument(node, event.documentId!));
     if (evidence.length !== 1 || textContent(elements(evidence[0]).find((node) => node.tagName === 'h3')!) !== title) errors.push(`${person.id}: источник события «${title}» отсутствует или показан отдельным событием`);
   }
   for (const name of person.alternateNames) if (!visibleText.includes(name)) errors.push(`${person.id}: пропущено альтернативное имя ${name}`);

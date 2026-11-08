@@ -1,7 +1,7 @@
 ---
-import type { Person } from '../../domain/schemas';
+import type { ProfileFootnote } from '../../domain/profile-footnotes';
 import { url } from '../../domain/urls';
-interface Props { sources: Person['sources'] }
+interface Props { sources: ProfileFootnote[] }
 const { sources } = Astro.props;
 ---
-{sources.length > 0 && <div class="section"><h3>Источники биографии</h3><ul>{sources.map((source) => <li><a class="text-link" href={url(source.href)}>{source.title}</a>{source.pages && <span class="muted"> · стр. {source.pages}</span>}</li>)}</ul></div>}
+{sources.length > 0 && <section class="section profile-footnotes" aria-labelledby="sources-title"><h2 id="sources-title">Источники</h2><ol>{sources.map((source) => <li id={`source-${source.number}`} data-footnote><a class="text-link" href={url(source.href)}>{source.title}</a>{source.pages && <span class="muted"> · стр. {source.pages}</span>}</li>)}</ol></section>}

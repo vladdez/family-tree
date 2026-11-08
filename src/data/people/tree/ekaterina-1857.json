@@ -1,8 +1,6 @@
 {
   "id": "ekaterina-1857",
-  "birthDate": "1857",
   "birthPlaceId": "lash-tayaba",
-  "deathDate": null,
   "sex": "female",
   "summary": "Жена Никифора; в семье её вспоминали как работящую женщину.",
   "biography": [
@@ -33,7 +31,7 @@
   ],
   "sources": [
     {
-      "title": "Семейные воспоминания «Древо на русском»",
+      "title": "Семейные воспоминания «Семейное древо»",
       "href": "/media/sources/family-history-russian.txt",
       "pages": "2"
     }

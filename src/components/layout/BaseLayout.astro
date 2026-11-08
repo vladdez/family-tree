@@ -1,22 +1,26 @@
 ---
 import Navigation from './Navigation.astro';
 import { url } from '../../domain/urls';
+import { language, languagePaths } from '../../domain/language';
 import '../../styles/global.css';
 interface Props { title: string; description: string; image?: string | null; canonicalPath?: string }
 const { title, description, image = null, canonicalPath } = Astro.props;
 const absolute = (path: string) => new URL(url(path), Astro.site ?? Astro.url.origin).href;
 const canonical = canonicalPath ? absolute(canonicalPath) : new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
+const siteBase = import.meta.env.PUBLIC_MEDIA_BASE ?? import.meta.env.BASE_URL;
+const languages = languagePaths(Astro.url.pathname, siteBase);
 ---
 <!doctype html>
-<html lang="ru">
+<html lang={language}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {Object.entries(languages).map(([lang, path]) => <link rel="alternate" hreflang={lang} href={new URL(path, Astro.site ?? Astro.url.origin).href} />)}
     <meta property="og:type" content="website" />
-    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:locale" content={language === 'en' ? 'en_GB' : 'ru_RU'} />
     <meta property="og:site_name" content="Родословная Михеевых" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -30,8 +34,12 @@ const canonical = canonicalPath ? absolute(canonicalPath) : new URL(Astro.url.pa
   <body>
     <a class="skip-link" href="#main">Перейти к содержимому</a>
     <header class="site-header"><div class="container header-inner">
-      <a class="brand" href={url('/')}><span class="brand-mark" aria-hidden="true">М</span><span>Родословная Михеевых<small>Семейный архив</small></span></a>
+      <a class="brand" href={url('/')}><span class="brand-mark" aria-hidden="true">{language === 'en' ? 'M' : 'М'}</span><span>Родословная Михеевых<small>Семейный архив</small></span></a>
       <Navigation />
+      <nav class="language-switch" aria-label="Язык сайта">
+        <a href={languages.ru} lang="ru" hreflang="ru" aria-current={language === 'ru' ? 'page' : undefined} data-language="ru">RU</a>
+        <a href={languages.en} lang="en" hreflang="en" aria-current={language === 'en' ? 'page' : undefined} data-language="en">EN</a>
+      </nav>
     </div></header>
     <main id="main" class="container"><slot /></main>
     <footer class="site-footer"><div class="container footer-inner"><span>Родословная Михеевых</span><span>Сохраняем известное. Уточняем неизвестное.</span><a href={url('/developer/')}>Разработчику</a></div></footer>

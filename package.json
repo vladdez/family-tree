@@ -8,9 +8,10 @@
     "dev": "astro dev --host 127.0.0.1",
     "validate-data": "node --import tsx scripts/validate-data.ts",
     "check": "astro check",
+    "check:ru": "npm run validate-data && npm run check && node --import tsx --test --test-skip-pattern='English inputs' tests/*.test.ts",
     "test": "node --import tsx --test tests/*.test.ts",
-    "build": "npm run validate-data && npm run check && astro build && npm run verify-build",
-    "verify-build": "node --import tsx scripts/check-build.ts",
+    "build": "npm run validate-data && npm run check && node --import tsx scripts/build.ts && npm run verify-build",
+    "verify-build": "node --import tsx scripts/check-build.ts && node --import tsx scripts/check-languages.ts",
     "preview": "astro preview --host 127.0.0.1"
   },
   "dependencies": {

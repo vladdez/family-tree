@@ -47,7 +47,7 @@ export function getRelativeGroups(personId: string, catalog: Catalog) {
   if (possibleIds.size) groups.push(group('Возможное совпадение записи', [...possibleIds].map((id) => getPerson(id, catalog)), 'possible_same_person'));
   return groups;
 }
-export interface TreePerson { id: string; name: string; lifespan: string; href: string; uncertain: boolean; birthYears: number[]; maidenName?: string }
+export interface TreePerson { id: string; name: string; lifespan: string; href: string; birthYears: number[]; maidenName?: string }
 export function treeDisplayName(person: Pick<TreePerson, 'name' | 'maidenName'>): string {
   return person.maidenName ? `${person.name} (${person.maidenName})` : person.name;
 }
@@ -68,6 +68,6 @@ export function getTreeRelationships(catalog: Catalog): TreeRelationship[] {
 export function getTreeData(catalog: Catalog): { people: TreePerson[]; relationships: TreeRelationship[] } {
   return { people: chronologicalPeople(catalog).map((p) => {
     const maidenName = maidenNameForDisplay(p);
-    return { id: p.id, name: displayName(p, catalog), lifespan: lifespan(p), href: personUrl(p.slug), uncertain: !!(p.birth.alternatives.length || p.death.alternatives.length), birthYears: [...new Set((p.birth.date ? [p.birth.date] : p.birth.alternatives).map((date) => Number(date.slice(0, 4))))], ...(maidenName !== null ? { maidenName } : {}) };
+    return { id: p.id, name: displayName(p, catalog), lifespan: lifespan(p), href: personUrl(p.slug), birthYears: [...new Set((p.birth.date ? [p.birth.date] : p.birth.alternatives).map((date) => Number(date.slice(0, 4))))], ...(maidenName !== null ? { maidenName } : {}) };
   }), relationships: getTreeRelationships(catalog) };
 }

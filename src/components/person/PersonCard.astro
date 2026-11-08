@@ -3,8 +3,8 @@ import type { Person } from '../../domain/schemas';
 import { catalog } from '../../domain/catalog';
 import { displayName, lifespan, personSearchText, maidenNameForDisplay } from '../../domain/people';
 import { personUrl, url } from '../../domain/urls';
-interface Props { person: Person }
-const { person } = Astro.props;
+interface Props { person: Person; showSummary?: boolean }
+const { person, showSummary = false } = Astro.props;
 const uncertain = person.death.alternatives.length || person.birth.alternatives.length;
 const name = displayName(person, catalog);
 const maidenName = maidenNameForDisplay(person);
@@ -13,5 +13,6 @@ const maidenName = maidenNameForDisplay(person);
   <div class="card-top"><span class="initial" aria-hidden="true">{person.portrait ? <img src={url(person.portrait)} alt="" loading="lazy" /> : name[0]}</span>{uncertain ? <span class="badge">Требует уточнения</span> : <span class="eyebrow">Семейная запись</span>}</div>
   <h3>{name}</h3><p class="lifespan">{lifespan(person)}</p>
   {maidenName !== null && <p class="muted" data-maiden-name>Девичья фамилия: {maidenName}</p>}
+  {showSummary && person.summary && <p>{person.summary}</p>}
   <div class="card-bottom"><span>Открыть историю</span><span aria-hidden="true">↗</span></div>
 </a>

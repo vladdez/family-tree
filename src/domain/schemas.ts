@@ -27,11 +27,13 @@ const profileSource = z.object({
 }).strict();
 const wrappedText = z.union([z.string(), z.array(z.string()).min(1)])
   .transform((value) => Array.isArray(value) ? value.join(' ') : value);
+const sourceRefs = z.array(z.number().int().positive()).refine((values) => new Set(values).size === values.length, 'Повтор номера источника').optional();
 const biography = z.union([
   wrappedText,
   z.array(z.object({
     title: z.string().trim().min(1),
     text: wrappedText.pipe(z.string().trim().min(1)),
+    sourceRefs,
   }).strict()).min(1),
 ]);
 const uniqueIds = z.array(id).refine((v) => new Set(v).size === v.length, 'Повторяющиеся ссылки');
@@ -56,7 +58,7 @@ export const PersonSchema = z.object({
   marriages: z.array(z.object({ spouseId: id, date: PartialDateSchema.nullable(), documentId: id.optional(), notes: wrappedText.default('') }).strict()).default([]),
   events: z.array(z.object({
     id, title: z.string().min(1), date: PartialDateSchema.nullable(), documentId: id.optional(),
-    beforeEventId: id.optional(), notes: wrappedText.default(''),
+    beforeEventId: id.optional(), notes: wrappedText.default(''), sourceRefs,
   }).strict().refine((event) => !event.beforeEventId || event.date === null, 'beforeEventId задаёт порядок только событий без даты')).default([]),
   portrait: mediaPath.nullable(),
   summary: wrappedText, biography, notes: wrappedText.default(''),

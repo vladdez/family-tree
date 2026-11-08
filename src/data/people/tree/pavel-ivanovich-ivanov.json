@@ -1,8 +1,6 @@
 {
   "id": "pavel-ivanovich-ivanov",
-  "birthDate": null,
   "birthPlaceId": null,
-  "deathDate": null,
   "sex": "male",
   "summary": "Плотник и столяр; держал мастерскую, строил печи и крыши.",
   "biography": [
@@ -46,7 +44,7 @@
   ],
   "sources": [
     {
-      "title": "Семейные воспоминания «Древо на русском»",
+      "title": "Семейные воспоминания «Семейное древо»",
       "href": "/media/sources/family-history-russian.txt",
       "pages": "5"
     }

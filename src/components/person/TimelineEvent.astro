@@ -1,14 +1,16 @@
 ---
 import type { TimelineEntry } from '../../domain/timeline';
 import { formatDate } from '../../domain/dates';
-import { documentUrl } from '../../domain/urls';
 import PersonLink from './PersonLink.astro';
 import InlineText from './InlineText.astro';
-interface Props { event: TimelineEntry }
-const { event } = Astro.props;
+import SourceReferences from './SourceReferences.astro';
+import type { ProfileFootnote } from '../../domain/profile-footnotes';
+interface Props { event: TimelineEntry; footnotes?: ProfileFootnote[] }
+const { event, footnotes = [] } = Astro.props;
+const sources = footnotes.filter((source) => event.sourceRefs?.includes(source.number) || (event.documentId && source.documentIds.includes(event.documentId)));
 ---
 <li class="timeline-event">
   <div class="event-date">{event.alternatives.length ? <span class="badge">{event.alternatives.map(formatDate).join(' или ')} · требует уточнения</span> : event.date ? <time datetime={event.date}>{formatDate(event.date)}</time> : 'Дата неизвестна'}</div>
-  <h3>{event.title}</h3>{event.peopleIds.map((id) => <p><PersonLink personId={id} /></p>)}
-  {event.notes && <p class="event-note prose"><InlineText text={event.notes} /></p>}{event.documentId && <a class="text-link" href={documentUrl(event.documentId)}>Подтверждающий документ →</a>}
+  <div class="event-heading"><h3>{event.title}</h3><SourceReferences sources={sources} documentId={event.documentId} /></div>{event.peopleIds.map((id) => <p><PersonLink personId={id} /></p>)}
+  {event.notes && <p class="event-note prose"><InlineText text={event.notes} footnotes={footnotes} /></p>}
 </li>

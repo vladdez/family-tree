@@ -1,8 +1,6 @@
 {
   "id": "paraskeva-pavlova-1889",
-  "birthDate": "1889-07-28",
   "birthPlaceId": "lash-tayaba",
-  "deathDate": "1955",
   "sex": "female",
   "birthDocumentId": "petr-paraskeva-births-1889",
   "summary": "Работала поваром для механизаторов и сдавала жильё учителям.",
@@ -68,7 +66,7 @@
   ],
   "sources": [
     {
-      "title": "Семейные воспоминания «Древо на русском»",
+      "title": "Семейные воспоминания «Семейное древо»",
       "href": "/media/sources/family-history-russian.txt",
       "pages": "2"
     }

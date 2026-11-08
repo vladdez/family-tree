@@ -1,16 +1,18 @@
 ---
 import type { Person } from '../../domain/schemas';
 import InlineText from './InlineText.astro';
-interface Props { biography: Person['biography'] }
-const { biography } = Astro.props;
+import SourceReferences from './SourceReferences.astro';
+import type { ProfileFootnote } from '../../domain/profile-footnotes';
+interface Props { biography: Person['biography']; footnotes?: ProfileFootnote[] }
+const { biography, footnotes = [] } = Astro.props;
 ---
 <div class="biography">
   {Array.isArray(biography) ? biography.map((section) => (
     <section class="biography-section">
       <h3>{section.title}</h3>
-      <p class="prose"><InlineText text={section.text} /></p>
+      <p class="prose"><InlineText text={section.text} footnotes={footnotes} /><SourceReferences sources={footnotes.filter((source) => section.sourceRefs?.includes(source.number))} /></p>
     </section>
-  )) : biography ? <p class="prose"><InlineText text={biography} /></p> : (
+  )) : biography ? <p class="prose"><InlineText text={biography} footnotes={footnotes} /></p> : (
     <p class="muted">Биография пока неизвестна.</p>
   )}
 </div>

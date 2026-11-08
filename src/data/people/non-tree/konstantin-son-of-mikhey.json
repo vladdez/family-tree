@@ -1,8 +1,6 @@
 {
   "id": "konstantin-son-of-mikhey",
-  "birthDate": "1853",
   "birthPlaceId": "lash-tayaba",
-  "deathDate": null,
   "sex": "male",
   "notes": [
     "Фамилия Михеев и год рождения 1853 указаны по переданной выписке из Familio. В ревизии",
@@ -14,7 +12,7 @@
       "href": "https://familio.org/persons/83c6b435-57af-45f9-9023-bd36d9b6909f"
     },
     {
-      "title": "Семейные воспоминания «Древо на русском»",
+      "title": "Семейные воспоминания «Семейное древо»",
       "href": "/media/sources/family-history-russian.txt",
       "pages": "2"
     }

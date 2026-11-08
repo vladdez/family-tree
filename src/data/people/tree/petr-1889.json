@@ -2,7 +2,6 @@
   "id": "petr-mikheev-1889",
   "birthDate": "1889-06-27",
   "birthPlaceId": "lash-tayaba",
-  "deathDate": null,
   "sex": "male",
   "birthDocumentId": "petr-paraskeva-births-1889",
   "summary": "Землеустроитель; держал сад и пчёл.",
@@ -74,7 +73,7 @@
   ],
   "sources": [
     {
-      "title": "Семейные воспоминания «Древо на русском»",
+      "title": "Семейные воспоминания «Семейное древо»",
       "href": "/media/sources/family-history-russian.txt",
       "pages": "2"
     }

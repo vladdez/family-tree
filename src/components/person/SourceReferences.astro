@@ -1,0 +1,6 @@
+---
+import type { ProfileFootnote } from '../../domain/profile-footnotes';
+interface Props { sources: ProfileFootnote[]; documentId?: string }
+const { sources, documentId } = Astro.props;
+---
+{sources.map((source) => <sup class="source-reference"><a href={`#source-${source.number}`} data-footnote-ref aria-label={`Источник ${source.number}: ${source.title}`} title={source.title} data-document-id={documentId && source.documentIds.includes(documentId) ? documentId : undefined}>[{source.number}]</a></sup>)}

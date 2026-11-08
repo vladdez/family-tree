@@ -1,8 +1,6 @@
 {
   "id": "anastasia-mikhailova-1914",
-  "birthDate": "1914-12-31",
   "birthPlaceId": null,
-  "deathDate": "1994-06-06",
   "sex": "female",
   "summary": "Работала в колхозе; во время войны возила зерно в Канаш и Буинск.",
   "biography": [
@@ -48,7 +46,7 @@
   ],
   "sources": [
     {
-      "title": "Семейные воспоминания «Древо на русском»",
+      "title": "Семейные воспоминания «Семейное древо»",
       "href": "/media/sources/family-history-russian.txt",
       "pages": "3"
     },

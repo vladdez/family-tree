@@ -1,6 +1,11 @@
 ---
 import { parseInlineLinks } from '../../domain/inline-links';
-interface Props { text: string }
-const { text } = Astro.props;
+import type { ProfileFootnote } from '../../domain/profile-footnotes';
+import SourceReferences from './SourceReferences.astro';
+interface Props { text: string; footnotes?: ProfileFootnote[] }
+const { text, footnotes = [] } = Astro.props;
 ---
-{parseInlineLinks(text).map((part) => part.href ? <a href={part.href}>{part.text}</a> : part.text)}
+{parseInlineLinks(text).map((part) => {
+  const source = part.href ? footnotes.find((source) => source.href === part.href) : undefined;
+  return source ? <>{part.text}<SourceReferences sources={[source]} /></> : part.href ? <a href={part.href}>{part.text}</a> : part.text;
+})}

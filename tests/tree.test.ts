@@ -5,8 +5,8 @@ import { fitView, scaleView, pinchView } from '../src/components/genealogy/viewp
 import type { TreePerson, TreeRelationship } from '../src/domain/relationships';
 import { getTreeBranches } from '../src/domain/tree-branches';
 const geometry = { nodeWidth: 220, nodeHeight: 100, gap: 40, generationGap: 100 };
-const people = ['a', 'b', 'c', 'd', 'e', 'f'].map((id): TreePerson => ({ id, name: id, lifespan: '? — ?', href: `/people/${id}/`, uncertain: false, birthYears: [] }));
-const person = (id: string, birthYears: number[] = []): TreePerson => ({ id, name: id, lifespan: '? — ?', href: `/people/${id}/`, uncertain: birthYears.length > 1, birthYears });
+const people = ['a', 'b', 'c', 'd', 'e', 'f'].map((id): TreePerson => ({ id, name: id, lifespan: '? — ?', href: `/people/${id}/`, birthYears: [] }));
+const person = (id: string, birthYears: number[] = []): TreePerson => ({ id, name: id, lifespan: '? — ?', href: `/people/${id}/`, birthYears });
 const parent = (from: string, to: string): TreeRelationship => ({ id: `${from}:${to}`, from, to, type: 'parent' });
 
 const branchRoots = [{ id: 'father', personId: 'a', label: 'Отцовская ветвь' }, { id: 'mother', personId: 'b', label: 'Материнская ветвь' }];

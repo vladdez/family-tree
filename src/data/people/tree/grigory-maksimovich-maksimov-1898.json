@@ -2,7 +2,6 @@
   "id": "grigory-maksimovich-maksimov-1898",
   "birthDate": "1898-01-01",
   "birthPlaceId": "khirposi",
-  "deathDate": "1944-11-25",
   "sex": "male",
   "summary": "Работал на мельницах. Умер в плену 25 ноября 1944 года; похоронен в Херлесхаузене.",
   "biography": [
@@ -104,7 +103,7 @@
   ],
   "sources": [
     {
-      "title": "Семейные воспоминания «Древо на русском»",
+      "title": "Семейные воспоминания «Семейное древо»",
       "href": "/media/sources/family-history-russian.txt",
       "pages": "6–7"
     },

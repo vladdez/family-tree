@@ -45,6 +45,10 @@ export function validateCatalog(raw: { people: unknown[]; documents: unknown[]; 
   for (const relative of catalog.unidentifiedRelatives ?? []) checkPersonRefs(relative.people, 'Безымянные родственники');
   for (const issue of catalog.issues ?? []) checkPersonRefs([...(issue.person ? [issue.person] : []), ...(issue.people ?? []), ...(issue.relatedPerson ? [issue.relatedPerson] : [])], 'Замечание к источнику');
   for (const person of catalog.people) {
+    if (Array.isArray(person.biography)) for (const section of person.biography) {
+      for (const number of section.sourceRefs ?? []) if (number > person.sources.length) errors.push(`${person.id}: неизвестный номер источника ${number}`);
+    }
+    for (const event of person.events) for (const number of event.sourceRefs ?? []) if (number > person.sources.length) errors.push(`${person.id}: неизвестный номер источника ${number}`);
     for (const [relation, inverse] of [['parents', 'children'], ['children', 'parents'], ['spouses', 'spouses']] as const) {
       for (const targetId of person[relation]) {
         const target = people.get(targetId);
