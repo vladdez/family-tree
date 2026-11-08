@@ -14,7 +14,7 @@ This is the technical guide for the static family archive. Keep family facts in 
 | `src/data/places/` | Place names and administrative divisions |
 | `public/media/sources/` | Preserved memoirs and extracts from external sources |
 | `public/media/documents/` | Scans, PDFs and lighter document previews |
-| `public/media/people/` | Portrait photographs |
+| `public/media/photos/` | Photographs, with profile portraits in `logos/` |
 | `src/i18n/` | English content, interface translations and name spellings |
 
 Source texts preserve what the source says. Record corrections in family data and profiles, with substantive discrepancies in `notes`. Documents do not automatically change names, dates or relationships. `src/data/sources/` contains source metadata; the current loader takes footnote references from profile `sources` arrays.
@@ -110,7 +110,7 @@ On personal pages, sources appear as superscript footnotes linked to the numbere
 
 ## 5. Add photographs
 
-Store a portrait in `public/media/people/` and set the person’s profile `portrait` to `/media/people/filename.jpg`. Adding a file alone does not attach it to a profile. A shared family photograph can be a document of type `photograph` linked to several people.
+Store a profile portrait in `public/media/photos/logos/` and set the person’s profile `portrait` to `/media/photos/logos/filename.jpg`. Adding a file alone does not attach it to a profile. A shared family photograph can be a document of type `photograph` linked to several people.
 
 ## 6. Add marriages and life events
 

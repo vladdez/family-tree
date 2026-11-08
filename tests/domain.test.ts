@@ -368,7 +368,7 @@ test('relative event order supports undated chains and rejects missing anchors, 
 });
 
 test('media must exist and paths cannot traverse out of public/media', async () => {
-  const catalog: Catalog = { ...raw([person('a', { portrait: '/media/people/absent.jpg' })]), places: [] };
+  const catalog: Catalog = { ...raw([person('a', { portrait: '/media/photos/absent.jpg' })]), places: [] };
   await assert.rejects(validateMedia(catalog), /Медиафайл не найден/);
   assert.equal(PersonSchema.safeParse({ ...person('a'), portrait: '/media/../secret.jpg' }).success, false);
 });

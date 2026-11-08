@@ -16,7 +16,7 @@ description: Инструкции по запуску, семейным данн
 | `src/data/places/` | Названия и административная принадлежность мест |
 | `public/media/sources/` | Тексты семейных воспоминаний и выписки из внешних источников |
 | `public/media/documents/` | Сканы, PDF и облегчённые превью документов |
-| `public/media/people/` | Фотографии для личных страниц |
+| `public/media/photos/` | Фотографии для личных страниц |
 
 Тексты в `public/media/sources/` отражают содержание источников. Уточнения вносите в семейные данные и профили, а существенные расхождения поясняйте в `notes`. Документы не меняют имена, даты или родственные связи автоматически. `src/data/sources/` хранит метаданные источников; сейчас загрузчик не использует этот каталог, а ссылки для сносок берёт из `sources` профилей.
 
@@ -233,12 +233,12 @@ npm run build
 
 ## 5. Добавить фотографию
 
-Сохраните фото в `public/media/people/`. Создайте или дополните профиль нужного человека:
+Сохраните фото для аватара профиля в `public/media/photos/logos/`. Создайте или дополните профиль нужного человека:
 
 ```json
 {
   "id": "petr-mikheev-1889",
-  "portrait": "/media/people/portrait.jpg"
+  "portrait": "/media/photos/logos/portrait.jpg"
 }
 ```
 
@@ -369,7 +369,7 @@ src/
     404.astro
   styles/{tokens,global}.css
   styles/themes/classic.css
-public/media/{people,documents,sources}/
+public/media/{photos,documents,sources}/
 scripts/                 # Проверка источника, медиа и собранного сайта
 tests/
 .github/workflows/deploy.yml
