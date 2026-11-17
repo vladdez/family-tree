@@ -4,7 +4,7 @@ import { parse, type DefaultTreeAdapterMap } from 'parse5';
 import { projectRoot, readRawCatalog } from './data-files';
 import { validateCatalog } from '../src/domain/validation';
 import { displayName, lifespan, personDescription, showBirthOnly, maidenNameForDisplay } from '../src/domain/people';
-import { getDocumentsForPerson, isImage } from '../src/domain/documents';
+import { getProfileDocuments, isImage } from '../src/domain/documents';
 import { getRelativeGroups } from '../src/domain/relationships';
 import { getSourceIssues, getPublicSourceIssues, getUnidentifiedRelatives } from '../src/domain/source-notes';
 import { getPersonRedirects } from '../src/domain/person-redirects';
@@ -62,8 +62,18 @@ for (const person of catalog.people) {
   const nodes = elements(parse(await readFile(file, 'utf8')));
   const visibleText = textContent(nodes.find((n) => n.tagName === 'main')!);
   const personLinks = new Set(nodes.filter((n) => n.tagName === 'a').map((n) => attr(n, 'href')));
-  for (const document of getDocumentsForPerson(person.id, catalog)) {
-    if (!personLinks.has(`${base}documents/${document.id}/`) || !visibleText.includes(document.title)) errors.push(`${person.id}: пропущен документ ${document.id}`);
+  const profileDocuments = getProfileDocuments(person.id, catalog);
+  for (const [headingId, documents] of [['photo-album-title', profileDocuments.photographs], ['document-trail-title', profileDocuments.documents]] as const) {
+    const section = nodes.find((node) => node.tagName === 'section' && attr(node, 'aria-labelledby') === headingId);
+    if (Boolean(section) !== Boolean(documents.length)) errors.push(`${person.id}: неверная видимость раздела ${headingId}`);
+    const sectionNodes = section ? elements(section) : [];
+    const sectionLinks = new Set(sectionNodes.filter((node) => node.tagName === 'a').map((node) => attr(node, 'href')));
+    for (const document of documents) {
+      if (!sectionLinks.has(`${base}documents/${document.id}/`) || !section || !textContent(section).includes(document.title)) errors.push(`${person.id}: пропущен документ ${document.id} в разделе ${headingId}`);
+    }
+    for (const document of catalog.documents.filter((document) => !documents.some((expected) => expected.id === document.id))) {
+      if (sectionLinks.has(`${base}documents/${document.id}/`)) errors.push(`${person.id}: лишний документ ${document.id} в разделе ${headingId}`);
+    }
   }
   const timelineEvents = nodes.filter((node) => node.tagName === 'li' && (attr(node, 'class') ?? '').split(/\s+/).includes('timeline-event'));
   const timelineTitles = timelineEvents.map((node) => textContent(elements(node).find((child) => child.tagName === 'h3')!));
@@ -128,8 +138,11 @@ for (const person of catalog.people) {
 }
 const archiveNodes = elements(parse(await readFile(path.join(dist, 'documents', 'index.html'), 'utf8')));
 const archiveLinks = new Set(archiveNodes.filter((node) => node.tagName === 'a').map((node) => attr(node, 'href')));
+const photoNodes = elements(parse(await readFile(path.join(dist, 'photos', 'index.html'), 'utf8')));
+const photoLinks = new Set(photoNodes.filter((node) => node.tagName === 'a').map((node) => attr(node, 'href')));
 for (const document of catalog.documents) {
   if (!archiveLinks.has(`${base}documents/${document.id}/`)) errors.push(`${document.id}: документ отсутствует в общем архиве`);
+  if (photoLinks.has(`${base}documents/${document.id}/`) !== (document.type === 'photograph')) errors.push(`${document.id}: неверный состав общего фотоальбома`);
   const nodes = elements(parse(await readFile(path.join(dist, 'documents', document.id, 'index.html'), 'utf8')));
   const visibleText = textContent(nodes.find((node) => node.tagName === 'main')!);
   const links = new Set(nodes.filter((node) => node.tagName === 'a').map((node) => attr(node, 'href')));
@@ -143,7 +156,10 @@ for (const document of catalog.documents) {
     if (!visibleText.includes(file.label)) errors.push(`${document.id}: пропущено описание скана ${file.path}`);
     if (isImage(file.path) && !nodes.some((node) => node.tagName === 'img' && attr(node, 'src') === `${base.replace(/\/$/, '')}${file.preview ?? file.path}`)) errors.push(`${document.id}: не показан скан ${file.path}`);
   }
-  for (const value of [document.archive.name, document.transcription, document.notes]) {
+  const archiveName = document.type === 'photograph' && document.archive.name === 'Семейный архив' ? '' : document.archive.name;
+  const archiveReferences = nodes.filter((node) => (attr(node, 'class') ?? '').split(/\s+/).includes('archive-reference'));
+  if (!archiveName && archiveReferences.some((node) => textContent(node).includes('Семейный архив'))) errors.push(`${document.id}: лишняя подпись семейного архива`);
+  for (const value of [archiveName, document.transcription, document.notes]) {
     if (value && !visibleText.includes(value)) errors.push(`${document.id}: пропущены сведения документа`);
   }
 }

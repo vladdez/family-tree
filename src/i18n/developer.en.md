@@ -70,11 +70,13 @@ Create an optional profile in `src/data/people/tree/` for a person shown as a se
 }
 ```
 
-Profiles can also contain `slug`, `sex`, `birthPlaceId`, `deathPlaceId`, `birthDocumentId`, `deathDocumentId`, `portrait`, `notes`, `marriages`, `events` and `sources`. They supplement the family record; do not duplicate parents, children or spouses in profiles.
+Profiles can also contain `slug`, `sex`, `birthPlaceId`, `deathPlaceId`, `birthDocumentId`, `deathDocumentId`, `portrait`, `portraits`, `notes`, `marriages`, `events` and `sources`. They supplement the family record; do not duplicate parents, children or spouses in profiles.
 
 A biography can be a string or an array of sections with `title`, `text` and optional `sourceRefs`. Text may be split into an array of short strings, which are joined with spaces. Preserve paragraph breaks as `\n\n` inside a string. Keep biographies factual and readable; put uncertain information and source discrepancies in `notes`.
 
-Places have separate files in `src/data/places/`. Keep the settlement name in `name`, administrative divisions in `district`, `region` and `country`, older names in `previousNames`, and linked people in `born` and `buried`.
+Places have separate files in `src/data/places/`. Keep the modern settlement name in `name`, administrative divisions in `district`, `region` and `country`, older names in `previousNames`, and linked people in `born` and `buried`. Store documented name periods in `previousNamePeriods`, using `name`, inclusive `fromYear` and/or `toYear`, and `sourceUrl`. Birth and death addresses use the settlement name for the event date, followed by “Now” and the modern name. For Lash-Tayaba births before 1917, use Urazgildino, with `toYear: 1916`. Unknown dates or alternatives spanning different periods retain the modern settlement name without this caption.
+
+Historical countries come from `src/data/place-country-history.json`; districts, uyezds, governorates and republics come from `src/data/place-administration-history.json`. Periods are inclusive and apply only to the listed places. They describe documented coverage, not necessarily the full lifespan of an administrative unit. If all possible dates do not fit one period, omit the uncertain administrative level instead of falling back to a modern name. For example, Lash-Tayaba was in the Chuvash ASSR in 1965, in Batyrevo district before 14 March and Yalchik district from that date.
 
 ## 3. Record relationships
 
@@ -106,11 +108,15 @@ Supported types are `metric`, `marriage`, `birth`, `death`, `census`, `military`
 
 Local media paths start with `/media/`, without `public` or the repository name. File names use Latin letters, numbers, hyphens or underscores. The URL helper adds the hosting base path. Both languages share the original media files.
 
-On personal pages, sources appear as superscript footnotes linked to the numbered list at the bottom. The profile `sources` array stores titles, links and page references. A biography section or event can use `sourceRefs: [1]`, where numbering starts at 1 in that person’s source array. Missing or repeated reference numbers fail validation. Document events and supported inline links receive footnotes automatically, reusing a source rather than repeating it.
+On personal pages, sources appear as superscript footnotes linked to the numbered list at the bottom. The profile `sources` array stores titles, links and page references. A biography section or event can use `sourceRefs: [1]`, where numbering starts at 1 in that person’s source array. Missing or repeated reference numbers fail validation. Displayed footnote numbers follow their first appearance on the page; `sourceRefs` continue to identify stable positions in the profile’s source array. Document events and supported inline links receive footnotes automatically, reusing a source rather than repeating it.
 
 ## 5. Add photographs
 
 Store a profile portrait in `public/media/photos/logos/` and set the person’s profile `portrait` to `/media/photos/logos/filename.jpg`. Adding a file alone does not attach it to a profile. A shared family photograph can be a document of type `photograph` linked to several people.
+
+For several portraits, add a `portraits` array containing existing photographs in the intended order. Each entry has `path` and optional `label`; only use documented years or life stages. The profile shows the supplied photographs without empty frames, and clicking opens the original. If the array is absent or empty, the existing `portrait` is used. The `portrait` field selects the primary avatar; otherwise the first gallery image is used.
+
+Documents of type `photograph` appear in a separate horizontally scrolling photo album on personal pages. Other documents remain in the documentary trail. The main `/photos/` page uses a three-column grid, reducing to two or one on smaller screens. Empty albums are hidden; photographs in PDF format remain accessible as links. Album photographs open their individual pages, where original downloads are available.
 
 ## 6. Add marriages and life events
 
