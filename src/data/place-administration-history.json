@@ -1,0 +1,93 @@
+[
+  {
+    "placeIds": ["lash-tayaba", "shemalakovo", "starye-toysi", "khirposi", "shibegechi", "cheboksary"],
+    "field": "region",
+    "sourceUrls": ["https://gs.cap.ru/istoriya/stanovlenie-i-razvitie-organov-predstaviteljnoj-i", "https://www.nbchr.ru/PDF/chuvashia9.pdf"],
+    "periods": [
+      { "name": "Чувашская АССР", "from": "1925-04-21", "to": "1990-10-23" },
+      { "name": "Чувашская ССР", "from": "1990-10-24", "to": "1992-02-12" },
+      { "name": "Чувашская Республика", "from": "1992-02-13" }
+    ]
+  },
+  {
+    "placeIds": ["lash-tayaba", "shemalakovo", "starye-toysi"],
+    "field": "region",
+    "sourceUrls": ["https://chuvenc.ru/filter_from_MainTable_/%D0%9B?page=9", "https://ru.wikipedia.org/wiki/%D0%A1%D1%82%D0%B0%D1%80%D1%8B%D0%B5_%D0%A2%D0%BE%D0%B9%D1%81%D0%B8"],
+    "periods": [
+      { "name": "Симбирское наместничество", "from": "1781-01-01", "to": "1795-12-31" },
+      { "name": "Симбирская губерния", "from": "1797-01-01", "to": "1919-12-31" },
+      { "name": "Чувашская автономная область", "from": "1922-01-01", "to": "1925-04-20" }
+    ]
+  },
+  {
+    "placeIds": ["khirposi"],
+    "field": "region",
+    "sourceUrls": ["https://chebpolytech.ru/wp-content/uploads/2022/09/%D0%A1%D0%B1%D0%BE%D1%80%D0%BD%D0%B8%D0%BA-%D1%82%D1%80%D1%83%D0%B4%D0%BE%D0%B2-%D0%9A%D0%BE%D0%BD%D1%84%D0%B5%D1%80%D0%B5%D0%BD%D1%86%D0%B8%D0%B8-2018.pdf", "https://calendar.nbchr.ru/06.html"],
+    "periods": [
+      { "name": "Казанская губерния", "from": "1897-01-01", "to": "1919-12-31" },
+      { "name": "Чувашская автономная область", "from": "1921-01-01", "to": "1925-04-20" }
+    ]
+  },
+  {
+    "placeIds": ["lash-tayaba", "shemalakovo"],
+    "field": "district",
+    "sourceUrls": ["https://chuvenc.ru/filter_from_MainTable_/%D0%9B?page=9", "https://chuvenc.ru/filter_from_MainTable_/%D0%A8?page=11", "https://ru.wikipedia.org/wiki/%D0%9B%D0%B0%D1%89-%D0%A2%D0%B0%D1%8F%D0%B1%D0%B8%D0%BD%D1%81%D0%BA%D0%BE%D0%B5_%D1%81%D0%B5%D0%BB%D1%8C%D1%81%D0%BA%D0%BE%D0%B5_%D0%BF%D0%BE%D1%81%D0%B5%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5"],
+    "periods": [
+      { "name": "Буинский уезд", "from": "1781-01-01", "to": "1919-12-31" },
+      { "name": "Батыревский уезд", "from": "1922-01-01", "to": "1927-09-30" },
+      { "name": "Малояльчиковский район", "from": "1927-10-01", "to": "1934-12-31" },
+      { "name": "Яльчикский район", "from": "1936-01-01", "to": "1962-12-19" },
+      { "name": "Батыревский район", "from": "1962-12-20", "to": "1965-03-13" },
+      { "name": "Яльчикский район", "from": "1965-03-14" }
+    ]
+  },
+  {
+    "placeIds": ["starye-toysi"],
+    "field": "district",
+    "sourceUrls": ["https://chuvenc.ru/filter_from_MainTable_/%D0%A1?page=104", "https://ru.wikipedia.org/wiki/%D0%A1%D1%82%D0%B0%D1%80%D1%8B%D0%B5_%D0%A2%D0%BE%D0%B9%D1%81%D0%B8"],
+    "periods": [
+      { "name": "Буинский уезд", "from": "1781-01-01", "to": "1920-08-02" },
+      { "name": "Цивильский уезд", "from": "1920-08-03", "to": "1920-10-04" },
+      { "name": "Батыревский уезд", "from": "1923-01-01", "to": "1927-09-30" },
+      { "name": "Большебатыревский район", "from": "1927-10-01", "to": "1935-05-18" },
+      { "name": "Батыревский район", "from": "1935-05-19", "to": "1939-02-21" },
+      { "name": "Чкаловский район", "from": "1939-02-22", "to": "1957-11-18" },
+      { "name": "Батыревский район", "from": "1957-11-19" }
+    ]
+  },
+  {
+    "placeIds": ["khirposi"],
+    "field": "district",
+    "sourceUrls": ["https://chebpolytech.ru/wp-content/uploads/2022/09/%D0%A1%D0%B1%D0%BE%D1%80%D0%BD%D0%B8%D0%BA-%D1%82%D1%80%D1%83%D0%B4%D0%BE%D0%B2-%D0%9A%D0%BE%D0%BD%D1%84%D0%B5%D1%80%D0%B5%D0%BD%D1%86%D0%B8%D0%B8-2018.pdf", "https://gov.cap.ru/home/59/foto/2012/exskursii/hirposi/text.pdf"],
+    "periods": [
+      { "name": "Ядринский уезд", "from": "1897-01-01", "to": "1926-12-31" },
+      { "name": "Вурнарский район", "from": "1928-01-01" }
+    ]
+  },
+  {
+    "placeIds": ["shibegechi"],
+    "field": "district",
+    "sourceUrls": ["https://chuvenc.ru/filter_from_MainTable_/%D0%A8?page=14"],
+    "periods": [
+      { "name": "Ядринский уезд", "from": "1801-01-01", "to": "1926-12-31" },
+      { "name": "Ибресинский район", "from": "1928-01-01", "to": "1961-12-31" },
+      { "name": "Вурнарский район", "from": "1963-01-01", "to": "1964-12-31" },
+      { "name": "Ибресинский район", "from": "1966-01-01" }
+    ]
+  },
+  {
+    "placeIds": ["berezniki"],
+    "field": "region",
+    "sourceUrls": ["https://museum-berezniki.ru/nauchno-issledovatelskaja-rabota/istorija-sozdanija-gerba-g-berezniki", "https://voda.gov.ru/maps/permskiy-kray/"],
+    "periods": [
+      { "name": "Пермская область", "from": "1995-01-01", "to": "2005-11-30" },
+      { "name": "Пермский край", "from": "2005-12-01" }
+    ]
+  },
+  {
+    "placeIds": ["boeblingen"],
+    "field": "region",
+    "sourceUrls": ["https://www.baden-wuerttemberg.de/en/our-state/state-history/"],
+    "periods": [{ "name": "Баден-Вюртемберг", "from": "1952-04-25" }]
+  }
+]

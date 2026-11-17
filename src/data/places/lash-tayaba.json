@@ -7,6 +7,13 @@
   "previousNames": [
     "Уразгильдино"
   ],
+  "previousNamePeriods": [
+    {
+      "name": "Уразгильдино",
+      "toYear": 1916,
+      "sourceUrl": "https://chuvenc.ru/filter_from_MainTable_/%D0%9B?page=9"
+    }
+  ],
   "born": [
     "sergey-tikhanov",
     "dmitry-mikheev-1910",

@@ -77,9 +77,16 @@ ul { margin: 0; padding: 0; list-style: none; }
 .page-header { padding-block: var(--space-3xl) var(--space-xl); }
 .page-header h1 { margin-block: var(--space-sm) var(--space-md); }
 .page-header p { max-width: var(--reading-width); color: var(--color-muted); }
-.breadcrumbs { display: flex; flex-wrap: wrap; gap: var(--space-xs); padding-top: var(--space-xl); font-size: var(--font-xs); color: var(--color-muted); }
+.breadcrumbs { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin: 0; padding: var(--space-xl) 0 0; list-style: none; font-size: var(--font-xs); color: var(--color-muted); }
 .breadcrumbs li:not(:last-child)::after { content: '/'; margin-left: var(--space-xs); }
-.person-header { display: grid; grid-template-columns: var(--portrait-size) 1fr; gap: var(--space-2xl); align-items: center; margin-top: var(--space-2xl); }
+.person-header { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-2xl); align-items: center; margin-top: var(--space-2xl); }
+.person-header.has-portraits { grid-template-columns: var(--portrait-size) minmax(0, 1fr); }
+.person-header.has-multiple-portraits { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.person-portraits { display: flex; flex-wrap: wrap; gap: var(--space-sm); align-items: start; min-width: 0; }
+.person-portrait { flex: 1 1 5rem; max-width: var(--portrait-size); min-width: 0; margin: 0; }
+.person-portrait .portrait { display: block; position: relative; width: 100%; overflow: hidden; }
+.person-portrait img { position: absolute; inset: 0; object-position: center top; }
+.person-portrait figcaption { margin-top: var(--space-xs); font-size: var(--font-sm); color: var(--color-muted); }
 .portrait { aspect-ratio: 4 / 5; width: var(--portrait-size); display: grid; align-content: center; justify-items: center; gap: var(--space-md); border: var(--border-width) solid var(--color-border); border-radius: var(--radius-small); background: var(--color-soft); color: var(--color-muted); text-align: center; }
 .portrait img { width: 100%; height: 100%; object-fit: cover; }
 .portrait .monogram { font: var(--font-2xl) var(--font-heading); color: var(--color-accent); }
@@ -146,6 +153,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .source-notes .document-people { margin-top: var(--space-md); }
 [hidden] { display: none !important; }
 @media (max-width: 800px) {
+  .person-header.has-multiple-portraits { grid-template-columns: minmax(0, 1fr); }
   .hero { grid-template-columns: 1fr; gap: var(--space-2xl); padding-top: var(--space-3xl); }
   .header-inner { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: var(--space-md); }
   .header-inner > .brand { grid-column: 1; grid-row: 1; }
@@ -161,7 +169,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   .stat { padding-inline: var(--space-md); }
   .stat strong { font-size: var(--font-xl); }
   .stat span { font-size: var(--font-xs); }
-  .person-header { grid-template-columns: 1fr; gap: var(--space-xl); }
+  .person-header.has-portraits, .person-header { grid-template-columns: minmax(0, 1fr); gap: var(--space-xl); }
   .portrait { width: var(--portrait-size); }
   .section-head { align-items: start; flex-direction: column; }
   .register-row { grid-template-columns: var(--space-lg) 1fr; }

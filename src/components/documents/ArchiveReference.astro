@@ -1,7 +1,8 @@
 ---
 import type { FamilyDocument } from '../../domain/schemas';
-interface Props { archive: FamilyDocument['archive'] }
-const { archive } = Astro.props;
+interface Props { archive: FamilyDocument['archive']; documentType: FamilyDocument['type'] }
+const { archive, documentType } = Astro.props;
+const name = documentType === 'photograph' && archive.name === 'Семейный архив' ? '' : archive.name;
 const parts = [[archive.fond, 'Фонд'], [archive.opis, 'Опись'], [archive.delo, 'Дело'], [archive.page, 'Лист']].filter(([value]) => value);
 ---
-{(archive.name || parts.length > 0) && <div class="archive-reference">{archive.name && <p>{archive.name}</p>}{parts.length > 0 && <p>{parts.map(([value, label]) => `${label} ${value}`).join(' · ')}</p>}</div>}
+{(name || parts.length > 0) && <div class="archive-reference">{name && <p>{name}</p>}{parts.length > 0 && <p>{parts.map(([value, label]) => `${label} ${value}`).join(' · ')}</p>}</div>}

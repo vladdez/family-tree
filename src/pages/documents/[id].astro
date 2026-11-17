@@ -17,5 +17,5 @@ const cover = document.files.find((file) => isImage(file.path));
 <BaseLayout title={`${document.title} — Родословная Михеевых`} description={description} image={cover?.preview ?? cover?.path ?? null}>
   <Breadcrumbs items={[{ label: 'Документы', path: '/documents/' }, { label: document.title }]} />
   <PageHeader title={document.title} eyebrow={documentTypes[document.type]} description={formatDate(document.date)} />
-  <ArchiveReference archive={document.archive} /><ul class="document-people section">{document.peopleIds.map((id) => <li><PersonLink personId={id} /></li>)}</ul><DocumentViewer document={document} />
+  <ArchiveReference archive={document.archive} documentType={document.type} /><ul class="document-people section">{document.peopleIds.map((id) => <li><PersonLink personId={id} /></li>)}</ul><DocumentViewer document={document} />
 </BaseLayout>

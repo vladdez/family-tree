@@ -3,6 +3,7 @@ import type { Person } from '../../domain/schemas';
 import { catalog } from '../../domain/catalog';
 import { displayName, lifespan, maidenNameForDisplay } from '../../domain/people';
 import { url, personUrl } from '../../domain/urls';
+import { personPortraits } from '../../domain/portraits';
 interface Props { person: Person }
 const { person } = Astro.props;
 const name = displayName(person, catalog);
@@ -10,8 +11,12 @@ const maidenName = maidenNameForDisplay(person);
 const biographyText = Array.isArray(person.biography) ? person.biography.map((section) => section.text).join(' ') : person.biography;
 const normalize = (text: string) => text.toLocaleLowerCase('ru').replace(/\s+/g, ' ').trim();
 const showSummary = person.summary && !normalize(biographyText).includes(normalize(person.summary));
+const photos = personPortraits(person);
 ---
-<header class="person-header">
-  <div class="portrait">{person.portrait ? <img src={url(person.portrait)} alt={`Портрет: ${name}`} /> : <><span class="monogram" aria-hidden="true">{name[0]}</span><small>Фотография пока не добавлена</small></>}</div>
+<header class:list={['person-header', { 'has-portraits': photos.length > 0, 'has-multiple-portraits': photos.length > 1 }]}>
+  {photos.length > 0 && <div class="person-portraits">{photos.map((photo) => <figure class="person-portrait">
+    <a class="portrait" href={url(photo.path)} target="_blank" rel="noopener"><img src={url(photo.path)} alt={`Портрет: ${name}${photo.label ? ` — ${photo.label}` : ''}`} /></a>
+    {photo.label && <figcaption>{photo.label}</figcaption>}
+  </figure>)}</div>}
   <div><h1>{name}</h1><p class="lifespan">{lifespan(person)}</p>{person.archivalName && <p class="muted">Имя сохранено в архивном написании.</p>}{maidenName !== null && <p class="muted" data-maiden-name>Девичья фамилия: {maidenName}</p>}{person.alternateNames.length > 0 && <div class="person-aliases"><span class="muted">Другие имена</span><ul>{person.alternateNames.map((alternateName) => <li><a class="person-link" href={personUrl(person.slug)}>{alternateName}</a></li>)}</ul></div>}{(person.birth.alternatives.length > 0 || person.death.alternatives.length > 0) && <p><span class="badge">Даты требуют уточнения</span></p>}{showSummary && <p class="muted">{person.summary}</p>}</div>
 </header>

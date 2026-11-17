@@ -1,0 +1,17 @@
+{
+  "id": "maria-mikheeva-sochi-railway",
+  "title": "Мария Ефимовна Михеева на строительстве железной дороги в Сочи",
+  "type": "photograph",
+  "date": null,
+  "peopleIds": ["maria-efimova-1941"],
+  "showInTimeline": false,
+  "files": [
+    {
+      "path": "/media/photos/maria-sochi.jpg",
+      "label": "Мария Ефимовна Михеева в молодости на строительстве железной дороги в Сочи"
+    }
+  ],
+  "archive": { "name": "Семейный архив", "fond": "", "opis": "", "delo": "", "page": "" },
+  "transcription": "",
+  "notes": ""
+}

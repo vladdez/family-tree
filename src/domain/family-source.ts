@@ -19,7 +19,7 @@ export function adaptFamilySource(input: unknown, profileInputs: unknown[] = [])
     const exact = profileDate ?? sourceDate;
     if (exact && years.length && (years.length !== 1 || Number(exact.slice(0, 4)) !== years[0])) throw new Error('Дата профиля противоречит годам family.json: сначала уточните исходную запись');
     const dates = years.map((year) => String(year).padStart(4, '0'));
-    return { date: exact ?? (dates.length === 1 ? dates[0] : null), alternatives: dates.length > 1 ? dates : [], placeId, ...(documentId ? { documentId } : {}), notes: dates.length > 1 ? 'В семейных данных указано несколько вариантов года. Требуется уточнение источника.' : '' };
+    return { date: exact ?? (dates.length === 1 ? dates[0] : null), alternatives: dates.length > 1 ? dates : [], placeId, ...(documentId ? { documentId } : {}), notes: '' };
   };
   const people = source.people.map((record) => {
     const profile = profiles.get(record.id);
@@ -32,7 +32,9 @@ export function adaptFamilySource(input: unknown, profileInputs: unknown[] = [])
       birth: event(record.birthYears, record.birth, profile?.birthDate, profile?.birthPlaceId, profile?.birthDocumentId),
       death: event(record.deathYears, record.death, profile?.deathDate, profile?.deathPlaceId, profile?.deathDocumentId),
       parents: [], spouses: [], children: [],
-      portrait: profile?.portrait ?? null, summary: profile?.summary ?? '', biography: profile?.biography ?? '', notes: profile?.notes ?? '',
+      portrait: profile?.portrait ?? profile?.portraits?.[0]?.path ?? null,
+      portraits: profile?.portraits,
+      summary: profile?.summary ?? '', biography: profile?.biography ?? '', notes: profile?.notes ?? '',
       sources: profile?.sources ?? [],
       marriages: profile?.marriages ?? [], events: profile?.events ?? [],
     });

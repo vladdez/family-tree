@@ -3,6 +3,8 @@
   "title": "Ответ архива о поиске сведений о Петре Михееве — № 335-г",
   "type": "other",
   "date": "2026-04-22",
+  "showInTimeline": false,
+  "showInDocumentTrail": false,
   "peopleIds": [
     "vladimir-mikheev-1995"
   ],

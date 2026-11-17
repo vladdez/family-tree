@@ -10,7 +10,7 @@ const { biography, footnotes = [] } = Astro.props;
   {Array.isArray(biography) ? biography.map((section) => (
     <section class="biography-section">
       <h3>{section.title}</h3>
-      <p class="prose"><InlineText text={section.text} footnotes={footnotes} /><SourceReferences sources={footnotes.filter((source) => section.sourceRefs?.includes(source.number))} /></p>
+      <p class="prose"><InlineText text={section.text} footnotes={footnotes} /><SourceReferences sources={footnotes.filter((source) => source.sourceNumber !== undefined && section.sourceRefs?.includes(source.sourceNumber))} /></p>
     </section>
   )) : biography ? <p class="prose"><InlineText text={biography} footnotes={footnotes} /></p> : (
     <p class="muted">Биография пока неизвестна.</p>

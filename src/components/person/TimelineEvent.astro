@@ -7,7 +7,7 @@ import SourceReferences from './SourceReferences.astro';
 import type { ProfileFootnote } from '../../domain/profile-footnotes';
 interface Props { event: TimelineEntry; footnotes?: ProfileFootnote[] }
 const { event, footnotes = [] } = Astro.props;
-const sources = footnotes.filter((source) => event.sourceRefs?.includes(source.number) || (event.documentId && source.documentIds.includes(event.documentId)));
+const sources = footnotes.filter((source) => (source.sourceNumber !== undefined && event.sourceRefs?.includes(source.sourceNumber)) || (event.documentId && source.documentIds.includes(event.documentId)));
 ---
 <li class="timeline-event">
   <div class="event-date">{event.alternatives.length ? <span class="badge">{event.alternatives.map(formatDate).join(' или ')} · требует уточнения</span> : event.date ? <time datetime={event.date}>{formatDate(event.date)}</time> : 'Дата неизвестна'}</div>

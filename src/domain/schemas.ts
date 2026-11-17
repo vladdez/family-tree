@@ -20,6 +20,10 @@ const lifeEvent = z.object({
   notes: z.string().default(''),
 }).strict().refine((e) => !e.alternatives.length || (e.date === null && e.alternatives.length >= 2 && new Set(e.alternatives).size === e.alternatives.length), 'Противоречивые даты: date = null, alternatives — минимум два разных варианта');
 const mediaPath = z.string().regex(/^\/media\/[a-zA-Z0-9_./-]+$/, 'Локальный путь должен начинаться с /media/').refine((p) => !p.includes('..') && !p.includes('//'), 'Недопустимый путь');
+const portraits = z.array(z.object({
+  path: mediaPath,
+  label: z.string().trim().default(''),
+}).strict()).refine((photos) => new Set(photos.map((photo) => photo.path)).size === photos.length, 'Повтор фотографии').optional();
 const profileSource = z.object({
   title: z.string().trim().min(1),
   href: z.union([mediaPath, z.url().refine((value) => value.startsWith('https://'), 'Источник должен использовать HTTPS')]),
@@ -61,6 +65,7 @@ export const PersonSchema = z.object({
     beforeEventId: id.optional(), notes: wrappedText.default(''), sourceRefs,
   }).strict().refine((event) => !event.beforeEventId || event.date === null, 'beforeEventId задаёт порядок только событий без даты')).default([]),
   portrait: mediaPath.nullable(),
+  portraits,
   summary: wrappedText, biography, notes: wrappedText.default(''),
   sources: z.array(profileSource).default([]),
 }).strict().refine(hasKnownName, 'Укажите хотя бы одну известную часть имени');
@@ -73,6 +78,7 @@ export const DocumentSchema = z.object({
   id, title: z.string().min(1), type: z.enum(['metric', 'marriage', 'birth', 'death', 'census', 'military', 'photograph', 'other']),
   date: PartialDateSchema.nullable(), peopleIds: uniqueIds.min(1),
   showInTimeline: z.boolean().default(true),
+  showInDocumentTrail: z.boolean().default(true),
   files: z.array(z.object({ path: mediaPath, preview: mediaPath.optional(), label: z.string().min(1) }).strict()),
   originalUrl: z.url().refine((v) => v.startsWith('https://'), 'Ссылка на оригинал должна использовать HTTPS').optional(),
   archive: z.object({ name: z.string(), fond: z.string(), opis: z.string(), delo: z.string(), page: z.string() }).strict(),
@@ -85,6 +91,13 @@ export const PlaceSchema = z.object({
   region: z.string().trim().default(''),
   country: z.string().trim().default(''),
   previousNames: z.array(z.string().trim().min(1)).default([]),
+  previousNamePeriods: z.array(z.object({
+    name: z.string().trim().min(1),
+    fromYear: z.number().int().min(1).max(9999).optional(),
+    toYear: z.number().int().min(1).max(9999).optional(),
+    sourceUrl: z.url().refine((value) => value.startsWith('https://')).optional(),
+  }).strict().refine((period) => period.fromYear !== undefined || period.toYear !== undefined, 'Укажите границу периода названия')
+    .refine((period) => period.fromYear === undefined || period.toYear === undefined || period.fromYear <= period.toYear, 'Начало периода позже конца')).optional(),
   born: uniqueIds.default([]),
   buried: uniqueIds.default([]),
 }).strict();
@@ -132,6 +145,7 @@ export const PersonProfileSchema = z.object({
   birthPlaceId: id.nullable().optional(), deathPlaceId: id.nullable().optional(),
   birthDocumentId: id.optional(), deathDocumentId: id.optional(),
   portrait: mediaPath.nullable().optional(), summary: wrappedText.optional(), biography: biography.optional(), notes: wrappedText.optional(),
+  portraits,
   marriages: PersonSchema.shape.marriages.optional(), events: PersonSchema.shape.events.optional(),
   sources: PersonSchema.shape.sources.optional(),
 }).strict();

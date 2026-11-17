@@ -4,6 +4,7 @@ import { parseInlineLinks } from './inline-links';
 
 export interface ProfileFootnote {
   number: number; title: string; href: string; pages: string; documentIds: string[];
+  sourceNumber?: number;
 }
 
 function inlineProfileLinks(person: Person, timeline: TimelineEntry[]) {
@@ -12,7 +13,7 @@ function inlineProfileLinks(person: Person, timeline: TimelineEntry[]) {
 }
 
 export function getProfileFootnotes(person: Person, timeline: TimelineEntry[], catalog: Catalog): ProfileFootnote[] {
-  const footnotes: ProfileFootnote[] = person.sources.map((source, index) => ({ ...source, number: index + 1, documentIds: [] }));
+  const footnotes: ProfileFootnote[] = person.sources.map((source, index) => ({ ...source, number: index + 1, sourceNumber: index + 1, documentIds: [] }));
   for (const event of timeline) {
     if (!event.documentId) continue;
     const document = catalog.documents.find((document) => document.id === event.documentId);
@@ -27,16 +28,26 @@ export function getProfileFootnotes(person: Person, timeline: TimelineEntry[], c
       footnotes.push({ number: footnotes.length + 1, title: part.text, href: part.href, pages: '', documentIds: [] });
     }
   }
-  return footnotes;
-}
-
-export function getGeneralProfileFootnotes(person: Person, timeline: TimelineEntry[], footnotes: ProfileFootnote[]): ProfileFootnote[] {
-  const explicit = new Set([
-    ...(Array.isArray(person.biography) ? person.biography.flatMap((section) => section.sourceRefs ?? []) : []),
-    ...timeline.flatMap((event) => event.sourceRefs ?? []),
-  ]);
-  const inlineHrefs = new Set(inlineProfileLinks(person, timeline).map((part) => part.href).filter(Boolean));
-  const documentIds = new Set(timeline.map((event) => event.documentId).filter(Boolean));
-  return footnotes.filter((source) => source.number <= person.sources.length && !explicit.has(source.number)
-    && !inlineHrefs.has(source.href) && !source.documentIds.some((id) => documentIds.has(id)));
+  // Keep sourceRefs tied to the source data while numbering displayed citations
+  // in reading order: biography, notes, then timeline. Uncited sources stay last.
+  const ordered = new Set<ProfileFootnote>();
+  const addInline = (text: string) => {
+    for (const part of parseInlineLinks(text)) {
+      const source = part.href && footnotes.find((source) => source.href === part.href);
+      if (source) ordered.add(source);
+    }
+  };
+  const addReferences = (refs: number[] = [], documentId?: string) => {
+    for (const source of footnotes) {
+      if ((source.sourceNumber !== undefined && refs.includes(source.sourceNumber))
+        || (documentId && source.documentIds.includes(documentId))) ordered.add(source);
+    }
+  };
+  if (Array.isArray(person.biography)) {
+    for (const section of person.biography) { addInline(section.text); addReferences(section.sourceRefs); }
+  } else addInline(person.biography);
+  addInline(person.notes);
+  for (const event of timeline) { addReferences(event.sourceRefs, event.documentId); addInline(event.notes); }
+  for (const source of footnotes) ordered.add(source);
+  return [...ordered].map((source, index) => ({ ...source, number: index + 1 }));
 }

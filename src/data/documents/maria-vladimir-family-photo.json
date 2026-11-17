@@ -1,0 +1,17 @@
+{
+  "id": "maria-vladimir-family-photo",
+  "title": "Семейная фотография Марии и Владимира Михеевых",
+  "type": "photograph",
+  "date": null,
+  "peopleIds": ["maria-efimova-1941", "vladimir-mikheev-1941"],
+  "showInTimeline": false,
+  "files": [
+    {
+      "path": "/media/photos/maria_vladimir.jpg",
+      "label": "Мария и Владимир Михеевы"
+    }
+  ],
+  "archive": { "name": "Семейный архив", "fond": "", "opis": "", "delo": "", "page": "" },
+  "transcription": "",
+  "notes": ""
+}

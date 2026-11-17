@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import PhotoAlbum from '../../components/person/PhotoAlbum.astro';
+import { catalog } from '../../domain/catalog';
+import { compareDates } from '../../domain/dates';
+
+const photographs = catalog.documents
+  .filter((document) => document.type === 'photograph')
+  .sort((a, b) => compareDates(a.date, b.date));
+---
+<BaseLayout title="Фотоальбом — Родословная Михеевых" description="Семейные фотографии разных лет.">
+  <PhotoAlbum photographs={photographs} headingLevel="h1" layout="grid" />
+  {photographs.length === 0 && <section class="section"><h1>Фотоальбом</h1><p class="empty-state">Фотографии пока не добавлены.</p></section>}
+</BaseLayout>

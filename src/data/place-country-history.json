@@ -1,0 +1,48 @@
+[
+  {
+    "placeIds": ["berezniki", "cheboksary", "khirposi", "lash-tayaba", "shemalakovo", "shibegechi", "starye-toysi", "toygildy"],
+    "periods": [
+      {
+        "name": "Русское царство",
+        "from": "1547-01-26",
+        "to": "1721-11-01",
+        "sourceUrl": "https://www.prlib.ru/history/618950"
+      },
+      {
+        "name": "Российская империя",
+        "from": "1721-11-02",
+        "to": "1917-09-13",
+        "sourceUrl": "https://historyrussia.org/sobytiya/den-v-istorii-k-300-letiyu-provozglasheniya-rossii-imperiej.html"
+      },
+      {
+        "name": "Российская республика",
+        "from": "1917-09-14",
+        "to": "1917-11-06",
+        "sourceUrl": "https://www.prlib.ru/node/619540"
+      },
+      {
+        "name": "Советская Россия",
+        "from": "1917-11-07",
+        "to": "1918-01-24",
+        "sourceUrl": "https://www.prlib.ru/section/2098163"
+      },
+      {
+        "name": "РСФСР",
+        "from": "1918-01-25",
+        "to": "1922-12-29",
+        "sourceUrl": "https://www.prlib.ru/node/618951"
+      },
+      {
+        "name": "СССР",
+        "from": "1922-12-30",
+        "to": "1991-12-25",
+        "sourceUrl": "https://www.prlib.ru/node/1417130"
+      },
+      {
+        "name": "Россия",
+        "from": "1991-12-26",
+        "sourceUrl": "https://base.garant.ru/74619820/"
+      }
+    ]
+  }
+]

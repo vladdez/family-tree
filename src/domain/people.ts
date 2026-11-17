@@ -77,7 +77,7 @@ export function lifespan(person: Person) {
   if (showBirthOnly(person)) return `род. ${year(person.birth)}`;
   return `${year(person.birth)} — ${year(person.death)}`;
 }
-export function eventDate(event: Person['birth']) { return event.alternatives.length ? `${event.alternatives.map(formatDate).join(' или ')} · дата не подтверждена` : formatDate(event.date); }
+export function eventDate(event: Person['birth']) { return event.alternatives.length ? event.alternatives.map(formatDate).join(' или ') : formatDate(event.date); }
 export function personDescription(person: Person, catalog?: Catalog) { return person.summary || `${catalog ? displayName(person, catalog) : fullName(person)}. ${lifespan(person)}. ${person.death.alternatives.length ? 'Год смерти требует уточнения.' : 'Семейная запись и известные даты жизни.'}`; }
 export function chronologicalPeople(catalog: Catalog) {
   const key = (p: Person) => p.birth.date ?? [...p.birth.alternatives].sort()[0] ?? null;
