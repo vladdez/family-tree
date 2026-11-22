@@ -106,13 +106,11 @@ for (const person of catalog.people) {
     const evidence = timelineEvents.filter((node) => textContent(elements(node).find((child) => child.tagName === 'h3')!) === title && hasEventDocument(node, event.documentId!));
     if (evidence.length !== 1 || textContent(elements(evidence[0]).find((node) => node.tagName === 'h3')!) !== title) errors.push(`${person.id}: источник события «${title}» отсутствует или показан отдельным событием`);
   }
-  for (const name of person.alternateNames) if (!visibleText.includes(name)) errors.push(`${person.id}: пропущено альтернативное имя ${name}`);
   const maidenName = maidenNameForDisplay(person);
   if (maidenName !== null) {
     const field = nodes.find((node) => attr(node, 'data-maiden-name') !== undefined);
     if (!field || textContent(field).trim() !== `Девичья фамилия: ${maidenName}`.trim()) errors.push(`${person.id}: неверно показан пункт «Девичья фамилия»`);
   }
-  if (person.archivalName && !visibleText.includes('Имя сохранено в архивном написании.')) errors.push(`${person.id}: пропущена пометка архивного написания`);
   if (showBirthOnly(person) && nodes.some((node) => node.tagName === 'dt' && textContent(node) === 'Смерть')) {
     errors.push(`${person.id}: показана пустая строка смерти`);
   }

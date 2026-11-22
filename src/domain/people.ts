@@ -39,7 +39,7 @@ function patronymicSex(person: Person): PatronymicSex | null {
   return null;
 }
 export function maidenNameForDisplay(person: Person): string | null {
-  return patronymicSex(person) === 'female' || person.maidenName ? person.maidenName : null;
+  return person.maidenName.trim() || null;
 }
 export function inferredPatronymic(person: Person, catalog: Catalog): string | null {
   if (person.patronymic || person.archivalName) return null;

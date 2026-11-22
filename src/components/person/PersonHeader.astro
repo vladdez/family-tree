@@ -2,7 +2,7 @@
 import type { Person } from '../../domain/schemas';
 import { catalog } from '../../domain/catalog';
 import { displayName, lifespan, maidenNameForDisplay } from '../../domain/people';
-import { url, personUrl } from '../../domain/urls';
+import { url } from '../../domain/urls';
 import { personPortraits } from '../../domain/portraits';
 interface Props { person: Person }
 const { person } = Astro.props;
@@ -18,5 +18,5 @@ const photos = personPortraits(person);
     <a class="portrait" href={url(photo.path)} target="_blank" rel="noopener"><img src={url(photo.path)} alt={`Портрет: ${name}${photo.label ? ` — ${photo.label}` : ''}`} /></a>
     {photo.label && <figcaption>{photo.label}</figcaption>}
   </figure>)}</div>}
-  <div><h1>{name}</h1><p class="lifespan">{lifespan(person)}</p>{person.archivalName && <p class="muted">Имя сохранено в архивном написании.</p>}{maidenName !== null && <p class="muted" data-maiden-name>Девичья фамилия: {maidenName}</p>}{person.alternateNames.length > 0 && <div class="person-aliases"><span class="muted">Другие имена</span><ul>{person.alternateNames.map((alternateName) => <li><a class="person-link" href={personUrl(person.slug)}>{alternateName}</a></li>)}</ul></div>}{(person.birth.alternatives.length > 0 || person.death.alternatives.length > 0) && <p><span class="badge">Даты требуют уточнения</span></p>}{showSummary && <p class="muted">{person.summary}</p>}</div>
+  <div><h1>{name}</h1><p class="lifespan">{lifespan(person)}</p>{maidenName !== null && <p class="muted" data-maiden-name>Девичья фамилия: {maidenName}</p>}{(person.birth.alternatives.length > 0 || person.death.alternatives.length > 0) && <p><span class="badge">Даты требуют уточнения</span></p>}{showSummary && <p class="muted">{person.summary}</p>}</div>
 </header>
