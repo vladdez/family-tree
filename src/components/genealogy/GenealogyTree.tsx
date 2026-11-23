@@ -167,6 +167,10 @@ export default function GenealogyTree({ people, relationships, branches = emptyB
     } else setView((old) => ({ ...old, x: old.x + dx, y: old.y + dy }));
   }
   function pointerUp(event: PointerEvent<HTMLDivElement>) {
+    // Touch starts with implicit capture on the card/link under the finger.
+    // Moving capture to the viewport bubbles lostpointercapture from that child;
+    // the finger is still down, so keep it in the pinch gesture.
+    if (event.type === 'lostpointercapture' && event.target !== event.currentTarget) return;
     pointers.current.delete(event.pointerId);
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
     if (!pointers.current.size) setDragging(false);
