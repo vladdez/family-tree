@@ -15,7 +15,7 @@
 .tree-viewport { position: relative; height: var(--tree-height); overflow: hidden; touch-action: none; cursor: grab; border: var(--border-width) solid var(--color-border); background-color: var(--color-soft); background-image: radial-gradient(var(--color-grid) var(--border-width), transparent var(--border-width)); background-size: var(--grid-size) var(--grid-size); }
 .tree-viewport.is-dragging { cursor: grabbing; user-select: none; }
 .tree-viewport.is-register { overflow: auto; cursor: auto; touch-action: pan-y; }
-.tree-canvas { position: absolute; transform-origin: 0 0; }
+.tree-canvas { position: absolute; transform-origin: 0 0; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 .tree-edges { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
 .tree-branch-heading { position: absolute; color: var(--color-accent); font: var(--font-xl)/var(--line-heading) var(--font-heading); pointer-events: none; }
 .tree-period { position: absolute; padding-block: var(--space-md); color: var(--color-muted); pointer-events: none; }

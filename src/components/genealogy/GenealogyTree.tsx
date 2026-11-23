@@ -4,6 +4,7 @@ import type { TreeBranch } from '../../domain/tree-branches';
 import type { HiddenRelativeGroup } from '../../domain/focused-tree';
 import { layoutTree, type Geometry } from './layout';
 import { fitView, fitNodes, scaleView, pinchView, type View } from './viewport';
+import { attachTreeTouchGestures } from './touch';
 import { edgePath, marriageMarkerPosition } from './edges';
 import MarriageIcon from './MarriageIcon';
 import { getFamilyConnections } from './families';
@@ -122,12 +123,18 @@ export default function GenealogyTree({ people, relationships, branches = emptyB
     if (relativePerson && !relativesDialog.current?.open) relativesDialog.current?.showModal();
   }, [relativePerson]);
 
+  const minimumScale = useCallback(() => {
+    if (!viewport.current || !graph) return 0.15;
+    return Math.min(0.15, fitView(viewport.current.getBoundingClientRect(), graph).scale);
+  }, [graph]);
+
   const zoom = useCallback((factor: number, point?: { x: number; y: number }) => {
     if (!viewport.current) return;
     const box = viewport.current.getBoundingClientRect();
     const anchor = point ?? { x: box.width / 2, y: box.height / 2 };
-    setView((old) => scaleView(old, factor, anchor));
-  }, []);
+    const minimum = minimumScale();
+    setView((old) => scaleView(old, factor, anchor, minimum));
+  }, [minimumScale]);
 
   useEffect(() => {
     const element = viewport.current;
@@ -142,13 +149,25 @@ export default function GenealogyTree({ people, relationships, branches = emptyB
     return () => element.removeEventListener('wheel', wheel);
   }, [zoom]);
 
+  useEffect(() => {
+    if (!viewport.current || !graph) return;
+    return attachTreeTouchGestures(viewport.current, {
+      updateView: setView,
+      start: () => { moved.current = false; },
+      move: () => { moved.current = true; setDragging(true); },
+      end: () => setDragging(false),
+      minimumScale,
+    });
+  }, [graph, minimumScale]);
+
   function pointerDown(event: PointerEvent<HTMLDivElement>) {
-    if (event.button !== 0) return;
+    if (event.pointerType === 'touch' || event.button !== 0 || !graph) return;
     if (!pointers.current.size) { moved.current = false; dragDistance.current = 0; }
     pointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
     // Preserve a normal click on links; capture only once a drag actually starts.
   }
   function pointerMove(event: PointerEvent<HTMLDivElement>) {
+    if (event.pointerType === 'touch') return;
     const previous = pointers.current.get(event.pointerId); if (!previous) return;
     const before = [...pointers.current.values()];
     const dx = event.clientX - previous.x, dy = event.clientY - previous.y;
@@ -163,13 +182,13 @@ export default function GenealogyTree({ people, relationships, branches = emptyB
       const box = event.currentTarget.getBoundingClientRect();
       const oldCenter = { x: (before[0].x + before[1].x) / 2 - box.left, y: (before[0].y + before[1].y) / 2 - box.top };
       const newCenter = { x: (after[0].x + after[1].x) / 2 - box.left, y: (after[0].y + after[1].y) / 2 - box.top };
-      setView((old) => pinchView(old, distance(after) / priorDistance, oldCenter, newCenter));
+      const minimum = minimumScale();
+      setView((old) => pinchView(old, distance(after) / priorDistance, oldCenter, newCenter, minimum));
     } else setView((old) => ({ ...old, x: old.x + dx, y: old.y + dy }));
   }
   function pointerUp(event: PointerEvent<HTMLDivElement>) {
-    // Touch starts with implicit capture on the card/link under the finger.
-    // Moving capture to the viewport bubbles lostpointercapture from that child;
-    // the finger is still down, so keep it in the pinch gesture.
+    if (event.pointerType === 'touch') return;
+    // A child losing capture to the viewport does not end a pen/mouse drag.
     if (event.type === 'lostpointercapture' && event.target !== event.currentTarget) return;
     pointers.current.delete(event.pointerId);
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
@@ -196,7 +215,7 @@ export default function GenealogyTree({ people, relationships, branches = emptyB
     <div className="tree-toolbar"><label className="field tree-search">Найти на древе<select value={selected} onChange={(event) => focusPerson(event.target.value)}><option value="">Главная линия</option>{people.map((p) => <option key={p.id} value={p.id}>{treeDisplayName(p)} · {p.lifespan}</option>)}</select></label><div className="tree-controls"><button type="button" className="button" onClick={() => zoom(1.2)} aria-label="Увеличить">+</button><span className="tree-scale" aria-live="polite">{Math.round(view.scale * 100)}%</span><button type="button" className="button" onClick={() => zoom(1 / 1.2)} aria-label="Уменьшить">−</button><button type="button" className="button" onClick={showFamily}>Моя семья</button><button type="button" className="button" onClick={() => { setSelected(''); fit(); }}>Все предки</button><button ref={fullscreenButton} type="button" className="button tree-fullscreen-button" onClick={toggleFullscreen} aria-pressed={!!fullscreenMode} disabled={!graph || fullscreenPending} title={fullscreenMode ? 'Выйти из полного экрана (Esc)' : 'Развернуть древо на весь экран'}>{fullscreenMode ? 'Выйти из полного экрана' : 'Весь экран'}</button></div></div>
     {fullscreenMessage && <p className="tree-fullscreen-message" role="status">{fullscreenMessage}</p>}
     {branches.some((branch) => branch.kind === 'family') && <div className="tree-branch-legend" role="group" aria-label="Цвета семейных ветвей">{branches.filter((branch) => branch.kind === 'family').map((branch) => <span key={branch.id} data-branch={branch.id}>{branch.label}</span>)}</div>}
-    <div ref={viewport} className={`tree-viewport${dragging ? ' is-dragging' : ''}${graph ? '' : ' is-register'}`} tabIndex={0} role="region" aria-label="Интерактивное семейное древо" aria-describedby="tree-instructions" onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} onLostPointerCapture={pointerUp} onPointerLeave={(event) => { if (!dragging) pointers.current.delete(event.pointerId); }} onKeyDown={keyboard} onClickCapture={(event) => { if (moved.current && event.detail !== 0) { event.preventDefault(); event.stopPropagation(); } }}>
+    <div ref={viewport} className={`tree-viewport${dragging ? ' is-dragging' : ''}${graph ? '' : ' is-register'}`} tabIndex={0} role="region" aria-label="Интерактивное семейное древо" aria-describedby="tree-instructions" onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} onLostPointerCapture={pointerUp} onPointerLeave={(event) => { if (event.pointerType !== 'touch' && !dragging) pointers.current.delete(event.pointerId); }} onKeyDown={keyboard} onClickCapture={(event) => { if (moved.current && event.detail !== 0) { event.preventDefault(); event.stopPropagation(); } }}>
       {graph && geometry ? <div className="tree-canvas" style={{ width: graph.width, height: graph.height, transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})` }}>
         {graph.lanes?.filter((lane) => branches.find((branch) => branch.id === lane.id)?.kind !== 'descendants').map((lane) => <div key={lane.id} className="tree-branch-heading" style={{ left: lane.x, top: lane.y, width: lane.width }}>{lane.label}</div>)}
         {graph.periods?.map((period) => <div key={period.y} className="tree-period" style={{ left: geometry.gap, top: period.y, width: geometry.nodeWidth }}><span>{period.label}</span><small>{period.dated ? 'Годы рождения' : 'Нет известных дат'}</small></div>)}

@@ -137,3 +137,15 @@ test('show-all fits both a mobile viewport and a large graph without cropping', 
     assert.ok(view.y + graph.height * view.scale <= viewport.height);
   }
 });
+
+test('pinching a fitted mobile tree changes scale proportionally below 15 percent', () => {
+  const view = fitView({ width: 320, height: 500 }, { width: 26000, height: 4000 });
+  const center = { x: 160, y: 250 };
+  const enlarged = pinchView(view, 2, center, center, view.scale);
+  assert.equal(enlarged.scale, view.scale * 2);
+  const restored = pinchView(enlarged, 0.5, center, center, view.scale);
+  assert.equal(restored.scale, view.scale);
+  assert.ok(Math.abs(restored.x - view.x) < 1e-9);
+  assert.ok(Math.abs(restored.y - view.y) < 1e-9);
+  assert.equal(scaleView(view, 0.5, center, view.scale).scale, view.scale);
+});
