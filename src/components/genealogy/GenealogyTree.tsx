@@ -5,6 +5,7 @@ import type { HiddenRelativeGroup } from '../../domain/focused-tree';
 import { layoutTree, type Geometry } from './layout';
 import { fitView, fitNodes, scaleView, pinchView, type View } from './viewport';
 import { attachTreeTouchGestures } from './touch';
+import { installTouchDiagnostics } from './touch-diagnostics';
 import { edgePath, marriageMarkerPosition } from './edges';
 import MarriageIcon from './MarriageIcon';
 import { getFamilyConnections } from './families';
@@ -151,13 +152,16 @@ export default function GenealogyTree({ people, relationships, branches = emptyB
 
   useEffect(() => {
     if (!viewport.current || !graph) return;
-    return attachTreeTouchGestures(viewport.current, {
+    const diagnostics = installTouchDiagnostics(viewport.current);
+    const detach = attachTreeTouchGestures(viewport.current, {
       updateView: setView,
       start: () => { moved.current = false; },
       move: () => { moved.current = true; setDragging(true); },
       end: () => setDragging(false),
       minimumScale,
+      trace: diagnostics.trace,
     });
+    return () => { detach(); diagnostics.cleanup(); };
   }, [graph, minimumScale]);
 
   function pointerDown(event: PointerEvent<HTMLDivElement>) {

@@ -1,4 +1,5 @@
 import { pinchView, type Point, type View } from './viewport';
+import type { TouchTrace } from './touch-diagnostics';
 
 interface Contact extends Point { id: number }
 interface Callbacks {
@@ -7,6 +8,7 @@ interface Callbacks {
   move: () => void;
   end: () => void;
   minimumScale?: () => number;
+  trace?: TouchTrace;
 }
 
 // Use complete touch snapshots on touchscreens. Unlike pointer capture, touch
@@ -26,6 +28,7 @@ export function attachTreeTouchGestures(element: HTMLElement, callbacks: Callbac
   const prevent = (event: TouchEvent) => { if (event.cancelable) event.preventDefault(); };
   const markMoved = () => { if (!moved) { moved = true; callbacks.move(); } };
   const start = (event: TouchEvent) => {
+    callbacks.trace?.('handler:start', { touches: event.touches.length, changed: event.changedTouches.length });
     if (!active.size) { moved = false; callbacks.start(); }
     for (const touch of Array.from(event.changedTouches)) active.add(touch.identifier);
     previous = read(event);
@@ -33,6 +36,7 @@ export function attachTreeTouchGestures(element: HTMLElement, callbacks: Callbac
     if (previous.length > 1) { prevent(event); markMoved(); }
   };
   const move = (event: TouchEvent) => {
+    callbacks.trace?.('handler:move', { touches: event.touches.length, active: active.size });
     if (!active.size) return;
     // Native, non-passive listeners let Safari cancel page scrolling/zooming.
     prevent(event);
@@ -46,6 +50,7 @@ export function attachTreeTouchGestures(element: HTMLElement, callbacks: Callbac
       if (!moved && Math.hypot(dx, dy) < 6) return;
       markMoved();
       callbacks.updateView((view) => ({ ...view, x: view.x + dx, y: view.y + dy }));
+      callbacks.trace?.('handler:pan', { dx, dy });
     } else if (next.length === 2) {
       const distance = (points: Contact[]) => Math.hypot(points[1].x - points[0].x, points[1].y - points[0].y);
       const center = (points: Contact[]): Point => ({ x: (points[0].x + points[1].x) / 2, y: (points[0].y + points[1].y) / 2 });
@@ -55,11 +60,13 @@ export function attachTreeTouchGestures(element: HTMLElement, callbacks: Callbac
         markMoved();
         const minimum = callbacks.minimumScale?.();
         callbacks.updateView((view) => pinchView(view, factor, from, to, minimum));
+        callbacks.trace?.('handler:pinch', { factor, from, to });
       }
     }
     previous = next;
   };
   const end = (event: TouchEvent) => {
+    callbacks.trace?.('handler:end', { touches: event.touches.length, changed: event.changedTouches.length });
     if (moved) prevent(event);
     for (const touch of Array.from(event.changedTouches)) active.delete(touch.identifier);
     previous = read(event);
